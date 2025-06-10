@@ -1,0 +1,19 @@
+<nav class="bg-white shadow-md mb-6">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <a href="/" class="text-lg font-semibold text-blue-600">Modelo ISP</a>
+
+    <% if (usuario) { %>
+      <div class="flex items-center gap-4">
+        <span class="text-gray-700">Hola, <%= usuario.nombre %></span>
+        <form action="/logout" method="POST">
+          <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar sesión</button>
+        </form>
+      </div>
+    <% } else { %>
+      <div class="flex gap-4">
+        <a href="/login" class="text-sm text-blue-600 hover:underline">Iniciar sesión</a>
+        <a href="/registro" class="text-sm text-blue-600 hover:underline">Registrarse</a>
+      </div>
+    <% } %>
+  </div>
+</nav>

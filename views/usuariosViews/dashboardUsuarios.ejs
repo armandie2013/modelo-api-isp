@@ -1,0 +1,41 @@
+<h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Gestión de Usuarios</h1>
+
+<div class="overflow-x-auto">
+    
+  <form action="/usuarios/actualizar-roles" method="POST">
+    <table class="w-full table-auto bg-white shadow-md rounded border">
+      <thead class="bg-gray-100 text-left text-sm text-gray-600">
+        <tr>
+          <th class="p-3">Nombre</th>
+          <th class="p-3">Apellido</th>
+          <th class="p-3">Email</th>
+          <th class="p-3">DNI</th>
+          <th class="p-3">Rol</th>
+        </tr>
+      </thead>
+      <tbody class="text-sm text-gray-700">
+        <% usuarios.forEach(usuario => { %>
+          <tr class="border-t">
+            <td class="p-3"><%= usuario.nombre %></td>
+            <td class="p-3"><%= usuario.apellido %></td>
+            <td class="p-3"><%= usuario.email %></td>
+            <td class="p-3"><%= usuario.dni %></td>
+            <td class="p-3">
+              <select name="roles[<%= usuario._id %>]" class="border rounded px-2 py-1 w-full">
+                <option value="admin" <%= usuario.rol === 'admin' ? 'selected' : '' %>>Admin</option>
+                <option value="cobrador" <%= usuario.rol === 'cobrador' ? 'selected' : '' %>>Cobrador</option>
+                <option value="cliente" <%= usuario.rol === 'cliente' ? 'selected' : '' %>>Cliente</option>
+              </select>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <div class="mt-6 text-center">
+      <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+        Guardar cambios
+      </button>
+    </div>
+  </form>
+</div>

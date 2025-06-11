@@ -1,9 +1,28 @@
-<nav class="bg-white shadow-md mb-6">
+<nav class="bg-white mb-6 border-b shadow-[0_4px_6px_rgba(0,0,0,0.1)]">
   <div class="container mx-auto px-4 py-3 flex justify-between items-center">
     <a href="/" class="text-lg font-semibold text-blue-600">Modelo ISP</a>
 
     <% if (usuario) { %>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-6">
+
+        <% if (usuario.rol === 'admin') { %>
+          <div class="relative group">
+            <button class="text-sm text-blue-600 hover:underline focus:outline-none">
+              Admin ▼
+            </button>
+            <div class="absolute opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 bg-white border shadow-md mt-2 rounded-md w-52 z-10">
+              <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                Panel de administración
+              </a>
+              <div class="border-t my-1"></div>
+              <a href="/usuarios/cambiar-roles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                Cambiar roles
+              </a>
+              <!-- Más opciones administrativas aquí -->
+            </div>
+          </div>
+        <% } %>
+
         <span class="text-gray-700">Hola, <%= usuario.nombre %></span>
         <form action="/logout" method="POST">
           <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar sesión</button>

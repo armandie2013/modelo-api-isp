@@ -8,6 +8,8 @@ import dotenv from 'dotenv';
 import expressLayouts from 'express-ejs-layouts';
 import { verificarSesion } from './middlewares/verificarSesion.mjs';
 import authRoutes from './routes/authRoutes.mjs';
+import usuariosRoutes from './routes/usuariosRoutes.mjs';
+import adminRoutes from './routes/adminRoutes.mjs';
 
 dotenv.config();
 
@@ -48,6 +50,8 @@ app.use(authRoutes);
 app.get('/', (req, res) => {
   res.render('inicio', { titulo: 'Inicio' });
 });
+app.use(usuariosRoutes);
+app.use(adminRoutes);
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;

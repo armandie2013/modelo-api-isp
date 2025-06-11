@@ -9,14 +9,25 @@ export const mostrarFormularioRegistro = (req, res) => {
 };
 
 export const procesarRegistro = async (req, res) => {
+  const { password, confirmarPassword } = req.body;
+
+  // Validar coincidencia de contraseñas
+  if (password !== confirmarPassword) {
+    return res.render("authViews/registroUsuario", {
+      titulo: "Registro de Usuario",
+      errores: ["Las contraseñas no coinciden"],
+      datos: req.body,
+    });
+  }
+
   try {
     await registrarUsuario(req.body);
     res.redirect("/login");
   } catch (error) {
     res.render("authViews/registroUsuario", {
       titulo: "Registro de Usuario",
-      errores: [],
-      datos: {},
+      errores: [error.message],
+      datos: req.body,
     });
   }
 };
@@ -28,7 +39,6 @@ export const mostrarFormularioLogin = (req, res) => {
     datos: {},
   });
 };
-
 
 export const procesarLogin = async (req, res) => {
   try {

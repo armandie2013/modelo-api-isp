@@ -1,5 +1,5 @@
 import Usuario from '../models/Usuario.mjs';
-import { actualizarRoles } from '../services/usuariosService.mjs';
+import { actualizarRoles, cambiarRolUsuario } from '../services/usuariosService.mjs';
 
 export const mostrarDashboardUsuarios = async (req, res) => {
   try {
@@ -25,7 +25,6 @@ export const actualizarRolesUsuarios = async (req, res) => {
   }
 };
 
-// GET /usuarios/cambiar-roles
 export const mostrarVistaCambioRoles = async (req, res) => {
   try {
     const usuarios = await Usuario.find().lean();
@@ -39,7 +38,6 @@ export const mostrarVistaCambioRoles = async (req, res) => {
   }
 };
 
-// POST /usuarios/cambiar-roles
 export const cambiarRolesUsuarios = async (req, res) => {
   try {
     await actualizarRoles(req.body);
@@ -52,5 +50,33 @@ export const cambiarRolesUsuarios = async (req, res) => {
   } catch (error) {
     console.error('Error al actualizar roles:', error);
     res.status(500).send('Error al actualizar roles');
+  }
+};
+
+export const mostrarFormularioEditarRol = async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.params.id).lean();
+    if (!usuario) return res.status(404).send('Usuario no encontrado');
+
+    res.render('usuariosViews/editarRol', {
+      titulo: 'Editar Rol de Usuario',
+      usuario,
+    });
+  } catch (error) {
+    console.error('Error al obtener usuario:', error);
+    res.status(500).send('Error interno del servidor');
+  }
+};
+
+export const procesarEdicionRol = async (req, res) => {
+  const { rol } = req.body;
+  const usuarioId = req.params.id;
+
+  try {
+    await cambiarRolUsuario(usuarioId, rol);
+    res.redirect('/usuarios/dashboard');
+  } catch (error) {
+    console.error('Error al actualizar rol:', error);
+    res.status(500).send('Error al actualizar el rol');
   }
 };

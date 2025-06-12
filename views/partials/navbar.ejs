@@ -5,12 +5,14 @@
     <% if (usuario) { %>
       <div class="flex items-center gap-6">
 
-        <% if (usuario.rol === 'admin') { %>
+        <% if (usuario.rol==='admin' ) { %>
+          <!-- Menú Admin -->
           <div class="relative group">
             <button class="text-sm text-blue-600 hover:underline focus:outline-none">
               Admin ▼
             </button>
-            <div class="absolute opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 bg-white border shadow-md mt-2 rounded-md w-52 z-10">
+            <div
+              class="absolute left-0 mt-2 bg-white border shadow-md rounded-md w-52 z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
               <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 Panel de administración
               </a>
@@ -18,21 +20,60 @@
               <a href="/usuarios/cambiar-roles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 Cambiar roles
               </a>
-              <!-- Más opciones administrativas aquí -->
             </div>
           </div>
-        <% } %>
+          <% } %>
 
-        <span class="text-gray-700">Hola, <%= usuario.nombre %></span>
-        <form action="/logout" method="POST">
-          <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar sesión</button>
-        </form>
+            <% if (usuario.rol==='cobrador' ) { %>
+              <!-- Menú Cobrador -->
+              <div class="relative group">
+                <button class="text-sm text-blue-600 hover:underline focus:outline-none">
+                  Cobrador ▼
+                </button>
+                <div
+                  class="absolute left-0 mt-2 bg-white border shadow-md rounded-md w-52 z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
+                  <a href="/cobrador/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Panel del cobrador
+                  </a>
+                  <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">
+                    Registrar pago (próximamente)
+                  </a>
+                  <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">
+                    Historial (próximamente)
+                  </a>
+                </div>
+              </div>
+              <% } %>
+
+                <% if (usuario.rol==='cliente' ) { %>
+                  <!-- Menú Cliente -->
+                  <div class="relative group">
+                    <button class="text-sm text-blue-600 hover:underline focus:outline-none">
+                      Cliente ▼
+                    </button>
+                    <div
+                      class="absolute left-0 mt-2 bg-white border shadow-md rounded-md w-52 z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
+                      <a href="/cliente/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        Panel del cliente
+                      </a>
+                      <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">
+                        Consultar pagos (próximamente)
+                      </a>
+                    </div>
+                  </div>
+                  <% } %>
+
+                    <span class="text-gray-700">Hola, <%= usuario.nombre %></span>
+                    <form action="/logout" method="POST">
+                      <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar sesión</button>
+                    </form>
       </div>
-    <% } else { %>
-      <div class="flex gap-4">
-        <a href="/login" class="text-sm text-blue-600 hover:underline">Iniciar sesión</a>
-        <a href="/registro" class="text-sm text-blue-600 hover:underline">Registrarse</a>
-      </div>
-    <% } %>
+
+      <% } else { %>
+        <div class="flex gap-4">
+          <a href="/login" class="text-sm text-blue-600 hover:underline">Iniciar sesión</a>
+          <a href="/registro" class="text-sm text-blue-600 hover:underline">Registrarse</a>
+        </div>
+        <% } %>
   </div>
 </nav>

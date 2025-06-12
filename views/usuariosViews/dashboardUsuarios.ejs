@@ -1,9 +1,8 @@
-<h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Gestión de Usuarios</h1>
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Gestión de Usuarios</h1>
 
-<div class="overflow-x-auto">
-    
-  <form action="/usuarios/actualizar-roles" method="POST">
-    <table class="w-full table-auto bg-white shadow-md rounded border">
+  <div class="overflow-x-auto">
+    <table class="w-full table-auto bg-white shadow-md rounded-lg border border-gray-200">
       <thead class="bg-gray-100 text-left text-sm text-gray-600">
         <tr>
           <th class="p-3">Nombre</th>
@@ -11,6 +10,7 @@
           <th class="p-3">Email</th>
           <th class="p-3">DNI</th>
           <th class="p-3">Rol</th>
+          <th class="p-3 text-center">Acciones</th>
         </tr>
       </thead>
       <tbody class="text-sm text-gray-700">
@@ -21,21 +21,23 @@
             <td class="p-3"><%= usuario.email %></td>
             <td class="p-3"><%= usuario.dni %></td>
             <td class="p-3">
-              <select name="roles[<%= usuario._id %>]" class="border rounded px-2 py-1 w-full">
-                <option value="admin" <%= usuario.rol === 'admin' ? 'selected' : '' %>>Admin</option>
-                <option value="cobrador" <%= usuario.rol === 'cobrador' ? 'selected' : '' %>>Cobrador</option>
-                <option value="cliente" <%= usuario.rol === 'cliente' ? 'selected' : '' %>>Cliente</option>
-              </select>
+              <% if (usuario.rol === 'admin') { %>
+                <span class="text-blue-600 font-medium">Admin</span>
+              <% } else if (usuario.rol === 'cobrador') { %>
+                <span class="text-red-500 font-medium">Cobrador</span>
+              <% } else { %>
+                <span class="text-green-600 font-medium">Cliente</span>
+              <% } %>
+            </td>
+            <td class="p-3 text-center space-x-2">
+              <a href="/usuarios/editar/<%= usuario._id %>" class="text-blue-600 hover:underline text-sm">Cambiar Rol</a>
+              <form action="/usuarios/eliminar/<%= usuario._id %>" method="POST" class="inline">
+                <button type="submit" onclick="return confirm('¿Eliminar este usuario?')" class="text-red-500 hover:underline text-sm">Eliminar</button>
+              </form>
             </td>
           </tr>
         <% }) %>
       </tbody>
     </table>
-
-    <div class="mt-6 text-center">
-      <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
-        Guardar cambios
-      </button>
-    </div>
-  </form>
+  </div>
 </div>

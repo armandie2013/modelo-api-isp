@@ -1,0 +1,43 @@
+<div class="flex items-center justify-center bg-gray-100 px-4 py-12">
+    <div
+        class="w-full max-w-md sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-xl 2xl:max-w-md border border-gray-300 shadow-md p-6 bg-white rounded-lg">
+
+        <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Crear nuevo plan</h1>
+
+        <% if (errores.length) { %>
+            <div class="bg-red-100 text-red-700 p-3 rounded mb-5 text-sm">
+                <% errores.forEach(error=> { %>
+                    <p>
+                        <%= error %>
+                    </p>
+                    <% }) %>
+            </div>
+            <% } %>
+
+                <form action="/planes/crear" method="POST" class="space-y-5">
+                    <div>
+                        <input type="text" name="nombre" placeholder="Nombre del plan" required
+                            value="<%= datos.nombre || '' %>"
+                            class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+
+                    <div>
+                        <input type="text" name="tipo" placeholder="Tipo (ej: Fibra, Radio, etc.)" required
+                            value="<%= datos.tipo || '' %>"
+                            class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+
+                    <div>
+                        <input type="number" name="precio" step="0.01" placeholder="Precio en pesos" required
+                            value="<%= datos.precio || '' %>"
+                            class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+                        Guardar Plan
+                    </button>
+                </form>
+
+    </div>
+</div>

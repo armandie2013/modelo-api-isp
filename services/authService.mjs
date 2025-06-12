@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 export const registrarUsuario = async (datos) => {
   const { nombre, apellido, email, dni, password } = datos;
   const cantidadUsuarios = await Usuario.countDocuments();
-  const rol = cantidadUsuarios === 0 ? 'admin' : 'cobrador';
+  const rol = cantidadUsuarios === 0 ? 'admin' : 'cliente';
   const passwordHasheada = await bcrypt.hash(password, 10);
 
   const nuevoUsuario = new Usuario({

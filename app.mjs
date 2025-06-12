@@ -10,6 +10,9 @@ import { verificarSesion } from './middlewares/verificarSesion.mjs';
 import authRoutes from './routes/authRoutes.mjs';
 import usuariosRoutes from './routes/usuariosRoutes.mjs';
 import adminRoutes from './routes/adminRoutes.mjs';
+import clienteRoutes from './routes/clienteRoutes.mjs';
+import cobradorRoutes from './routes/cobradorRoutes.mjs'
+import planesRoutes from './routes/planesRoutes.mjs';
 
 dotenv.config();
 
@@ -52,6 +55,9 @@ app.get('/', (req, res) => {
 });
 app.use(usuariosRoutes);
 app.use(adminRoutes);
+app.use(clienteRoutes);
+app.use(cobradorRoutes);
+app.use(planesRoutes);
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;

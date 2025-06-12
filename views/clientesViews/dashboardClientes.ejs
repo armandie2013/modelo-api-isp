@@ -1,0 +1,85 @@
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Listado de Clientes</h1>
+
+    <% if (clientes.length===0) { %>
+        <p class="text-center text-gray-600">No hay clientes registrados aún.</p>
+        <% } else { %>
+            <form action="/clientes/generar-cargos" method="POST"
+                onsubmit="return confirm('¿Generar cargos para todos los clientes?')">
+                <button type="submit"
+                    class="mb-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    Generar cargos del mes
+                </button>
+            </form>
+
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto bg-white shadow-md rounded border border-gray-200">
+                    <thead class="bg-gray-100 text-left text-sm text-gray-600">
+                        <tr>
+                            <th class="p-3">#</th>
+                            <th class="p-3">Nombre</th>
+                            <th class="p-3">Apellido</th>
+                            <th class="p-3">DNI</th>
+                            <th class="p-3">Dirección</th>
+                            <th class="p-3">Teléfono</th>
+                            <th class="p-3">Correo</th>
+                            <th class="p-3">Plan</th>
+                            <th class="p-3 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-gray-700">
+                        <% clientes.forEach((cliente, index)=> { %>
+                            <tr class="border-t odd:bg-gray-50">
+                                <td class="p-3">
+                                    <%= index + 1 %>
+                                </td>
+                                <td class="p-3">
+                                    <%= cliente.nombre %>
+                                </td>
+                                <td class="p-3">
+                                    <%= cliente.apellido %>
+                                </td>
+                                <td class="p-3">
+                                    <%= cliente.dni %>
+                                </td>
+                                <td class="p-3">
+                                    <%= cliente.direccion %>
+                                </td>
+                                <td class="p-3">
+                                    <%= cliente.telefono %>
+                                </td>
+                                <td class="p-3">
+                                    <%= cliente.email %>
+                                </td>
+                                <td class="p-3">
+                                    <span class="block font-medium">
+                                        <%= cliente.plan?.nombre %>
+                                    </span>
+                                    <span class="text-sm text-gray-500">$<%= cliente.plan?.precio.toFixed(2) %></span>
+                                </td>
+                                <td class="p-3 text-center space-x-2">
+                                    <a href="/clientes/<%= cliente._id %>/historial"
+                                        class="text-green-600 hover:underline text-sm">Ver Historial</a>
+                                    <a href="/clientes/editar/<%= cliente._id %>"
+                                        class="text-blue-600 hover:underline text-sm">Editar</a>
+                                    <form action="/clientes/eliminar/<%= cliente._id %>" method="POST" class="inline">
+                                        <button type="submit" onclick="return confirm('¿Eliminar este cliente?')"
+                                            class="text-red-500 hover:underline text-sm">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <% } %>
+
+                <div class="mt-6 text-center">
+                    <a href="/clientes/crear"
+                        class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+                        Registrar nuevo cliente
+                    </a>
+                </div>
+</div>

@@ -13,6 +13,7 @@ import adminRoutes from './routes/adminRoutes.mjs';
 import clienteRoutes from './routes/clienteRoutes.mjs';
 import cobradorRoutes from './routes/cobradorRoutes.mjs'
 import planesRoutes from './routes/planesRoutes.mjs';
+import clientesRoutes from './routes/clientesRoutes.mjs';
 
 dotenv.config();
 
@@ -58,6 +59,7 @@ app.use(adminRoutes);
 app.use(clienteRoutes);
 app.use(cobradorRoutes);
 app.use(planesRoutes);
+app.use(clientesRoutes);
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;

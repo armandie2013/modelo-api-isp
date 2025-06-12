@@ -1,0 +1,44 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">
+    Historial de <%= cliente.nombre %> <%= cliente.apellido %>
+  </h1>
+
+  <% if (cliente.historial.length === 0) { %>
+    <p class="text-center text-gray-500">Sin movimientos aún.</p>
+  <% } else { %>
+    <div class="overflow-x-auto bg-white rounded-md shadow border border-gray-200">
+      <table class="min-w-full table-auto text-sm text-gray-800">
+        <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-medium">
+          <tr>
+            <th class="px-2 py-2 text-left w-4">#</th>
+            <th class="px-2 py-2 text-left w-24">N° Comp.</th>
+            <th class="px-2 py-2 text-left">Tipo</th>
+            <th class="px-2 py-2 text-left">Detalle</th>
+            <th class="px-2 py-2 text-left">Fecha</th>
+            <th class="px-2 py-2 text-left">Vencimiento</th>
+            <th class="px-2 py-2 text-left">Importe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% cliente.historial.forEach((mov, index) => { %>
+            <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %> hover:bg-gray-100">
+              <td class="px-2 py-2"><%= index + 1 %></td>
+              <td class="px-2 py-2 text-xs text-gray-700"><%= mov.numeroDeComprobante || '-' %></td>
+              <td class="px-2 py-2 font-semibold <%= mov.tipo === 'cargo' ? 'text-red-600' : 'text-green-600' %>">
+                <%= mov.tipo === 'cargo' ? 'Factura' : 'Pago' %>
+              </td>
+              <td class="px-2 py-2"><%= mov.detalle %></td>
+              <td class="px-2 py-2"><%= new Date(mov.fecha).toLocaleDateString() %></td>
+              <td class="px-2 py-2"><%= mov.vencimiento ? new Date(mov.vencimiento).toLocaleDateString() : '-' %></td>
+              <td class="px-2 py-2">$<%= mov.importe.toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+
+  <div class="mt-8 text-center">
+    <a href="/clientes/dashboard" class="text-blue-600 hover:underline">← Volver al dashboard</a>
+  </div>
+</div>

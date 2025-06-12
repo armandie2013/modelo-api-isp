@@ -3,10 +3,17 @@ import { actualizarRoles, cambiarRolUsuario } from '../services/usuariosService.
 
 export const mostrarDashboardUsuarios = async (req, res) => {
   try {
-    const usuarios = await Usuario.find();
+    const usuarios = await Usuario.find().lean();
+
+    const admins = usuarios.filter(u => u.rol === 'admin');
+    const cobradores = usuarios.filter(u => u.rol === 'cobrador');
+    const clientes = usuarios.filter(u => u.rol === 'cliente');
+
     res.render('usuariosViews/dashboardUsuarios', {
       titulo: 'Gestión de Usuarios',
-      usuarios
+      admins,
+      cobradores,
+      clientes
     });
   } catch (error) {
     console.error('Error al mostrar usuarios:', error);

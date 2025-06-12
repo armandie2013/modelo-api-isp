@@ -1,43 +1,63 @@
 <div class="container mx-auto px-4 py-8">
-  <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Gestión de Usuarios</h1>
+  <h1 class="text-2xl font-bold mb-8 text-center text-gray-800">Gestión de Usuarios</h1>
 
-  <div class="overflow-x-auto">
-    <table class="w-full table-auto bg-white shadow-md rounded-lg border border-gray-200">
-      <thead class="bg-gray-100 text-left text-sm text-gray-600">
-        <tr>
-          <th class="p-3">Nombre</th>
-          <th class="p-3">Apellido</th>
-          <th class="p-3">Email</th>
-          <th class="p-3">DNI</th>
-          <th class="p-3">Rol</th>
-          <th class="p-3 text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="text-sm text-gray-700">
-        <% usuarios.forEach(usuario => { %>
-          <tr class="border-t">
-            <td class="p-3"><%= usuario.nombre %></td>
-            <td class="p-3"><%= usuario.apellido %></td>
-            <td class="p-3"><%= usuario.email %></td>
-            <td class="p-3"><%= usuario.dni %></td>
-            <td class="p-3">
-              <% if (usuario.rol === 'admin') { %>
-                <span class="text-blue-600 font-medium">Admin</span>
-              <% } else if (usuario.rol === 'cobrador') { %>
-                <span class="text-red-500 font-medium">Cobrador</span>
-              <% } else { %>
-                <span class="text-green-600 font-medium">Cliente</span>
-              <% } %>
-            </td>
-            <td class="p-3 text-center space-x-2">
-              <a href="/usuarios/editar/<%= usuario._id %>" class="text-blue-600 hover:underline text-sm">Cambiar Rol</a>
-              <form action="/usuarios/eliminar/<%= usuario._id %>" method="POST" class="inline">
-                <button type="submit" onclick="return confirm('¿Eliminar este usuario?')" class="text-red-500 hover:underline text-sm">Eliminar</button>
-              </form>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
+  <% const secciones = [
+    { titulo: 'Listado Administradores', usuarios: admins, color: 'blue' },
+    { titulo: 'Listado Cobradores', usuarios: cobradores, color: 'red' },
+    { titulo: 'Listado Clientes', usuarios: clientes, color: 'green' }
+  ]; %>
+
+  <% secciones.forEach(seccion => { %>
+    <div class="mb-12">
+      <h2 class="text-xl font-semibold text-<%= seccion.color %>-600 mb-4 border-b pb-2">
+        <%= seccion.titulo %> - Totales <%= seccion.usuarios.length %>
+      </h2>
+
+      <% if (seccion.usuarios.length === 0) { %>
+        <p class="text-gray-500 text-sm mb-4">No hay usuarios en esta categoría.</p>
+      <% } else { %>
+        <div class="overflow-x-auto">
+          <table class="w-full table-auto bg-white shadow-md rounded-lg border border-gray-200">
+            <thead class="bg-gray-100 text-left text-sm text-gray-600">
+              <tr>
+                <th class="p-3">#</th>
+                <th class="p-3">Nombre</th>
+                <th class="p-3">Apellido</th>
+                <th class="p-3">Email</th>
+                <th class="p-3">DNI</th>
+                <th class="p-3">Rol</th>
+                <th class="p-3 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="text-sm text-gray-700">
+              <% seccion.usuarios.forEach((usuario, index) => { %>
+                <tr class="border-t">
+                  <td class="p-3"><%= index + 1 %></td>
+                  <td class="p-3"><%= usuario.nombre %></td>
+                  <td class="p-3"><%= usuario.apellido %></td>
+                  <td class="p-3"><%= usuario.email %></td>
+                  <td class="p-3"><%= usuario.dni %></td>
+                  <td class="p-3">
+                    <% if (usuario.rol === 'admin') { %>
+                      <span class="text-blue-600 font-medium">Admin</span>
+                    <% } else if (usuario.rol === 'cobrador') { %>
+                      <span class="text-red-500 font-medium">Cobrador</span>
+                    <% } else { %>
+                      <span class="text-green-600 font-medium">Cliente</span>
+                    <% } %>
+                  </td>
+                  <td class="p-3 text-center space-x-2">
+                    <a href="/usuarios/editar/<%= usuario._id %>" class="text-blue-600 hover:underline text-sm">Editar Rol</a>
+                    <form action="/usuarios/eliminar/<%= usuario._id %>" method="POST" class="inline">
+                      <button type="submit" onclick="return confirm('¿Eliminar este usuario?')" class="text-red-500 hover:underline text-sm">Eliminar</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  <% }) %>
 </div>

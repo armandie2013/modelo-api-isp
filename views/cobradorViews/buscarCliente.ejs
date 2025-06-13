@@ -1,0 +1,58 @@
+<div class="max-w-4xl mx-auto mt-8 bg-white p-6 rounded-xl shadow">
+  <h2 class="text-2xl font-bold mb-4">Buscar Cliente</h2>
+
+  <form method="get" action="/cobros/buscar-cliente" class="mb-4 flex gap-4 items-center">
+    <input type="text" name="dni" placeholder="DNI del cliente" class="border p-2 rounded w-64" required>
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Buscar</button>
+  </form>
+
+  <% if (mensaje) { %>
+    <p class="text-red-600"><%= mensaje %></p>
+  <% } %>
+
+  <% if (cliente) { %>
+    <div class="border-t pt-4">
+      <h3 class="text-xl font-semibold mb-2">Datos del cliente</h3>
+      <p><strong>Nombre:</strong> <%= cliente.nombre %> <%= cliente.apellido %></p>
+      <p><strong>DNI:</strong> <%= cliente.dni %></p>
+      <p><strong>Dirección:</strong> <%= cliente.direccion %></p>
+      <p><strong>Email:</strong> <%= cliente.email %></p>
+      <p><strong>Teléfono:</strong> <%= cliente.telefono %></p>
+      <p><strong>Plan:</strong> <%= cliente.plan?.nombre %> - $<%= cliente.plan?.precio %></p>
+
+      <form action="/cobros/registrar" method="post" class="mt-6 space-y-4">
+        <input type="hidden" name="clienteId" value="<%= cliente._id %>">
+
+        <h4 class="text-lg font-medium">Historial de cargos</h4>
+        <% const pendientes = cliente.historial.filter(h => !h.pagado); %>
+        <% if (pendientes.length === 0) { %>
+          <p class="text-green-600">No hay facturas pendientes.</p>
+        <% } else { %>
+          <table class="w-full border text-sm">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="p-2">#</th>
+                <th class="p-2">Detalle</th>
+                <th class="p-2">Importe</th>
+                <th class="p-2">Seleccionar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% pendientes.forEach((item, i) => { %>
+                <tr class="border-t">
+                  <td class="p-2"><%= item.numeroComprobante %></td>
+                  <td class="p-2"><%= item.detalle %></td>
+                  <td class="p-2">$<%= item.importe.toFixed(2) %></td>
+                  <td class="p-2 text-center">
+                    <input type="checkbox" name="facturasSeleccionadas" value="<%= item.numeroComprobante %>">
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          <button type="submit" class="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Confirmar Pago</button>
+        <% } %>
+      </form>
+    </div>
+  <% } %>
+</div>

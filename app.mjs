@@ -1,19 +1,26 @@
 import express from 'express';
-import { conectarDB } from './config/database.mjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import dotenv from 'dotenv';
 import expressLayouts from 'express-ejs-layouts';
+
+import { conectarDB } from './config/database.mjs';
 import { verificarSesion } from './middlewares/verificarSesion.mjs';
+
+// 📦 Rutas principales del sistema
 import authRoutes from './routes/authRoutes.mjs';
 import usuariosRoutes from './routes/usuariosRoutes.mjs';
 import adminRoutes from './routes/adminRoutes.mjs';
 import clienteRoutes from './routes/clienteRoutes.mjs';
-import cobradorRoutes from './routes/cobradorRoutes.mjs'
+import cobradorRoutes from './routes/cobradorRoutes.mjs';
 import planesRoutes from './routes/planesRoutes.mjs';
 import clientesRoutes from './routes/clientesRoutes.mjs';
+
+// 🧾 Rutas para módulo financiero (cobros/retiros)
+import cobrosRoutes from './routes/cobrosRoutes.mjs';
+import retirosRoutes from './routes/retirosRoutes.mjs';
 
 dotenv.config();
 
@@ -49,17 +56,31 @@ app.use(session({
 // Middleware de sesión
 app.use(verificarSesion);
 
-// Rutas
-app.use(authRoutes);
-app.get('/', (req, res) => {
-  res.render('inicio', { titulo: 'Inicio' });
+// 🔧 Middleware temporal para evitar errores por falta de 'titulo'
+app.use((req, res, next) => {
+  if (typeof res.locals.titulo === 'undefined') {
+    res.locals.titulo = 'Sistema ISP (sin título)';
+  }
+  next();
 });
+
+// 👉 Rutas del sistema
+app.use(authRoutes);
 app.use(usuariosRoutes);
 app.use(adminRoutes);
 app.use(clienteRoutes);
 app.use(cobradorRoutes);
 app.use(planesRoutes);
 app.use(clientesRoutes);
+
+// 👉 Rutas específicas del módulo cobrador/admin
+app.use(cobrosRoutes);   // /cobrador/panel, /cobros/...
+app.use(retirosRoutes);  // /admin/cobrador/:id/panel, /retiros/registrar
+
+// Página de inicio
+app.get('/', (req, res) => {
+  res.render('inicio', { titulo: 'Inicio' });
+});
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;

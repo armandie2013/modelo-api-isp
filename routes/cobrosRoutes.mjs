@@ -4,7 +4,8 @@ import {
   procesarBusquedaCliente,
   procesarCobro,
   mostrarRecibo,
-  mostrarPanelCobrador
+  mostrarPanelCobrador,
+  mostrarHistorialCliente
 } from '../controllers/cobrosController.mjs';
 import { verificarSesion } from '../middlewares/verificarSesion.mjs';
 
@@ -15,5 +16,6 @@ router.get('/cobros/buscar', verificarSesion, mostrarFormularioBusqueda);
 router.get('/cobros/buscar-cliente', verificarSesion, procesarBusquedaCliente);
 router.post('/cobros/registrar', verificarSesion, procesarCobro);
 router.get('/cobros/:id/recibo', verificarSesion, mostrarRecibo);
+router.get('/cobrador/:clienteId/historial', verificarSesion, mostrarHistorialCliente);
 
 export default router;

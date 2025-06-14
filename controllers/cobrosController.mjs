@@ -5,6 +5,7 @@ import {
   obtenerCobroPorId,
 } from "../services/cobrosService.mjs";
 import { obtenerResumenCajaCobrador } from "../services/cajaService.mjs";
+import { obtenerHistorialFinanciero } from "../services/historialClienteService.mjs";
 
 export const mostrarFormularioBusqueda = (req, res) => {
   res.render("cobradorViews/buscarCliente", {
@@ -18,26 +19,20 @@ export const procesarBusquedaCliente = async (req, res) => {
   const { dni } = req.query;
 
   try {
-    const cliente = await Cliente.findOne({ dni }).populate("plan");
+    const cliente = await Cliente.findOne({ dni });
+
     if (!cliente) {
-      return res.render("cobradorViews/buscarCliente", {
-        titulo: "Buscar Cliente",
-        cliente: null,
-        mensaje: "No se encontró el cliente.",
+      return res.render('cobrosViews/buscarCliente', {
+        titulo: 'Buscar Cliente',
+        error: 'Cliente no encontrado',
       });
     }
 
-    res.render("cobradorViews/buscarCliente", {
-      titulo: "Buscar Cliente",
-      cliente,
-      mensaje: null,
-    });
+    // Redirige al historial
+    res.redirect(`/cobrador/${cliente._id}/historial`);
   } catch (error) {
-    console.error("Error al buscar cliente:", error);
-    res.status(500).render("errorGenerico", {
-      titulo: "Error",
-      mensaje: "Error al buscar cliente.",
-    });
+    console.error('Error al buscar cliente:', error);
+    res.status(500).send('Error interno del servidor');
   }
 };
 
@@ -98,6 +93,35 @@ export const mostrarPanelCobrador = async (req, res) => {
     res.status(500).render("errorGenerico", {
       titulo: "Error",
       mensaje: "Error al cargar el panel del cobrador.",
+    });
+  }
+};
+
+export const mostrarHistorialCliente = async (req, res) => {
+  const { clienteId } = req.params;
+
+  try {
+    const cliente = await Cliente.findById(clienteId);
+
+    if (!cliente) {
+      return res.status(404).render('errorGenerico', {
+        titulo: 'Cliente no encontrado',
+        mensaje: 'No se encontró un cliente con ese ID.',
+      });
+    }
+
+    const historial = await obtenerHistorialFinanciero(clienteId);
+
+    res.render('cobradorViews/historialCliente', {
+      titulo: `Historial de ${cliente.nombre} ${cliente.apellido}`,
+      cliente,
+      historial,
+    });
+  } catch (error) {
+    console.error('Error al cargar historial:', error);
+    res.status(500).render('errorGenerico', {
+      titulo: 'Error',
+      mensaje: 'Hubo un problema al cargar el historial del cliente.',
     });
   }
 };

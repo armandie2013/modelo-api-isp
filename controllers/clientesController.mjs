@@ -24,15 +24,7 @@ export const procesarCreacionCliente = async (req, res) => {
   const { nombre, apellido, dni, direccion, telefono, email, plan } = req.body;
   const errores = [];
 
-  if (
-    !nombre ||
-    !apellido ||
-    !dni ||
-    !direccion ||
-    !telefono ||
-    !email ||
-    !plan
-  ) {
+  if (!nombre || !apellido || !dni || !direccion || !telefono || !email || !plan) {
     errores.push("Todos los campos son obligatorios");
   }
 
@@ -56,8 +48,8 @@ export const procesarCreacionCliente = async (req, res) => {
       email,
       plan,
     });
-    await nuevoCliente.save();
 
+    await nuevoCliente.save();
     res.redirect("/clientes/dashboard");
   } catch (error) {
     console.error("Error al crear cliente:", error);
@@ -101,8 +93,7 @@ export const mostrarFormularioEditarCliente = async (req, res) => {
 // POST /clientes/editar/:id
 export const procesarEdicionCliente = async (req, res) => {
   try {
-    const { nombre, apellido, dni, direccion, telefono, email, plan } =
-      req.body;
+    const { nombre, apellido, dni, direccion, telefono, email, plan } = req.body;
 
     await Cliente.findByIdAndUpdate(req.params.id, {
       nombre,
@@ -133,10 +124,7 @@ export const eliminarCliente = async (req, res) => {
 
 export const mostrarHistorialCliente = async (req, res) => {
   try {
-    const cliente = await Cliente.findById(req.params.id)
-      .populate("plan")
-      .lean();
-
+    const cliente = await Cliente.findById(req.params.id).populate("plan").lean();
     if (!cliente) {
       return res.status(404).send("Cliente no encontrado");
     }
@@ -152,31 +140,43 @@ export const mostrarHistorialCliente = async (req, res) => {
   }
 };
 
+// POST /clientes/generar-cargos
 export const generarCargosMensuales = async (req, res) => {
   try {
     const clientes = await Cliente.find().populate("plan");
 
     for (const cliente of clientes) {
-  const fechaHoy = new Date();
-  const nombreMes = fechaHoy.toLocaleString("default", { month: "long" }).toUpperCase();
-  const detalle = `Factura por servicio - ${nombreMes}`;
-  const vencimiento = new Date(fechaHoy);
-  vencimiento.setDate(vencimiento.getDate() + 10);
+      const fechaHoy = new Date();
+      const mes = fechaHoy.getMonth();
+      const anio = fechaHoy.getFullYear();
 
-  const numeroDeComprobante = await obtenerSiguienteNumeroDeComprobante();
+      // Validar si ya tiene un cargo del mes actual
+      const yaTieneCargo = cliente.historial.some(h => {
+        const fecha = new Date(h.fecha);
+        return h.tipo === "cargo" && fecha.getMonth() === mes && fecha.getFullYear() === anio;
+      });
 
-  cliente.historial.push({
-    tipo: "cargo",
-    detalle,
-    fecha: fechaHoy,
-    vencimiento,
-    importe: cliente.plan.precio,
-    estado: "pendiente",
-    numeroDeComprobante
-  });
+      if (!yaTieneCargo) {
+        const nombreMes = fechaHoy.toLocaleString("default", { month: "long" }).toUpperCase();
+        const detalle = `Factura por servicio - ${nombreMes}`;
+        const vencimiento = new Date(fechaHoy);
+        vencimiento.setDate(vencimiento.getDate() + 10);
 
-  await cliente.save();
-}
+        const numeroDeComprobante = await obtenerSiguienteNumeroDeComprobante();
+
+        cliente.historial.push({
+          tipo: "cargo",
+          detalle,
+          fecha: fechaHoy,
+          vencimiento,
+          importe: cliente.plan.precio,
+          estado: "pendiente",
+          numeroDeComprobante,
+        });
+
+        await cliente.save();
+      }
+    }
 
     res.redirect("/clientes/dashboard");
   } catch (error) {

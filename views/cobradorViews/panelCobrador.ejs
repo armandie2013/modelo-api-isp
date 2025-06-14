@@ -1,30 +1,66 @@
 <div class="max-w-6xl mx-auto px-4 py-8">
   <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Panel del Cobrador</h1>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-    <!-- Realizar nuevo cobro -->
-    <a href="/cobrador/buscar" class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
-      <h2 class="text-xl font-semibold text-green-600 mb-2">Realizar nuevo cobro</h2>
-      <p class="text-gray-600 text-sm">Busca un cliente y genera un nuevo cobro sobre facturas pendientes.</p>
-    </a>
-
-    <!-- Ver historial de cobros -->
-    <a href="/cobrador/panel" class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
-      <h2 class="text-xl font-semibold text-blue-600 mb-2">Historial de cobros</h2>
-      <p class="text-gray-600 text-sm">Consulta los cobros realizados por vos y el estado de tu caja.</p>
-    </a>
-
-    <!-- Ver resumen de caja -->
-    <a href="/cobrador/panel" class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
-      <h2 class="text-xl font-semibold text-indigo-600 mb-2">Resumen de caja</h2>
-      <p class="text-gray-600 text-sm">Revisa el total cobrado, retirado y acumulado disponible.</p>
-    </a>
-
-    <!-- Placeholder -->
-    <div class="block bg-gray-100 border border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-400">
-      <p class="text-sm">Aquí se podrán agregar nuevas funciones del módulo cobrador.</p>
+  <!-- Resumen en tarjetas -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white border-l-4 border-green-500 p-4 rounded shadow">
+      <h2 class="text-lg font-semibold text-gray-600">Total cobrado</h2>
+      <p class="text-2xl font-bold text-green-700">$<%= totalCobrado.toFixed(2) %></p>
     </div>
 
+    <div class="bg-white border-l-4 border-red-500 p-4 rounded shadow">
+      <h2 class="text-lg font-semibold text-gray-600">Total retirado</h2>
+      <p class="text-2xl font-bold text-red-700">$<%= totalRetirado.toFixed(2) %></p>
+    </div>
+
+    <div class="bg-white border-l-4 border-blue-500 p-4 rounded shadow">
+      <h2 class="text-lg font-semibold text-gray-600">Acumulado actual</h2>
+      <p class="text-2xl font-bold text-blue-700">$<%= montoTotal.toFixed(2) %></p>
+    </div>
+  </div>
+
+  <!-- Accesos rápidos -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+    <!-- Buscar Cliente -->
+    <a href="/cobros/buscar" class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold text-blue-600 mb-2">Buscar Cliente</h2>
+      <p class="text-gray-600 text-sm">Busca un cliente por DNI para ver facturas y registrar un nuevo cobro.</p>
+    </a>
+
+    <!-- Registrar Cobro -->
+    <a href="/cobrador/buscar" class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold text-green-600 mb-2">Registrar Cobro</h2>
+      <p class="text-gray-600 text-sm">Ingresa un nuevo cobro desde el buscador de clientes.</p>
+    </a>
+  </div>
+
+  <!-- Últimos cobros -->
+  <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+    <table class="min-w-full text-sm text-gray-700">
+      <thead class="bg-gray-100 text-xs uppercase text-gray-600">
+        <tr>
+          <th class="px-4 py-3 text-left">N° Comprobante</th>
+          <th class="px-4 py-3 text-left">Cliente</th>
+          <th class="px-4 py-3 text-left">Fecha</th>
+          <th class="px-4 py-3 text-left">Importe</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (cobros.length === 0) { %>
+          <tr>
+            <td colspan="4" class="text-center py-4 text-gray-500">Sin cobros registrados.</td>
+          </tr>
+        <% } else { %>
+          <% cobros.forEach(cobro => { %>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-2 font-medium"><%= cobro.numeroDeComprobante %></td>
+              <td class="px-4 py-2"><%= cobro.cliente?.apellido %>, <%= cobro.cliente?.nombre %></td>
+              <td class="px-4 py-2"><%= new Date(cobro.fecha).toLocaleDateString() %></td>
+              <td class="px-4 py-2">$<%= cobro.importeTotal.toFixed(2) %></td>
+            </tr>
+          <% }); %>
+        <% } %>
+      </tbody>
+    </table>
   </div>
 </div>

@@ -1,0 +1,57 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+    Historial de <%= cliente.nombre %> <%= cliente.apellido %>
+  </h1>
+
+  <% if (historial.length === 0) { %>
+    <p class="text-center text-gray-500">Sin movimientos aún.</p>
+  <% } else { %>
+    <div class="overflow-x-auto bg-white rounded-lg shadow-md border border-gray-200">
+      <table class="min-w-full table-auto text-sm text-gray-800">
+        <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
+          <tr>
+            <th class="px-4 py-3 text-left">#</th>
+            <th class="px-4 py-3 text-left">N° Comprobante</th>
+            <th class="px-4 py-3 text-left">Tipo</th>
+            <th class="px-4 py-3 text-left">Fecha</th>
+            <th class="px-4 py-3 text-left">Detalle</th>
+            <th class="px-4 py-3 text-right">Cargo ($)</th>
+            <th class="px-4 py-3 text-right">Pago ($)</th>
+            <th class="px-4 py-3 text-right">Saldo ($)</th>
+            <th class="px-4 py-3 text-center">Recibo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let saldo = 0; %>
+          <% historial.forEach((item, i) => { %>
+            <% 
+              const esPago = item.tipo === 'pago';
+              const esNotaCredito = item.tipo === 'nota_credito';
+              const esNotaDebito = item.tipo === 'nota_debito';
+              const cargo = (!esPago && !esNotaCredito) ? item.importe : 0;
+              const pago = (esPago || esNotaCredito) ? item.importe : 0;
+              saldo += cargo - pago;
+            %>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-2"><%= i + 1 %></td>
+              <td class="px-4 py-2"><%= item.numeroDeComprobante %></td>
+              <td class="px-4 py-2 capitalize"><%= item.tipo.replace('_', ' ') %></td>
+              <td class="px-4 py-2"><%= new Date(item.fecha).toLocaleDateString() %></td>
+              <td class="px-4 py-2"><%= item.detalle || '-' %></td>
+              <td class="px-4 py-2 text-right"><%= cargo > 0 ? `$${cargo.toFixed(2)}` : '-' %></td>
+              <td class="px-4 py-2 text-right"><%= pago > 0 ? `$${pago.toFixed(2)}` : '-' %></td>
+              <td class="px-4 py-2 text-right font-semibold"><%= `$${saldo.toFixed(2)}` %></td>
+              <td class="px-4 py-2 text-center">
+                <% if (item.tipo === 'pago') { %>
+                  <a href="/cobros/<%= item._id %>/recibo" class="text-blue-600 hover:underline">Ver recibo</a>
+                <% } else { %>
+                  -
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>

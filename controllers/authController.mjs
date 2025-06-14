@@ -43,13 +43,25 @@ export const mostrarFormularioLogin = (req, res) => {
 export const procesarLogin = async (req, res) => {
   try {
     const usuario = await loginUsuario(req.body);
+    
     req.session.usuario = {
       id: usuario._id,
       nombre: usuario.nombre,
       rol: usuario.rol,
       dni: usuario.dni,
     };
-    res.redirect("/");
+
+    // Redirección según rol
+    if (usuario.rol === "admin") {
+      return res.redirect("/admin/dashboard");
+    } else if (usuario.rol === "cobrador") {
+      return res.redirect("/cobrador/panel");
+    } else if (usuario.rol === "cliente") {
+      return res.redirect("/cliente/panel");
+    } else {
+      return res.redirect("/"); // fallback
+    }
+
   } catch (error) {
     res.render("authViews/login", {
       errores: [error.message],

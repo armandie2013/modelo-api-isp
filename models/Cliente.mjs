@@ -20,7 +20,6 @@ const historialSchema = new mongoose.Schema({
   numeroDeComprobante: {
     type: Number,
     required: true,
-    unique: true,
   }
 
 }, { _id: true }); // para manejar ítems únicos

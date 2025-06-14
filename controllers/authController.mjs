@@ -45,7 +45,7 @@ export const procesarLogin = async (req, res) => {
     const usuario = await loginUsuario(req.body);
     
     req.session.usuario = {
-      id: usuario._id,
+      _id: usuario._id,
       nombre: usuario.nombre,
       rol: usuario.rol,
       dni: usuario.dni,

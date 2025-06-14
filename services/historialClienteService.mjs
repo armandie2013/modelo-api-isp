@@ -7,12 +7,11 @@ export const obtenerHistorialFinanciero = async (clienteId) => {
   const seisMesesAtras = new Date();
   seisMesesAtras.setMonth(seisMesesAtras.getMonth() - 6);
 
-  // Buscar comprobantes
   const [facturas, pagos, notasCredito, notasDebito] = await Promise.all([
-    Factura.find({ cliente: clienteId, fecha: { $gte: seisMesesAtras } }),
-    Pago.find({ cliente: clienteId, fecha: { $gte: seisMesesAtras } }),
-    NotaCredito.find({ cliente: clienteId, fecha: { $gte: seisMesesAtras } }),
-    NotaDebito.find({ cliente: clienteId, fecha: { $gte: seisMesesAtras } })
+    Factura.find({ cliente: clienteId, fecha: { $gte: seisMesesAtras } }).lean(),
+    Pago.find({ cliente: clienteId, fecha: { $gte: seisMesesAtras } }).lean(),
+    NotaCredito.find({ cliente: clienteId, fecha: { $gte: seisMesesAtras } }).lean(),
+    NotaDebito.find({ cliente: clienteId, fecha: { $gte: seisMesesAtras } }).lean()
   ]);
 
   const movimientos = [];
@@ -23,16 +22,18 @@ export const obtenerHistorialFinanciero = async (clienteId) => {
     fecha: f.fecha,
     detalle: f.detalle || 'Factura por servicio',
     cargo: f.importe,
-    pago: 0
+    pago: 0,
+    _id: f._id
   }));
 
   pagos.forEach(p => movimientos.push({
     tipo: 'Pago',
     numero: p.numeroDeComprobante,
     fecha: p.fecha,
-    detalle: 'Pago realizado',
+    detalle: p.detalle || 'Pago realizado',
     cargo: 0,
-    pago: p.importeTotal
+    pago: p.importeTotal,
+    _id: p._id
   }));
 
   notasCredito.forEach(nc => movimientos.push({
@@ -41,7 +42,8 @@ export const obtenerHistorialFinanciero = async (clienteId) => {
     fecha: nc.fecha,
     detalle: nc.detalle || 'Nota de Crédito',
     cargo: 0,
-    pago: nc.importe
+    pago: nc.importe,
+    _id: nc._id
   }));
 
   notasDebito.forEach(nd => movimientos.push({
@@ -50,7 +52,8 @@ export const obtenerHistorialFinanciero = async (clienteId) => {
     fecha: nd.fecha,
     detalle: nd.detalle || 'Nota de Débito',
     cargo: nd.importe,
-    pago: 0
+    pago: 0,
+    _id: nd._id
   }));
 
   // Ordenar por fecha ascendente

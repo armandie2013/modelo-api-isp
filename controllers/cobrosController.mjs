@@ -1,4 +1,6 @@
 import Cliente from "../models/Cliente.mjs";
+import Pago from "../models/Pago.mjs";
+import Factura from "../models/Factura.mjs";
 import Cobro from "../models/Cobro.mjs";
 import {
   registrarCobro,
@@ -6,6 +8,8 @@ import {
 } from "../services/cobrosService.mjs";
 import { obtenerResumenCajaCobrador } from "../services/cajaService.mjs";
 import { obtenerHistorialFinanciero } from "../services/historialClienteService.mjs";
+import { obtenerSiguienteNumeroDeComprobante } from "../utils/obtenerSiguienteComprobante.mjs";
+import { formatearMonedaARS } from "../utils/formatearMoneda.mjs";
 
 export const mostrarFormularioBusqueda = (req, res) => {
   res.render("cobradorViews/buscarCliente", {
@@ -16,52 +20,88 @@ export const mostrarFormularioBusqueda = (req, res) => {
 };
 
 export const procesarBusquedaCliente = async (req, res) => {
-  const { dni } = req.query;
-
   try {
-    const cliente = await Cliente.findOne({ dni });
+    const { dni } = req.query;
 
+    const cliente = await Cliente.findOne({ dni }).populate("plan");
     if (!cliente) {
-      return res.render('cobrosViews/buscarCliente', {
-        titulo: 'Buscar Cliente',
-        error: 'Cliente no encontrado',
+      return res.render("cobradorViews/buscarCliente.ejs", {
+        error: "Cliente no encontrado",
+        cliente: null,
       });
     }
 
-    // Redirige al historial
-    res.redirect(`/cobrador/${cliente._id}/historial`);
+    const historial = await obtenerHistorialFinanciero(cliente._id);
+
+    // Buscar facturas impagas (usamos tipo 'factura' y pagada=false)
+    const facturasImpagas = await Factura.find({
+      cliente: cliente._id,
+      pagada: false,
+    }).sort({ fecha: 1 });
+
+    res.render("cobradorViews/verClienteCobro.ejs", {
+      cliente,
+      historial,
+      facturasImpagas,
+      usuario: req.session.usuario,
+    });
   } catch (error) {
-    console.error('Error al buscar cliente:', error);
-    res.status(500).send('Error interno del servidor');
+    console.error("Error al procesar búsqueda de cliente:", error);
+    res.status(500).send("Error al procesar búsqueda");
   }
 };
 
+// POST /cobros/registrar
 export const procesarCobro = async (req, res) => {
   try {
     const { clienteId, facturasSeleccionadas } = req.body;
     const cobradorId = req.session.usuario._id;
 
-    const cobro = await registrarCobro({
-      clienteId,
-      cobradorId,
-      facturasSeleccionadas: Array.isArray(facturasSeleccionadas)
-        ? facturasSeleccionadas
-        : [facturasSeleccionadas],
+    console.log("En controlador - clienteId:", clienteId);
+    console.log("En controlador - cobradorId:", cobradorId);
+    console.log("facturasSeleccionadas:", facturasSeleccionadas);
+
+    if (!facturasSeleccionadas || facturasSeleccionadas.length === 0) {
+      return res.status(400).send("No se seleccionaron facturas para cobrar.");
+    }
+
+    const facturasIds = Array.isArray(facturasSeleccionadas)
+      ? facturasSeleccionadas
+      : [facturasSeleccionadas];
+
+    const facturas = await Factura.find({
+      _id: { $in: facturasIds },
+      pagada: false,
     });
 
-    res.redirect(`/cobros/${cobro._id}/recibo`);
+    if (facturas.length === 0) {
+      return res.status(400).send("No se encontraron facturas válidas.");
+    }
+
+    const nuevoCobro = await registrarCobro({
+      clienteId,
+      cobradorId,
+      facturas,
+    });
+
+    res.redirect(`/cobros/${nuevoCobro._id}/recibo`);
   } catch (error) {
     console.error("Error al registrar cobro:", error);
-    res.status(500).render("errorGenerico", {
-      titulo: "Error al registrar cobro",
-      mensaje: error.message,
-    });
+    res.status(500).send("Error al registrar el cobro.");
   }
 };
 
 export const mostrarRecibo = async (req, res) => {
   try {
     const cobro = await obtenerCobroPorId(req.params.id);
+
+    if (!cobro) {
+      return res.status(404).render("errorGenerico", {
+        titulo: "Error",
+        mensaje: "Cobro no encontrado.",
+      });
+    }
+
     res.render("cobradorViews/reciboCobro", {
       titulo: "Recibo de Cobro",
       cobro,
@@ -83,10 +123,14 @@ export const mostrarPanelCobrador = async (req, res) => {
 
     res.render("cobradorViews/panelCobrador", {
       titulo: "Panel del Cobrador",
-      cobros: resumen.cobros,
-      montoTotal: resumen.acumuladoActual,
-      totalCobrado: resumen.totalCobrado,
-      totalRetirado: resumen.totalRetirado,
+      cobros: resumen.cobros.map((c) => ({
+        ...c.toObject(), // <- importante si `c` es documento de Mongoose
+        importeFormateado: formatearMonedaARS(c.totalCobrado),
+        fechaFormateada: new Date(c.fecha).toLocaleDateString("es-AR"),
+      })),
+      montoTotal: formatearMonedaARS(resumen.acumuladoActual),
+      totalCobrado: formatearMonedaARS(resumen.totalCobrado),
+      totalRetirado: formatearMonedaARS(resumen.totalRetirado),
     });
   } catch (error) {
     console.error("Error al mostrar panel del cobrador:", error);
@@ -98,30 +142,68 @@ export const mostrarPanelCobrador = async (req, res) => {
 };
 
 export const mostrarHistorialCliente = async (req, res) => {
-  const { clienteId } = req.params;
-
   try {
-    const cliente = await Cliente.findById(clienteId);
+    const clienteId = req.params.clienteId;
 
-    if (!cliente) {
-      return res.status(404).render('errorGenerico', {
-        titulo: 'Cliente no encontrado',
-        mensaje: 'No se encontró un cliente con ese ID.',
-      });
-    }
+    const cliente = await Cliente.findById(clienteId).lean();
+    if (!cliente) return res.status(404).send("Cliente no encontrado");
 
     const historial = await obtenerHistorialFinanciero(clienteId);
 
-    res.render('cobradorViews/historialCliente', {
+    res.render("clientesViews/historialCliente", {
       titulo: `Historial de ${cliente.nombre} ${cliente.apellido}`,
       cliente,
       historial,
     });
   } catch (error) {
-    console.error('Error al cargar historial:', error);
-    res.status(500).render('errorGenerico', {
-      titulo: 'Error',
-      mensaje: 'Hubo un problema al cargar el historial del cliente.',
+    console.error("Error al mostrar historial del cliente:", error);
+    res.status(500).send("Error al cargar el historial");
+  }
+};
+
+export const mostrarHistorialPropioCliente = async (req, res) => {
+  try {
+    const clienteId = req.session.usuario._id;
+
+    const cliente = await Cliente.findById(clienteId).lean();
+
+    if (!cliente) {
+      return res.status(404).send("Cliente no encontrado");
+    }
+
+    const historial = await obtenerHistorialFinanciero(cliente._id);
+
+    res.render("clientesViews/historialCliente", {
+      titulo: `Historial de ${cliente.nombre} ${cliente.apellido}`,
+      cliente,
+      historial,
     });
+  } catch (error) {
+    console.error("Error al mostrar historial del cliente autenticado:", error);
+    res.status(500).send("Error al mostrar historial");
+  }
+};
+
+export const mostrarHistorialDelClienteLogueado = async (req, res) => {
+  try {
+    const cliente = await Cliente.findOne({
+      dni: req.session.usuario.dni,
+    }).lean();
+
+    if (!cliente) {
+      return res.status(404).send("Cliente no encontrado");
+    }
+
+    const historial = await obtenerHistorialFinanciero(cliente._id);
+
+    res.render("clientesViews/verHistorialCliente", {
+      titulo: `Mi Historial`,
+      cliente,
+      historial,
+      usuario: req.session.usuario,
+    });
+  } catch (error) {
+    console.error("Error al mostrar historial del cliente logueado:", error);
+    res.status(500).send("Error interno del servidor");
   }
 };

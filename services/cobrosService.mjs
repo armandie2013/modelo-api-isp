@@ -1,53 +1,53 @@
-import Cobro from '../models/Cobro.mjs';
-import Cliente from '../models/Cliente.mjs';
-import { obtenerSiguienteNumeroDeComprobante } from '../utils/obtenerSiguienteComprobante.mjs';
+import mongoose from "mongoose";
+import Cobro from "../models/Cobro.mjs";
+import { obtenerSiguienteNumeroDeComprobante } from "../utils/obtenerSiguienteComprobante.mjs";
+import Factura from "../models/Factura.mjs";
 
-export const registrarCobro = async ({ clienteId, cobradorId, facturasSeleccionadas }) => {
-  const cliente = await Cliente.findById(clienteId);
-  if (!cliente) throw new Error('Cliente no encontrado');
+export const registrarCobro = async (datos) => {
+  const { clienteId, cobradorId, facturas } = datos;
+  console.log("🧩 Datos recibidos en servicio:", datos);
+  // 1. Calcular total
+  const total = facturas.reduce((sum, f) => sum + f.importe, 0);
 
-  const historial = cliente.historial || [];
-  const facturasPagadas = [];
-  let totalCobrado = 0;
+  // 2. Obtener número de comprobante
+  const numero = await obtenerSiguienteNumeroDeComprobante();
 
-  for (const factura of historial) {
-    if (
-      facturasSeleccionadas.includes(factura.numeroComprobante.toString()) &&
-      !factura.pagado
-    ) {
-      facturasPagadas.push({
-        numeroComprobante: factura.numeroComprobante,
-        tipo: factura.tipo,
-        detalle: factura.detalle,
-        importe: factura.importe
-      });
-      totalCobrado += factura.importe;
-      factura.pagado = true;
-    }
-  }
-
-  if (facturasPagadas.length === 0) {
-    throw new Error('No se seleccionaron facturas válidas para pagar.');
-  }
-
-  const numeroComprobante = await obtenerSiguienteNumeroDeComprobante();
-
+  // 3. Crear documento de cobro
+  if (!cobradorId) {
+  throw new Error("❌ cobradorId no está definido");
+}
+  console.log("✅ Datos recibidos en registrarCobro:");
+console.log("clienteId:", clienteId);
+console.log("cobradorId:", cobradorId);
+console.log("facturas.length:", facturas.length);
+console.log("typeof cobradorId:", typeof cobradorId);
+console.log("¿Es ObjectId?", mongoose.Types.ObjectId.isValid(cobradorId));
   const nuevoCobro = new Cobro({
-    numeroComprobante,
+    numeroComprobante: numero,
     cliente: clienteId,
     cobrador: cobradorId,
-    facturasPagadas,
-    totalCobrado
+    facturasPagadas: facturas.map(f => ({
+      numeroComprobante: f.numeroDeComprobante,
+      tipo: f.tipo || "factura",
+      detalle: f.detalle,
+      importe: f.importe
+    })),
+    totalCobrado: total
   });
 
   await nuevoCobro.save();
-  await cliente.save(); // actualiza historial
+
+  // 4. Actualizar las facturas como pagadas
+  await Factura.updateMany(
+    { _id: { $in: facturas.map(f => f._id) } },
+    { $set: { pagada: true, pagadoEn: nuevoCobro._id } }
+  );
 
   return nuevoCobro;
 };
 
 export const obtenerCobroPorId = async (id) => {
-  return await Cobro.findById(id)
-    .populate('cliente')
-    .populate('cobrador');
+  return Cobro.findById(id)
+    .populate("cliente", "nombre apellido dni")
+    .lean();
 };

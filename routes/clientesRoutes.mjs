@@ -7,7 +7,8 @@ import {
   eliminarCliente,
   mostrarDashboardClientes,
   mostrarHistorialCliente,
-  generarCargosMensuales
+  generarCargosMensuales,
+  mostrarPanelCliente
 } from "../controllers/clientesController.mjs";
 import { verificarSesion } from "../middlewares/verificarSesion.mjs";
 import { verificarAdmin } from "../middlewares/verificarAdmin.mjs";
@@ -66,6 +67,12 @@ router.post(
   verificarSesion,
   verificarAdmin,
   generarCargosMensuales
+);
+
+router.get(
+  "/cliente/panel",
+  verificarSesion,
+  mostrarPanelCliente
 );
 
 export default router;

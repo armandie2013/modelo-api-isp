@@ -1,5 +1,6 @@
 import Plan from "../models/Plan.mjs";
 import Cliente from "../models/Cliente.mjs";
+import Factura from '../models/Factura.mjs';
 import { generarCargosParaTodos } from "../services/cargosService.mjs";
 import { obtenerSiguienteNumeroDeComprobante } from "../utils/obtenerSiguienteComprobante.mjs";
 
@@ -143,44 +144,52 @@ export const mostrarHistorialCliente = async (req, res) => {
 // POST /clientes/generar-cargos
 export const generarCargosMensuales = async (req, res) => {
   try {
-    const clientes = await Cliente.find().populate("plan");
+    const clientes = await Cliente.find().populate('plan');
 
     for (const cliente of clientes) {
       const fechaHoy = new Date();
-      const mes = fechaHoy.getMonth();
-      const anio = fechaHoy.getFullYear();
+      const nombreMes = fechaHoy.toLocaleString("default", { month: "long" }).toUpperCase();
+      const detalle = `Factura por servicio - ${nombreMes}`;
+      const numeroDeComprobante = await obtenerSiguienteNumeroDeComprobante();
 
-      // Validar si ya tiene un cargo del mes actual
-      const yaTieneCargo = cliente.historial.some(h => {
-        const fecha = new Date(h.fecha);
-        return h.tipo === "cargo" && fecha.getMonth() === mes && fecha.getFullYear() === anio;
+      // Verificamos si ya existe una factura igual (por mes)
+      const yaExiste = await Factura.findOne({
+        cliente: cliente._id,
+        detalle,
+        fecha: {
+          $gte: new Date(fechaHoy.getFullYear(), fechaHoy.getMonth(), 1),
+          $lte: new Date(fechaHoy.getFullYear(), fechaHoy.getMonth() + 1, 0)
+        }
       });
 
-      if (!yaTieneCargo) {
-        const nombreMes = fechaHoy.toLocaleString("default", { month: "long" }).toUpperCase();
-        const detalle = `Factura por servicio - ${nombreMes}`;
-        const vencimiento = new Date(fechaHoy);
-        vencimiento.setDate(vencimiento.getDate() + 10);
-
-        const numeroDeComprobante = await obtenerSiguienteNumeroDeComprobante();
-
-        cliente.historial.push({
-          tipo: "cargo",
-          detalle,
+      if (!yaExiste) {
+        const nuevaFactura = new Factura({
+          cliente: cliente._id,
           fecha: fechaHoy,
-          vencimiento,
+          detalle,
           importe: cliente.plan.precio,
-          estado: "pendiente",
-          numeroDeComprobante,
+          numeroDeComprobante
         });
 
-        await cliente.save();
+        await nuevaFactura.save();
       }
     }
 
     res.redirect("/clientes/dashboard");
   } catch (error) {
-    console.error("Error al generar cargos:", error);
+    console.error("Error al generar cargos mensuales:", error);
     res.status(500).send("Error al generar cargos mensuales");
   }
+};
+
+export const mostrarPanelCliente = (req, res) => {
+  const usuario = req.session.usuario;
+
+  if (!usuario) {
+    return res.redirect("/login");
+  }
+
+  res.render("clientesViews/panelCliente", {
+    usuario
+  });
 };

@@ -5,30 +5,35 @@
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
     <div class="bg-white border-l-4 border-green-500 p-4 rounded shadow">
       <h2 class="text-lg font-semibold text-gray-600">Total cobrado</h2>
-      <p class="text-2xl font-bold text-green-700">$<%= totalCobrado.toFixed(2) %></p>
+      <p class="text-2xl font-bold text-green-700"><%= totalCobrado %></p>
+      </p>
     </div>
 
     <div class="bg-white border-l-4 border-red-500 p-4 rounded shadow">
       <h2 class="text-lg font-semibold text-gray-600">Total retirado</h2>
-      <p class="text-2xl font-bold text-red-700">$<%= totalRetirado.toFixed(2) %></p>
+      <p class="text-2xl font-bold text-red-700"><%= totalRetirado %></p>
+      </p>
     </div>
 
     <div class="bg-white border-l-4 border-blue-500 p-4 rounded shadow">
       <h2 class="text-lg font-semibold text-gray-600">Acumulado actual</h2>
-      <p class="text-2xl font-bold text-blue-700">$<%= montoTotal.toFixed(2) %></p>
+      <p class="text-2xl font-bold text-blue-700"><%= montoTotal %></p>
+      </p>
     </div>
   </div>
 
   <!-- Accesos rápidos -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
     <!-- Buscar Cliente -->
-    <a href="/cobros/buscar" class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
+    <a href="/cobros/buscar"
+      class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
       <h2 class="text-xl font-semibold text-blue-600 mb-2">Buscar Cliente</h2>
       <p class="text-gray-600 text-sm">Busca un cliente por DNI para ver facturas y registrar un nuevo cobro.</p>
     </a>
 
     <!-- Registrar Cobro -->
-    <a href="/cobrador/buscar" class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
+    <a href="/cobrador/buscar"
+      class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
       <h2 class="text-xl font-semibold text-green-600 mb-2">Registrar Cobro</h2>
       <p class="text-gray-600 text-sm">Ingresa un nuevo cobro desde el buscador de clientes.</p>
     </a>
@@ -43,23 +48,34 @@
           <th class="px-4 py-3 text-left">Cliente</th>
           <th class="px-4 py-3 text-left">Fecha</th>
           <th class="px-4 py-3 text-left">Importe</th>
+          <th class="px-4 py-3 text-center">Recibo</th>
         </tr>
       </thead>
       <tbody>
-        <% if (cobros.length === 0) { %>
+        <% if (cobros.length===0) { %>
           <tr>
             <td colspan="4" class="text-center py-4 text-gray-500">Sin cobros registrados.</td>
           </tr>
-        <% } else { %>
-          <% cobros.forEach(cobro => { %>
-            <tr class="border-b hover:bg-gray-50">
-              <td class="px-4 py-2 font-medium"><%= cobro.numeroDeComprobante %></td>
-              <td class="px-4 py-2"><%= cobro.cliente?.apellido %>, <%= cobro.cliente?.nombre %></td>
-              <td class="px-4 py-2"><%= new Date(cobro.fecha).toLocaleDateString() %></td>
-              <td class="px-4 py-2">$<%= cobro.importeTotal.toFixed(2) %></td>
-            </tr>
-          <% }); %>
-        <% } %>
+          <% } else { %>
+            <% cobros.forEach(cobro=> { %>
+              <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-2 font-medium">
+                  <%= cobro.numeroComprobante %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= cobro.cliente?.apellido %>, <%= cobro.cliente?.nombre %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= new Date(cobro.fecha).toLocaleDateString() %>
+                </td>
+                <td class="px-4 py-2"><%= cobro.importeFormateado %></td>
+                </td>
+                <td class="px-4 py-2 text-center">
+                  <a href="/cobros/<%= cobro._id %>/recibo" class="text-blue-600 hover:underline">Ver recibo</a>
+                </td>
+              </tr>
+              <% }); %>
+                <% } %>
       </tbody>
     </table>
   </div>

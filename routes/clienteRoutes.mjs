@@ -1,10 +1,10 @@
 import express from 'express';
-import { mostrarDashboardCliente } from '../controllers/clienteController.mjs';
 import { verificarSesion } from '../middlewares/verificarSesion.mjs';
-import { verificarCliente } from '../middlewares/verificarCliente.mjs';
+import { mostrarHistorialDelClienteLogueado } from '../controllers/cobrosController.mjs';
 
 const router = express.Router();
 
-router.get('/cliente/dashboard', verificarSesion, verificarCliente, mostrarDashboardCliente);
+// Cliente ve su historial
+router.get('/cliente/historial', verificarSesion, mostrarHistorialDelClienteLogueado);
 
 export default router;

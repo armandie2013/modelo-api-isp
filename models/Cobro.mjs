@@ -1,29 +1,25 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const cobroSchema = new mongoose.Schema({
+const CobroSchema = new mongoose.Schema({
   numeroComprobante: {
     type: Number,
     required: true,
     unique: true
   },
-  fecha: {
-    type: Date,
-    default: Date.now
-  },
   cliente: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Cliente',
-    required: true
-  },
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Cliente",
+  required: true
+},
   cobrador: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario', // o 'Persona' según cómo tengas definido al cobrador
+    ref: "Usuario", // o "Persona" si lo estás tomando desde otro modelo
     required: true
   },
   facturasPagadas: [
     {
       numeroComprobante: Number,
-      tipo: String, // "factura", "nota de débito", etc.
+      tipo: String,
       detalle: String,
       importe: Number
     }
@@ -31,7 +27,13 @@ const cobroSchema = new mongoose.Schema({
   totalCobrado: {
     type: Number,
     required: true
+  },
+  fecha: {
+    type: Date,
+    default: Date.now
   }
 });
 
-export default mongoose.model('Cobro', cobroSchema);
+const Cobro = mongoose.model("Cobro", CobroSchema);
+
+export default Cobro;

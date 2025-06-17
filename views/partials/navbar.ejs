@@ -1,79 +1,77 @@
-<nav class="bg-white mb-6 border-b shadow-[0_4px_6px_rgba(0,0,0,0.1)]">
+<nav class="bg-white border-b shadow-md">
   <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-    <a href="/" class="text-lg font-semibold text-blue-600">WISH.net</a>
 
+    <% let enlaceInicio = "/"; %>
     <% if (usuario) { %>
-      <div class="flex items-center gap-6">
+      <% if (usuario.rol === "admin") { enlaceInicio = "/admin/cobranzas"; } %>
+      <% if (usuario.rol === "cobrador") { enlaceInicio = "/cobrador/panel"; } %>
+      <% if (usuario.rol === "cliente") { enlaceInicio = "/cliente/dashboard"; } %>
+    <% } %>
 
-        <% if (usuario.rol==='admin' ) { %>
-          <!-- Menú Admin -->
+    <a href="<%= enlaceInicio %>" class="text-lg font-semibold text-blue-600">WISH.net</a>
+
+    <!-- Botón hamburguesa -->
+    <button id="menu-toggle" class="sm:hidden text-blue-600 focus:outline-none">
+      ☰
+    </button>
+
+    <!-- Menú principal -->
+    <div id="menu"
+      class="hidden sm:flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 absolute sm:static top-16 left-0 w-full sm:w-auto bg-white sm:bg-transparent px-4 sm:px-0 py-4 sm:py-0 border-t sm:border-none shadow sm:shadow-none z-20">
+
+      <% if (usuario) { %>
+
+        <% if (usuario.rol === "admin") { %>
           <div class="relative group">
-            <button class="text-sm text-blue-600 hover:underline focus:outline-none">
-              Admin ▼
-            </button>
-            <div
-              class="absolute left-0 mt-2 bg-white border shadow-md rounded-md w-52 z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-              <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                Panel de administración
-              </a>
+            <button class="text-sm text-blue-600 hover:underline">Admin ▼</button>
+            <div class="hidden group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
+              <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel de administración</a>
               <div class="border-t my-1"></div>
-              <a href="/usuarios/cambiar-roles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                Cambiar roles
-              </a>
+              <a href="/usuarios/cambiar-roles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cambiar roles</a>
             </div>
           </div>
-          <% } %>
+        <% } %>
 
-            <% if (usuario.rol==='cobrador' ) { %>
-              <!-- Menú Cobrador -->
-              <div class="relative group">
-                <button class="text-sm text-blue-600 hover:underline focus:outline-none">
-                  Cobrador ▼
-                </button>
-                <div
-                  class="absolute left-0 mt-2 bg-white border shadow-md rounded-md w-52 z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-                  <a href="/cobrador/panel" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Panel del cobrador
-                  </a>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">
-                    Registrar pago (próximamente)
-                  </a>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">
-                    Historial (próximamente)
-                  </a>
-                </div>
-              </div>
-              <% } %>
+        <% if (usuario.rol === "cobrador") { %>
+          <div class="relative group">
+            <button class="text-sm text-blue-600 hover:underline">Cobrador ▼</button>
+            <div class="hidden group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
+              <a href="/cobrador/panel" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel del cobrador</a>
+              <a class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Registrar pago (próximamente)</a>
+              <a class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Historial (próximamente)</a>
+            </div>
+          </div>
+        <% } %>
 
-                <% if (usuario.rol==='cliente' ) { %>
-                  <!-- Menú Cliente -->
-                  <div class="relative group">
-                    <button class="text-sm text-blue-600 hover:underline focus:outline-none">
-                      Cliente ▼
-                    </button>
-                    <div
-                      class="absolute left-0 mt-2 bg-white border shadow-md rounded-md w-52 z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200">
-                      <a href="/cliente/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Panel del cliente
-                      </a>
-                      <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">
-                        Consultar pagos (próximamente)
-                      </a>
-                    </div>
-                  </div>
-                  <% } %>
+        <% if (usuario.rol === "cliente") { %>
+          <div class="relative group">
+            <button class="text-sm text-blue-600 hover:underline">Cliente ▼</button>
+            <div class="hidden group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
+              <a href="/cliente/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel del cliente</a>
+              <a class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Consultar pagos (próximamente)</a>
+            </div>
+          </div>
+        <% } %>
 
-                    <span class="text-gray-700">Hola, <%= usuario.nombre %></span>
-                    <form action="/logout" method="POST">
-                      <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar sesión</button>
-                    </form>
-      </div>
+        <span class="text-gray-700">Hola, <%= usuario.nombre %></span>
+        <form action="/logout" method="POST">
+          <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar sesión</button>
+        </form>
 
       <% } else { %>
-        <div class="flex gap-4">
-          <a href="/login" class="text-sm text-blue-600 hover:underline">Iniciar sesión</a>
-          <a href="/registro" class="text-sm text-blue-600 hover:underline">Registrarse</a>
-        </div>
-        <% } %>
+        <a href="/login" class="text-sm text-blue-600 hover:underline">Iniciar sesión</a>
+        <a href="/registro" class="text-sm text-blue-600 hover:underline">Registrarse</a>
+      <% } %>
+
+    </div>
   </div>
 </nav>
+
+<script>
+  const toggleBtn = document.getElementById("menu-toggle");
+  const menu = document.getElementById("menu");
+
+  toggleBtn.addEventListener("click", () => {
+    menu.classList.toggle("hidden");
+  });
+</script>

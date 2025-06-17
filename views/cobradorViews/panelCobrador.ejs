@@ -2,7 +2,7 @@
   <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Panel del Cobrador</h1>
 
   <!-- Resumen en tarjetas -->
-  <div class="bg-white border-l-4 border-blue-500 p-4 rounded shadow-md mb-6">
+  <div class="bg-white border-l-4 border-blue-500 p-4 rounded shadow-lg mb-6">
     <h2 class="text-lg font-semibold text-gray-700">Monto recaudado actual</h2>
     <p class="text-2xl font-bold text-blue-700">
       <%= montoFormateado %>
@@ -13,14 +13,14 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
     <!-- Buscar Cliente -->
     <a href="/cobros/buscar"
-      class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
+      class="block bg-white border border-gray-200 shadow-lg rounded-lg p-6 hover:shadow-lg transition">
       <h2 class="text-xl font-semibold text-blue-600 mb-2">Buscar Cliente</h2>
       <p class="text-gray-600 text-sm">Busca un cliente por DNI para ver facturas y registrar un nuevo cobro.</p>
     </a>
 
     <!-- Registrar Cobro -->
     <a href="/cobrador/buscar"
-      class="block bg-white border border-gray-200 shadow-md rounded-lg p-6 hover:shadow-lg transition">
+      class="block bg-white border border-gray-200 shadow-lg rounded-lg p-6 hover:shadow-lg transition">
       <h2 class="text-xl font-semibold text-green-600 mb-2">Nota de crédito o débito</h2>
       <p class="text-gray-600 text-sm">Genera nuevos cargos para cobros ya realizados.</p>
     </a>
@@ -30,7 +30,7 @@
    <div>
     <h1 class="text-smtext-gray-800 mb-6 text-left">Ultimos cobros realizados</h1>
    </div>
-  <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+  <div class="bg-white shadow-lg rounded-lg overflow-x-auto">
     <table class="min-w-full text-sm text-gray-700">
       <thead class="bg-gray-200 text-xs uppercase text-gray-600">
         <tr>

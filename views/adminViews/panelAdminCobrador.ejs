@@ -1,0 +1,67 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Panel de Cobranzas (Administrador)</h1>
+  <div class="mb-6">
+  <a href="/admin/cobranzas" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg transition">
+    ← Volver al panel de cobranzas
+  </a>
+</div>
+
+  <!-- Resumen en tarjetas -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white border-l-4 border-green-500 p-4 rounded shadow">
+      <h2 class="text-lg font-semibold text-gray-600">Total cobrado</h2>
+      <p class="text-2xl font-bold text-green-700"><%= totalCobrado %></p>
+    </div>
+
+    <div class="bg-white border-l-4 border-red-500 p-4 rounded shadow">
+      <h2 class="text-lg font-semibold text-gray-600">Total retirado</h2>
+      <p class="text-2xl font-bold text-red-700"><%= totalRetirado %></p>
+    </div>
+
+    <div class="bg-white border-l-4 border-blue-500 p-4 rounded shadow">
+      <h2 class="text-lg font-semibold text-gray-600">Acumulado actual</h2>
+      <p class="text-2xl font-bold text-blue-700"><%= montoTotal %></p>
+    </div>
+  </div>
+
+  <!-- Botón para solicitar retiro -->
+<div class="flex justify-end mt-2 mb-8">
+  <a href="/retiros/solicitar" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow">
+    Solicitar Retiro
+  </a>
+</div>
+
+  <!-- Historial de cobros -->
+  <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+    <table class="min-w-full text-sm text-gray-700">
+      <thead class="bg-gray-100 text-xs uppercase text-gray-600">
+        <tr>
+          <th class="px-4 py-3 text-left">N° Comprobante</th>
+          <th class="px-4 py-3 text-left">Cliente</th>
+          <th class="px-4 py-3 text-left">Fecha</th>
+          <th class="px-4 py-3 text-left">Importe</th>
+          <th class="px-4 py-3 text-center">Recibo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (cobros.length === 0) { %>
+          <tr>
+            <td colspan="5" class="text-center py-4 text-gray-500">Sin cobros registrados.</td>
+          </tr>
+        <% } else { %>
+          <% cobros.forEach(cobro => { %>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-2 font-medium"><%= cobro.numeroComprobante %></td>
+              <td class="px-4 py-2"><%= cobro.cliente?.apellido %>, <%= cobro.cliente?.nombre %></td>
+              <td class="px-4 py-2"><%= cobro.fechaFormateada %></td>
+              <td class="px-4 py-2"><%= cobro.importeFormateado %></td>
+              <td class="px-4 py-2 text-center">
+                <a href="/cobros/<%= cobro._id %>/recibo" class="text-blue-600 hover:underline">Ver recibo</a>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>

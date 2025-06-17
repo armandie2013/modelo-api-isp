@@ -122,16 +122,14 @@ export const mostrarPanelCobrador = async (req, res) => {
     const resumen = await obtenerResumenCajaCobrador(cobradorId);
 
     res.render("cobradorViews/panelCobrador", {
-      titulo: "Panel del Cobrador",
-      cobros: resumen.cobros.map((c) => ({
-        ...c.toObject(), // <- importante si `c` es documento de Mongoose
-        importeFormateado: formatearMonedaARS(c.totalCobrado),
-        fechaFormateada: new Date(c.fecha).toLocaleDateString("es-AR"),
-      })),
-      montoTotal: formatearMonedaARS(resumen.acumuladoActual),
-      totalCobrado: formatearMonedaARS(resumen.totalCobrado),
-      totalRetirado: formatearMonedaARS(resumen.totalRetirado),
-    });
+  titulo: "Panel del Cobrador",
+  cobros: resumen.cobros.map((c) => ({
+    ...c.toObject(),
+    importeFormateado: formatearMonedaARS(c.totalCobrado),
+    fechaFormateada: new Date(c.fecha).toLocaleDateString("es-AR"),
+  })),
+  montoFormateado: formatearMonedaARS(resumen.acumuladoActual),
+});
   } catch (error) {
     console.error("Error al mostrar panel del cobrador:", error);
     res.status(500).render("errorGenerico", {

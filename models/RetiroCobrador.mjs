@@ -1,27 +1,33 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const retiroCobradorSchema = new mongoose.Schema({
-  fecha: {
-    type: Date,
-    default: Date.now
-  },
   cobrador: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario',
-    required: true
-  },
-  admin: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario',
-    required: true
+    ref: "Usuario",
+    required: true,
   },
   importe: {
     type: Number,
-    required: true
+    required: true,
   },
-  observacion: {
-    type: String
-  }
+  fecha: {
+    type: Date,
+    default: Date.now,
+  },
+  codigoAutorizacion: {
+    type: String,
+    required: true,
+    unique: true, // Evita reutilización del código
+  },
+  utilizado: {
+    type: Boolean,
+    default: false,
+  },
+  creadoPor: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Usuario",
+  required: true,
+},
 });
 
-export default mongoose.model('RetiroCobrador', retiroCobradorSchema);
+export default mongoose.model("RetiroCobrador", retiroCobradorSchema);

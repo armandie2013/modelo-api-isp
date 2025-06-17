@@ -1,56 +1,80 @@
 <div class="max-w-xl mx-auto mt-10 bg-white p-6 rounded-xl shadow">
   <h2 class="text-2xl font-bold mb-4 text-gray-800">Panel de administración del cobrador</h2>
 
-  <p class="text-gray-700 mb-2"><strong>Total cobrado:</strong> $<%= totalCobrado.toFixed(2) %></p>
-  <p class="text-gray-700 mb-2"><strong>Total retirado:</strong> $<%= totalRetirado.toFixed(2) %></p>
-  <p class="text-lg font-bold text-green-700 mb-4"><strong>Acumulado actual:</strong> $<%= acumuladoActual.toFixed(2) %></p>
+  <p class="text-gray-700 mb-2"><strong>Total cobrado:</strong> $<%= totalCobrado.toFixed(2) %>
+  </p>
+  <p class="text-gray-700 mb-2"><strong>Total retirado:</strong> $<%= totalRetirado.toFixed(2) %>
+  </p>
+  <p class="text-lg font-bold text-green-700 mb-4"><strong>Acumulado actual:</strong> $<%= acumuladoActual.toFixed(2) %>
+  </p>
+  <% if (codigoGenerado) { %>
+    <div class="mb-6 p-4 bg-green-100 text-green-800 rounded-lg border border-green-300">
+      <p class="font-semibold">Código generado:</p>
+      <p class="text-xl tracking-wider font-mono">
+        <%= codigoGenerado %>
+      </p>
+    </div>
+    <% } else { %>
+      <form action="/retiros/generar-codigo" method="POST" class="mb-6">
+        <input type="hidden" name="cobradorId" value="<%= cobradorId %>">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
+          Generar código de retiro
+        </button>
+      </form>
+      <% } %>
 
-  <!-- Formulario de retiro -->
-  <form action="/retiros/registrar" method="post" class="space-y-4 mb-10">
-    <input type="hidden" name="cobradorId" value="<%= cobradorId %>">
+        <!-- Formulario de retiro -->
+        <form action="/retiros/registrar" method="post" class="space-y-4 mb-10">
+          <input type="hidden" name="cobradorId" value="<%= cobradorId %>">
 
-    <label class="block">
-      <span class="text-gray-700">Importe a retirar</span>
-      <input type="number" name="importe" step="0.01" max="<%= acumuladoActual %>" required class="mt-1 block w-full border p-2 rounded">
-    </label>
+          <label class="block">
+            <span class="text-gray-700">Importe a retirar</span>
+            <input type="number" name="importe" step="0.01" max="<%= acumuladoActual %>" required
+              class="mt-1 block w-full border p-2 rounded">
+          </label>
 
-    <label class="block">
-      <span class="text-gray-700">Observación (opcional)</span>
-      <input type="text" name="observacion" class="mt-1 block w-full border p-2 rounded">
-    </label>
+          <label class="block">
+            <span class="text-gray-700">Observación (opcional)</span>
+            <input type="text" name="observacion" class="mt-1 block w-full border p-2 rounded">
+          </label>
 
-    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-      Confirmar retiro
-    </button>
-  </form>
+          <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+            Confirmar retiro
+          </button>
+        </form>
 </div>
 
 <!-- Historial de retiros fuera del form -->
 <div class="max-w-xl mx-auto mt-6 bg-white p-6 rounded-xl shadow border border-gray-200">
   <h3 class="text-xl font-semibold mb-4 text-gray-800">📋 Historial de retiros realizados</h3>
 
-  <% if (retiros.length === 0) { %>
+  <% if (retiros.length===0) { %>
     <p class="text-gray-500">No se registraron retiros aún.</p>
-  <% } else { %>
-    <div class="overflow-x-auto">
-      <table class="w-full border text-sm">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="p-2 text-left">Fecha</th>
-            <th class="p-2 text-left">Importe</th>
-            <th class="p-2 text-left">Observación</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% retiros.forEach(retiro => { %>
-            <tr class="border-t">
-              <td class="p-2"><%= new Date(retiro.fecha).toLocaleString() %></td>
-              <td class="p-2">$<%= retiro.importe.toFixed(2) %></td>
-              <td class="p-2"><%= retiro.observacion || '-' %></td>
+    <% } else { %>
+      <div class="overflow-x-auto">
+        <table class="w-full border text-sm">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="p-2 text-left">Fecha</th>
+              <th class="p-2 text-left">Importe</th>
+              <th class="p-2 text-left">Observación</th>
             </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-  <% } %>
+          </thead>
+          <tbody>
+            <% retiros.forEach(retiro=> { %>
+              <tr class="border-t">
+                <td class="p-2">
+                  <%= new Date(retiro.fecha).toLocaleString() %>
+                </td>
+                <td class="p-2">$<%= retiro.importe.toFixed(2) %>
+                </td>
+                <td class="p-2">
+                  <%= retiro.observacion || '-' %>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
 </div>

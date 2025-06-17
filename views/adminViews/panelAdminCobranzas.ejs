@@ -1,0 +1,36 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Panel de Cobranzas</h1>
+  <% if (usuario && usuario.rol === 'admin' && usuario.rol === 'cobrador') { %>
+  <!-- Aunque esto no será verdadero nunca, lo dejamos para claridad. -->
+<% } else if (usuario && usuario.rol === 'admin') { %>
+  <div class="text-right mb-6">
+    <a href="/admin/mi-panel-cobrador" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+      Ver mi panel como cobrador
+    </a>
+  </div>
+<% } %>
+
+  <% if (cobradores.length === 0) { %>
+    <p class="text-center text-gray-500">No hay cobradores registrados.</p>
+  <% } else { %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% cobradores.forEach(c => { %>
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+          <h2 class="text-xl font-semibold text-gray-800 mb-2"><%= c.nombre %> <%= c.apellido %></h2>
+          <p class="text-gray-600 text-sm mb-1">
+            <span class="font-medium">Email:</span> <%= c.email %>
+          </p>
+          <p class="text-green-700 font-bold text-lg mt-3 mb-1">
+            Recaudado: <%= c.montoRecaudadoFormateado %>
+          </p>
+          <p class="text-gray-500 text-sm mb-4">
+            Último retiro: <%= c.ultimaFechaRetiro || "Sin retiros" %>
+          </p>
+          <a href="/admin/cobrador/<%= c._id %>/panel" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition">
+            Ver panel del cobrador
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>

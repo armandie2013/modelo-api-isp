@@ -53,7 +53,7 @@ export const procesarLogin = async (req, res) => {
 
     // Redirección según rol
     if (usuario.rol === "admin") {
-      return res.redirect("/admin/dashboard");
+      return res.redirect("/admin/cobranzas");
     } else if (usuario.rol === "cobrador") {
       return res.redirect("/cobrador/panel");
     } else if (usuario.rol === "cliente") {

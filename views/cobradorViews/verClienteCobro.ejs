@@ -19,7 +19,7 @@
       <%= cliente.direccion %>
     </p>
     <p><strong>Plan:</strong>
-      <%= cliente.plan?.nombre %> - $<%= cliente.plan?.precio.toFixed(2) %>
+      <p><strong>Plan:</strong> <%= cliente.plan?.nombre %> - <%= cliente.plan?.precioFormateado %></p>
     </p>
   </div>
 

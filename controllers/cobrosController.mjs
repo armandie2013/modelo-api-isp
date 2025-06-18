@@ -31,6 +31,11 @@ export const procesarBusquedaCliente = async (req, res) => {
       });
     }
 
+    // ✅ Formatear precio del plan
+    if (cliente.plan?.precio) {
+      cliente.plan.precioFormateado = formatearMonedaARS(cliente.plan.precio);
+    }
+
     const historial = await obtenerHistorialFinanciero(cliente._id);
 
     const facturasImpagas = await Factura.find({
@@ -38,7 +43,6 @@ export const procesarBusquedaCliente = async (req, res) => {
       pagada: false,
     }).sort({ fecha: 1 });
 
-    // ✅ Formatear importes para la vista
     const facturasImpagasFormateadas = facturasImpagas.map((f) => ({
       ...f.toObject(),
       importeFormateado: formatearMonedaARS(f.importe),
@@ -56,15 +60,10 @@ export const procesarBusquedaCliente = async (req, res) => {
   }
 };
 
-// POST /cobros/registrar
 export const procesarCobro = async (req, res) => {
   try {
     const { clienteId, facturasSeleccionadas } = req.body;
     const cobradorId = req.session.usuario._id;
-
-    console.log("En controlador - clienteId:", clienteId);
-    console.log("En controlador - cobradorId:", cobradorId);
-    console.log("facturasSeleccionadas:", facturasSeleccionadas);
 
     if (!facturasSeleccionadas || facturasSeleccionadas.length === 0) {
       return res.status(400).send("No se seleccionaron facturas para cobrar.");
@@ -99,7 +98,6 @@ export const procesarCobro = async (req, res) => {
 export const mostrarRecibo = async (req, res) => {
   try {
     const cobro = await obtenerCobroPorId(req.params.id);
-
     if (!cobro) {
       return res.status(404).render("errorGenerico", {
         titulo: "Error",
@@ -107,10 +105,7 @@ export const mostrarRecibo = async (req, res) => {
       });
     }
 
-    // Formatear el total
     cobro.totalCobradoFormateado = formatearMonedaARS(cobro.totalCobrado);
-
-    // Formatear cada factura
     if (Array.isArray(cobro.facturasPagadas)) {
       cobro.facturasPagadas.forEach((f) => {
         f.importeFormateado = formatearMonedaARS(f.importe);
@@ -133,7 +128,6 @@ export const mostrarRecibo = async (req, res) => {
 export const mostrarPanelCobrador = async (req, res) => {
   try {
     const cobradorId = req.session.usuario._id;
-
     const resumen = await obtenerResumenCajaCobrador(cobradorId);
 
     res.render("cobradorViews/panelCobrador", {
@@ -158,8 +152,12 @@ export const mostrarHistorialCliente = async (req, res) => {
   try {
     const clienteId = req.params.clienteId;
 
-    const cliente = await Cliente.findById(clienteId).lean();
+    const cliente = await Cliente.findById(clienteId).populate("plan").lean();
     if (!cliente) return res.status(404).send("Cliente no encontrado");
+
+    if (cliente.plan?.precio) {
+      cliente.plan.precioFormateado = formatearMonedaARS(cliente.plan.precio);
+    }
 
     const historial = await obtenerHistorialFinanciero(clienteId);
 
@@ -178,10 +176,11 @@ export const mostrarHistorialPropioCliente = async (req, res) => {
   try {
     const clienteId = req.session.usuario._id;
 
-    const cliente = await Cliente.findById(clienteId).lean();
+    const cliente = await Cliente.findById(clienteId).populate("plan").lean();
+    if (!cliente) return res.status(404).send("Cliente no encontrado");
 
-    if (!cliente) {
-      return res.status(404).send("Cliente no encontrado");
+    if (cliente.plan?.precio) {
+      cliente.plan.precioFormateado = formatearMonedaARS(cliente.plan.precio);
     }
 
     const historial = await obtenerHistorialFinanciero(cliente._id);
@@ -201,10 +200,14 @@ export const mostrarHistorialDelClienteLogueado = async (req, res) => {
   try {
     const cliente = await Cliente.findOne({
       dni: req.session.usuario.dni,
-    }).lean();
+    }).populate("plan").lean();
 
     if (!cliente) {
       return res.status(404).send("Cliente no encontrado");
+    }
+
+    if (cliente.plan?.precio) {
+      cliente.plan.precioFormateado = formatearMonedaARS(cliente.plan.precio);
     }
 
     const historial = await obtenerHistorialFinanciero(cliente._id);

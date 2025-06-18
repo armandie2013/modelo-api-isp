@@ -36,7 +36,7 @@
             <td class="p-2 border"><%= f?.tipo || '-' %></td>
             <td class="p-2 border"><%= f?.numeroComprobante || '-' %></td>
             <td class="p-2 border"><%= f?.detalle || '-' %></td>
-            <td class="p-2 border text-right">$<%= f?.importe?.toFixed(2) || "0.00" %></td>
+            <td class="p-2 border text-right"><%= f.importeFormateado %></td>
           </tr>
         <% }) %>
       </tbody>
@@ -44,7 +44,7 @@
   </div>
 
   <div class="mt-4 text-right font-bold text-lg">
-    Total Cobrado: $<%= cobro?.totalCobrado?.toFixed(2) || "0.00" %>
+    Total Cobrado: <%= cobro.totalCobradoFormateado %>
   </div>
 
   <div class="mt-6 text-center">

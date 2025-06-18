@@ -16,13 +16,8 @@ const historialSchema = new mongoose.Schema({
   importe: {
     type: Number,
     required: true,
-  },
-  numeroDeComprobante: {
-    type: Number,
-    required: true,
   }
-
-}, { _id: true }); // para manejar ítems únicos
+}, { _id: true });
 
 const clienteSchema = new mongoose.Schema({
   nombre: {

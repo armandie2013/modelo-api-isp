@@ -33,16 +33,21 @@ export const procesarBusquedaCliente = async (req, res) => {
 
     const historial = await obtenerHistorialFinanciero(cliente._id);
 
-    // Buscar facturas impagas (usamos tipo 'factura' y pagada=false)
     const facturasImpagas = await Factura.find({
       cliente: cliente._id,
       pagada: false,
     }).sort({ fecha: 1 });
 
+    // ✅ Formatear importes para la vista
+    const facturasImpagasFormateadas = facturasImpagas.map((f) => ({
+      ...f.toObject(),
+      importeFormateado: formatearMonedaARS(f.importe),
+    }));
+
     res.render("cobradorViews/verClienteCobro.ejs", {
       cliente,
       historial,
-      facturasImpagas,
+      facturasImpagas: facturasImpagasFormateadas,
       usuario: req.session.usuario,
     });
   } catch (error) {
@@ -102,6 +107,16 @@ export const mostrarRecibo = async (req, res) => {
       });
     }
 
+    // Formatear el total
+    cobro.totalCobradoFormateado = formatearMonedaARS(cobro.totalCobrado);
+
+    // Formatear cada factura
+    if (Array.isArray(cobro.facturasPagadas)) {
+      cobro.facturasPagadas.forEach((f) => {
+        f.importeFormateado = formatearMonedaARS(f.importe);
+      });
+    }
+
     res.render("cobradorViews/reciboCobro", {
       titulo: "Recibo de Cobro",
       cobro,
@@ -122,14 +137,14 @@ export const mostrarPanelCobrador = async (req, res) => {
     const resumen = await obtenerResumenCajaCobrador(cobradorId);
 
     res.render("cobradorViews/panelCobrador", {
-  titulo: "Panel del Cobrador",
-  cobros: resumen.cobros.map((c) => ({
-    ...c.toObject(),
-    importeFormateado: formatearMonedaARS(c.totalCobrado),
-    fechaFormateada: new Date(c.fecha).toLocaleDateString("es-AR"),
-  })),
-  montoFormateado: formatearMonedaARS(resumen.acumuladoActual),
-});
+      titulo: "Panel del Cobrador",
+      cobros: resumen.cobros.map((c) => ({
+        ...c.toObject(),
+        importeFormateado: formatearMonedaARS(c.totalCobrado),
+        fechaFormateada: new Date(c.fecha).toLocaleDateString("es-AR"),
+      })),
+      montoFormateado: formatearMonedaARS(resumen.acumuladoActual),
+    });
   } catch (error) {
     console.error("Error al mostrar panel del cobrador:", error);
     res.status(500).render("errorGenerico", {

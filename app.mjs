@@ -54,7 +54,15 @@ app.use(session({
   secret: 'clave_secreta_segura',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    ttl: 60 * 60, // Tiempo de vida de la sesión en segundos (1 hora)
+  }),
+  cookie: {
+    maxAge: 60 * 60 * 1000, // 1 hora en milisegundos
+    httpOnly: true, // seguridad: evita acceso JS
+    secure: false, // true solo si usás HTTPS
+  },
 }));
 
 // 👉 Configuración de flash (mensajes temporales)

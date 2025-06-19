@@ -27,47 +27,88 @@
   </div>
 
   <!-- Últimos cobros -->
-   <div>
-    <h1 class="text-smtext-gray-800 mb-6 text-left">Ultimos cobros realizados</h1>
-   </div>
+<div class="mt-10">
+  <h2 class="text-lg font-semibold text-gray-800 mb-4">Últimos cobros</h2>
+  <div class="bg-white shadow-lg rounded-lg overflow-x-auto">
+    <table class="min-w-full text-sm text-gray-700">
+      <thead class="bg-gray-100 text-xs uppercase text-gray-600">
+        <tr>
+          <th class="px-4 py-3 text-left">Fecha</th>
+          <th class="px-4 py-3 text-left">Comprobante</th>
+          <th class="px-4 py-3 text-left">Cliente</th>
+          <th class="px-4 py-3 text-right">Importe</th>
+          <th class="px-4 py-3 text-right">Recibo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% ultimosCobros.forEach(cobro => { %>
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-2">
+              <%= new Date(cobro.fecha).toLocaleDateString() %>
+            </td>
+            <td class="px-4 py-2"><%= cobro.numeroComprobante %></td>
+            <td class="px-4 py-2"><%= cobro.cliente %></td>
+            <td class="px-4 py-2 text-right">
+              <%= cobro.importe.toLocaleString("es-AR", { style: "currency", currency: "ARS" }) %>
+            </td>
+            <td class="px-4 py-2 text-right">
+              <a href="/cobros/<%= cobro.idComprobante %>/recibo" class="text-blue-600 underline text-sm">
+                Ver recibo
+              </a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  <!-- Historial de movimientos -->
+<div class="mt-10">
+  <h2 class="text-lg font-semibold text-gray-800 mb-4">Historial financiero</h2>
   <div class="bg-white shadow-lg rounded-lg overflow-x-auto">
     <table class="min-w-full text-sm text-gray-700">
       <thead class="bg-gray-200 text-xs uppercase text-gray-600">
         <tr>
-          <th class="px-4 py-3 text-left">N° Comp.</th>
-          <th class="px-4 py-3 text-left">Cliente</th>
           <th class="px-4 py-3 text-left">Fecha</th>
-          <th class="px-4 py-3 text-left">Importe</th>
-          <th class="px-4 py-3 text-center">Recibo</th>
+          <th class="px-4 py-3 text-left">N° Comprobante</th>
+          <th class="px-4 py-3 text-left">Tipo</th>
+          <th class="px-4 py-3 text-left">Descripción</th>
+          <th class="px-4 py-3 text-right">Importe</th>
+          <th class="px-4 py-3 text-right">Saldo</th>
         </tr>
       </thead>
       <tbody>
-        <% if (cobros.length===0) { %>
+        <% if (movimientos.length === 0) { %>
           <tr>
-            <td colspan="4" class="text-center py-4 text-gray-500">Sin cobros registrados.</td>
+            <td colspan="6" class="text-center py-4 text-gray-500">Sin movimientos aún.</td>
           </tr>
-          <% } else { %>
-            <% cobros.forEach(cobro=> { %>
-              <tr class="border-b hover:bg-gray-50">
-                <td class="px-4 py-2 font-medium">
-                  <%= cobro.numeroComprobante %>
-                </td>
-                <td class="px-4 py-2">
-                  <%= cobro.cliente?.apellido %>, <%= cobro.cliente?.nombre %>
-                </td>
-                <td class="px-4 py-2">
-                  <%= new Date(cobro.fecha).toLocaleDateString() %>
-                </td>
-                <td class="px-4 py-2">
-                  <%= cobro.importeFormateado %>
-                </td>
-                </td>
-                <td class="px-4 py-2 text-center">
-                  <a href="/cobros/<%= cobro._id %>/recibo" class="text-blue-600 hover:underline">Ver recibo</a>
-                </td>
-              </tr>
-              <% }); %>
-                <% } %>
+        <% } else { %>
+          <% let saldo = 0; %>
+          <% movimientos.slice().reverse().forEach(mov => { %>
+            <% saldo += mov.importe; %>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-2">
+                <%= new Date(mov.fecha).toLocaleDateString("es-AR") %>
+              </td>
+              <td class="px-4 py-2">
+                <%= mov.numeroComprobante || "-" %>
+              </td>
+              <td class="px-4 py-2 capitalize">
+                <%= mov.tipo %>
+              </td>
+              <td class="px-4 py-2">
+                <%= mov.detalle %>
+              </td>
+              <td class="px-4 py-2 text-right <%= mov.importe < 0 ? 'text-red-600' : 'text-green-700' %> font-semibold">
+                <%= mov.importe.toLocaleString("es-AR", { style: "currency", currency: "ARS" }) %>
+              </td>
+              <td class="px-4 py-2 text-right font-medium">
+                <%= saldo.toLocaleString("es-AR", { style: "currency", currency: "ARS" }) %>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
       </tbody>
     </table>
   </div>

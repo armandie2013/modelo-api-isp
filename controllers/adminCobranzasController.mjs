@@ -1,10 +1,12 @@
+import mongoose from "mongoose";
 import Usuario from "../models/Usuario.mjs";
 import Cobro from "../models/Cobro.mjs";
 import RetiroCobrador from "../models/RetiroCobrador.mjs";
 import CodigoRetiro from "../models/CodigoRetiro.mjs";
+import Factura from "../models/Factura.mjs";
+import Retiro from "../models/RetiroCobrador.mjs";
 import { formatearMonedaARS } from "../utils/formatearMoneda.mjs";
 import { obtenerResumenCajaCobrador } from "../services/cajaService.mjs";
-import { obtenerResumenesDeCobradores } from "../services/adminCobranzasService.mjs";
 
 export const mostrarPanelAdminCobranzas = async (req, res) => {
   try {
@@ -37,9 +39,44 @@ export const mostrarPanelAdminCobranzas = async (req, res) => {
       })
     );
 
+    // Agrupar facturas por mes
+    const facturas = await Factura.find().lean();
+    const recaudacionesPorMes = {};
+
+    facturas.forEach(factura => {
+      const fecha = new Date(factura.fecha);
+      const key = `${fecha.getFullYear()}-${fecha.getMonth() + 1}`;
+
+      if (!recaudacionesPorMes[key]) {
+        recaudacionesPorMes[key] = {
+          total: 0,
+          mes: fecha.toLocaleString("es-AR", { month: "long" }),
+          anio: fecha.getFullYear(),
+        };
+      }
+
+      recaudacionesPorMes[key].total += factura.importe;
+    });
+
+    const tarjetasRecaudacion = Object.entries(recaudacionesPorMes).map(
+      ([key, val]) => ({
+        key,
+        mes: val.mes.charAt(0).toUpperCase() + val.mes.slice(1),
+        anio: val.anio,
+        total: formatearMonedaARS(val.total),
+      })
+    ).sort((a, b) => new Date(`${a.anio}-${a.key.split('-')[1]}-01`) - new Date(`${b.anio}-${b.key.split('-')[1]}-01`));
+
+    // Calcular total de retiros
+    const retirosTotales = await Retiro.find();
+    const totalRetiros = retirosTotales.reduce((acc, r) => acc + (r.monto || 0), 0);
+    const totalRetirosFormateado = formatearMonedaARS(totalRetiros);
+
     res.render("adminViews/panelAdminCobranzas", {
       titulo: "Panel de Cobranzas",
       cobradores: cobradoresConDatos,
+      tarjetasRecaudacion,
+      totalRetirosFormateado,
     });
   } catch (error) {
     console.error(
@@ -71,17 +108,32 @@ export async function mostrarPanelCobradorDesdeAdmin(req, res) {
       fecha: -1,
     });
 
-    // ✅ Primero calculás el totalCobrado
     const totalCobrado = cobros.reduce((acc, c) => acc + c.totalCobrado, 0);
-
-    // ✅ Luego lo formateás
     const totalCobradoFormateado = formatearMonedaARS(totalCobrado);
 
-    // ✅ Buscar código activo
+    // 🔍 Verificar si el código está activo y si está vencido (más de 24h)
+    let codigoExpirado = false;
+    let codigoGenerado = null;
+
     const codigoActivo = await CodigoRetiro.findOne({
-      cobradorId,
+      cobrador: new mongoose.Types.ObjectId(cobradorId),
       estado: "activo",
     });
+
+    if (codigoActivo) {
+      const ahora = new Date();
+      const expirado = (ahora - codigoActivo.fechaGeneracion) > 24 * 60 * 60 * 1000;
+
+      if (expirado) {
+        codigoExpirado = true;
+
+        // ✅ Opcional: Marcar como expirado en la BD
+        codigoActivo.estado = "expirado";
+        await codigoActivo.save();
+      } else {
+        codigoGenerado = codigoActivo.codigo;
+      }
+    }
 
     res.render("adminViews/panelCobradorDesdeAdmin", {
       titulo: `Panel de ${cobrador.nombre} ${cobrador.apellido}`,
@@ -94,7 +146,8 @@ export async function mostrarPanelCobradorDesdeAdmin(req, res) {
       retiros,
       totalCobrado,
       totalCobradoFormateado,
-      codigoGenerado: codigoActivo?.codigo || null,
+      codigoGenerado,
+      codigoExpirado,
     });
   } catch (error) {
     console.error("Error al mostrar panel de cobrador desde admin:", error);

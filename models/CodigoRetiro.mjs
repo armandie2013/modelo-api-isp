@@ -5,31 +5,31 @@ const codigoRetiroSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    trim: true
-  },
-  estado: {
-    type: String,
-    enum: ["activo", "usado"],
-    default: "activo"
-  },
-  importeDisponible: {
-    type: Number,
-    required: true
   },
   cobrador: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario", // o "Cobrador" si cambiás el nombre del modelo
-    required: true
+    ref: "Usuario",
+    required: true,
   },
-  creadoPor: {
+  generadoPor: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario", // el admin que lo creó
-    required: true
+    ref: "Usuario",
+    required: true,
   },
-  fechaCreacion: {
+  estado: {
+    type: String,
+    enum: ["activo", "usado", "anulado"],
+    default: "activo",
+  },
+  importeDisponible: {
+    type: Number,
+    required: true,
+  },
+  fechaGeneracion: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+    expires: 86400 // 24 horas en segundos
+  },
 });
 
 export default mongoose.model("CodigoRetiro", codigoRetiroSchema);

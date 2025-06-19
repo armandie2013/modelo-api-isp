@@ -1,10 +1,10 @@
 import express from "express";
 import {
   mostrarFormularioRetiro,
-  procesarRetiro,
-  procesarSolicitudRetiro,
-  mostrarFormularioValidarCodigo,
-  procesarRetiroConCodigo,
+  mostrarFormularioValidarCodigo, // Paso 1: mostrar input para el código
+  procesarRetiroConCodigo,       // Paso 1: procesar el código, guardar en sesión y redirigir a /retiros/confirmar
+  mostrarFormularioConfirmarRetiro, // Paso 2: mostrar datos del retiro (importe + admin) y confirmar
+  confirmarRetiroUnificado,      // Paso 2: registrar retiro y redirigir
   generarCodigoRetiroController
 } from "../controllers/retirosController.mjs";
 
@@ -13,14 +13,18 @@ import { verificarAdmin } from "../middlewares/verificarAdmin.mjs";
 
 const router = express.Router();
 
-// Ruta para ver historial y formulario de retiro tradicional
+// Paso 0: Panel historial del cobrador
 router.get("/retiros", verificarSesion, mostrarFormularioRetiro);
-router.post("/retiros/solicitar", verificarSesion, procesarSolicitudRetiro);
 
-// Ruta para validar un código generado por admin
+// Paso 1: Validar código de retiro
 router.get("/retiros/validar-codigo", verificarSesion, mostrarFormularioValidarCodigo);
 router.post("/retiros/procesar-retiro", verificarSesion, procesarRetiroConCodigo);
 
-router.post('/retiros/generar-codigo', verificarSesion, verificarAdmin, generarCodigoRetiroController);
+// Paso 2: Mostrar pantalla de confirmación
+router.get("/retiros/confirmar", verificarSesion, mostrarFormularioConfirmarRetiro);
+router.post("/retiros/confirmar-retiro", verificarSesion, confirmarRetiroUnificado);
+
+// Admin: generar código de retiro
+router.post("/retiros/generar-codigo", verificarSesion, verificarAdmin, generarCodigoRetiroController);
 
 export default router;

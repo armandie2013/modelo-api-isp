@@ -39,3 +39,27 @@ export async function generarCodigoUnicoParaCobrador(cobradorId, adminId) {
   await nuevoCodigo.save();
   return nuevoCodigo;
 }
+
+export async function confirmarRetiroService({ cobradorId, codigo, importe }) {
+  const codigoEncontrado = await CodigoRetiro.findOne({
+    codigo,
+    usuario: cobradorId,
+    usado: false,
+  });
+
+  if (!codigoEncontrado) {
+    throw new Error("El código ya fue utilizado o no existe.");
+  }
+
+  // Marcar como usado
+  codigoEncontrado.usado = true;
+  await codigoEncontrado.save();
+
+  // Registrar retiro
+  await RetiroCobrador.create({
+    cobrador: cobradorId,
+    importe: parseFloat(importe),
+    codigo,
+    fecha: new Date(),
+  });
+}

@@ -125,28 +125,28 @@ export const mostrarRecibo = async (req, res) => {
   }
 };
 
-export const mostrarPanelCobrador = async (req, res) => {
+export async function mostrarPanelCobrador(req, res) {
   try {
     const cobradorId = req.session.usuario._id;
-    const resumen = await obtenerResumenCajaCobrador(cobradorId);
+
+    const { movimientos, acumuladoActual, ultimosCobros } = await obtenerResumenCajaCobrador(cobradorId);
+
+    const montoFormateado = acumuladoActual.toLocaleString("es-AR", {
+      style: "currency",
+      currency: "ARS"
+    });
 
     res.render("cobradorViews/panelCobrador", {
-      titulo: "Panel del Cobrador",
-      cobros: resumen.cobros.map((c) => ({
-        ...c.toObject(),
-        importeFormateado: formatearMonedaARS(c.totalCobrado),
-        fechaFormateada: new Date(c.fecha).toLocaleDateString("es-AR"),
-      })),
-      montoFormateado: formatearMonedaARS(resumen.acumuladoActual),
+      movimientos,
+      montoFormateado,
+      ultimosCobros // 👈 Agregado acá
     });
+
   } catch (error) {
-    console.error("Error al mostrar panel del cobrador:", error);
-    res.status(500).render("errorGenerico", {
-      titulo: "Error",
-      mensaje: "Error al cargar el panel del cobrador.",
-    });
+    console.error("Error al mostrar el panel del cobrador:", error);
+    res.status(500).send("Error al mostrar el panel del cobrador");
   }
-};
+}
 
 export const mostrarHistorialCliente = async (req, res) => {
   try {

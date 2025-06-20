@@ -22,41 +22,58 @@
       <% if (usuario) { %>
 
         <% if (usuario.rol === "admin") { %>
-          <div class="relative group">
-            <button class="text-sm text-blue-600 hover:underline">Admin ▼</button>
-            <div class="hidden group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
+          <div class="sm:relative sm:group">
+            <button class="text-sm text-blue-600 hover:underline sm:block hidden">Admin ▼</button>
+            <div class="sm:hidden block">
+              <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700">Panel de administración</a>
+              <a href="/usuarios/cambiar-roles" class="block px-4 py-2 text-sm text-gray-700">Cambiar roles</a>
+            </div>
+            <div class="hidden sm:group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
               <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel de administración</a>
-              <div class="border-t my-1"></div>
               <a href="/usuarios/cambiar-roles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cambiar roles</a>
             </div>
           </div>
         <% } %>
 
         <% if (usuario.rol === "cobrador") { %>
-          <div class="relative group">
-            <button class="text-sm text-blue-600 hover:underline">Cobrador ▼</button>
-            <div class="hidden group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
+          <div class="sm:relative sm:group">
+            <button class="text-sm text-blue-600 hover:underline sm:block hidden">Cobrador ▼</button>
+            <div class="sm:hidden block">
+              <a href="/cobrador/panel" class="block px-4 py-2 text-sm text-gray-700">Panel del cobrador</a>
+              <a href="/retiros/validar-codigo" class="block px-4 py-2 text-sm text-gray-700">Retiro</a>
+              <span class="block px-4 py-2 text-sm text-gray-400">Registrar pago (próximamente)</span>
+              <span class="block px-4 py-2 text-sm text-gray-400">Historial (próximamente)</span>
+            </div>
+            <div class="hidden sm:group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
               <a href="/cobrador/panel" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel del cobrador</a>
-              <a class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Registrar pago (próximamente)</a>
-              <a class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Historial (próximamente)</a>
+              <a href="/retiros/validar-codigo" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Retiro</a>
+              <span class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Registrar pago (próximamente)</span>
+              <span class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Historial (próximamente)</span>
             </div>
           </div>
         <% } %>
 
         <% if (usuario.rol === "cliente") { %>
-          <div class="relative group">
-            <button class="text-sm text-blue-600 hover:underline">Cliente ▼</button>
-            <div class="hidden group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
+          <div class="sm:relative sm:group">
+            <button class="text-sm text-blue-600 hover:underline sm:block hidden">Cliente ▼</button>
+            <div class="sm:hidden block">
+              <a href="/cliente/dashboard" class="block px-4 py-2 text-sm text-gray-700">Panel del cliente</a>
+              <span class="block px-4 py-2 text-sm text-gray-400">Consultar pagos (próximamente)</span>
+            </div>
+            <div class="hidden sm:group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
               <a href="/cliente/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel del cliente</a>
-              <a class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Consultar pagos (próximamente)</a>
+              <span class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Consultar pagos (próximamente)</span>
             </div>
           </div>
         <% } %>
 
-        <span class="text-gray-700">Hola, <%= usuario.nombre %></span>
-        <form action="/logout" method="POST">
-          <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar sesión</button>
-        </form>
+        <!-- Bloque de usuario -->
+        <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-4">
+          <span class="text-gray-700 text-sm">Hola, <%= usuario.nombre %></span>
+          <form action="/logout" method="POST">
+            <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar sesión</button>
+          </form>
+        </div>
 
       <% } else { %>
         <a href="/login" class="text-sm text-blue-600 hover:underline">Iniciar sesión</a>

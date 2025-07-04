@@ -7,6 +7,8 @@ import Factura from "../models/Factura.mjs";
 import Retiro from "../models/RetiroCobrador.mjs";
 import { formatearMonedaARS } from "../utils/formatearMoneda.mjs";
 import { obtenerResumenCajaCobrador } from "../services/cajaService.mjs";
+import { obtenerResumenCobrador } from "../services/cobradorService.mjs";
+
 
 export const mostrarPanelAdminCobranzas = async (req, res) => {
   try {
@@ -90,76 +92,42 @@ export const mostrarPanelAdminCobranzas = async (req, res) => {
   }
 };
 
-export async function mostrarPanelCobradorDesdeAdmin(req, res) {
+export const mostrarPanelCobradorDesdeAdmin = async (req, res) => {
   try {
-    const cobradorId = req.params.id;
+    const { id } = req.params;
 
-    const cobrador = await Usuario.findById(cobradorId);
-    if (!cobrador) {
-      req.flash("error", "Cobrador no encontrado");
-      return res.redirect("/admin/cobranzas");
-    }
+    const resumen = await obtenerResumenCobrador(id);
 
-    const cobros = await Cobro.find({ cobrador: cobradorId })
-      .populate("cliente")
-      .sort({ fecha: -1 });
-
-    const retiros = await RetiroCobrador.find({ cobrador: cobradorId }).sort({
-      fecha: -1,
-    });
-
-    const totalCobrado = cobros.reduce((acc, c) => acc + c.totalCobrado, 0);
-    const totalCobradoFormateado = formatearMonedaARS(totalCobrado);
-
-    // 🔍 Verificar si el código está activo y si está vencido (más de 24h)
-    let codigoExpirado = false;
-    let codigoGenerado = null;
-
-    const codigoActivo = await CodigoRetiro.findOne({
-      cobrador: new mongoose.Types.ObjectId(cobradorId),
-      estado: "activo",
-    });
-
-    if (codigoActivo) {
-      const ahora = new Date();
-      const expirado = (ahora - codigoActivo.fechaGeneracion) > 24 * 60 * 60 * 1000;
-
-      if (expirado) {
-        codigoExpirado = true;
-
-        // ✅ Opcional: Marcar como expirado en la BD
-        codigoActivo.estado = "expirado";
-        await codigoActivo.save();
-      } else {
-        codigoGenerado = codigoActivo.codigo;
-      }
+    // Validación: Si no existe el cobrador, mostrar error
+    if (!resumen.cobrador) {
+      return res.status(404).render("errorGenerico", {
+        titulo: "Cobrador no encontrado",
+        mensaje: "El cobrador especificado no existe.",
+      });
     }
 
     res.render("adminViews/panelCobradorDesdeAdmin", {
-      titulo: `Panel de ${cobrador.nombre} ${cobrador.apellido}`,
-      cobrador,
-      cobros: cobros.map((c) => ({
-        ...c.toObject(),
-        importeFormateado: formatearMonedaARS(c.totalCobrado),
-        fechaFormateada: new Date(c.fecha).toLocaleDateString("es-AR"),
-      })),
-      retiros,
-      totalCobrado,
-      totalCobradoFormateado,
-      codigoGenerado,
-      codigoExpirado,
+      cobrador: resumen.cobrador,
+      totalCobradoFormateado: resumen.totalCobradoFormateado,
+      totalRetiradoFormateado: resumen.totalRetiradoFormateado,
+      saldoFormateado: resumen.saldoFormateado,
+      historial: resumen.historial,
+      codigoGenerado: resumen.codigoGenerado,
+      codigoExpirado: resumen.codigoExpirado,
     });
+
   } catch (error) {
-    console.error("Error al mostrar panel de cobrador desde admin:", error);
+    console.error("Error al mostrar el panel del cobrador desde admin:", error);
     res.status(500).render("errorGenerico", {
       titulo: "Error",
-      mensaje: "Error al cargar el panel del cobrador.",
+      mensaje: "Ocurrió un problema al cargar el panel del cobrador.",
     });
   }
-}
+};
 
 export const mostrarPanelAdminComoCobrador = async (req, res) => {
   try {
+    console.log("ID recibido:", idCobrador);
     const adminId = req.session.usuario._id;
 
     const resumen = await obtenerResumenCajaCobrador(adminId);

@@ -1,5 +1,5 @@
 <div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8">
-  <div class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
+  <div class="w-full max-w-sm sm:max-w-3xl md:max-w-5xl lg:max-w-6xl bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
     <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8">
       Panel de <%= cobrador.nombre %>
         <%= cobrador.apellido %>
@@ -9,8 +9,8 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
       <!-- Total recaudado -->
       <div class="bg-slate-800 border-l-4 border-green-500 p-4 rounded-lg shadow">
-        <h2 class="text-sm font-semibold text-green-300">Total Recaudado</h2>
-        <p class="text-2xl font-bold text-green-400 break-words">
+        <h2 class="text-base sm:text-lg font-semibold text-blue-300">Total Recaudado</h2>
+        <p class="text-2xl sm:text-3xl font-bold text-blue-400 break-words">
           <%= totalCobradoFormateado %>
         </p>
       </div>
@@ -39,8 +39,33 @@
           <% } %>
     </div>
 
+    
+    <!-- Accesos rápidos -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-10">
+      <a href="#"
+        class="block bg-slate-800 border border-slate-600 rounded-lg p-4 sm:p-6 shadow hover:bg-slate-700 transition min-h-[100px]">
+        <h2 class="text-lg sm:text-xl font-semibold text-red-400 mb-1 sm:mb-2">
+          Historial de Retiros
+        </h2>
+        <p class="text-sm text-slate-300">
+          Visualizar todos los retiros realizados hasta la fecha.
+        </p>
+      </a>
+      <a href="#"
+        class="block bg-slate-800 border border-slate-600 rounded-lg p-4 sm:p-6 shadow hover:bg-slate-700 transition min-h-[100px]">
+        <h2 class="text-lg sm:text-xl font-semibold text-green-400 mb-1 sm:mb-2">
+          Historial de Movimientos
+        </h2>
+        <p class="text-sm text-slate-300">
+          Visualizar todos los movimientos realizados hasta la fecha.
+        </p>
+      </a>
+    </div>
+
+    
+
    <!-- Historial financiero -->
-<div class="mt-8 sm:mt-10">
+  <div class="mt-8 sm:mt-10">
   <h2 class="text-base sm:text-lg font-semibold text-white mb-4">
     Historial financiero
   </h2>
@@ -49,12 +74,12 @@
     <table class="min-w-[700px] w-full text-sm text-white">
       <thead class="bg-slate-700 text-blue-200 uppercase">
         <tr>
-          <th class="px-3 py-3 text-left whitespace-nowrap">Fecha</th>
-          <th class="px-3 py-3 text-left whitespace-nowrap">N° Comp.</th>
-          <th class="px-3 py-3 text-left whitespace-nowrap">Tipo</th>
-          <th class="px-3 py-3 text-left whitespace-nowrap">Detalle</th>
-          <th class="px-3 py-3 text-right whitespace-nowrap">Importe</th>
-          <th class="px-3 py-3 text-right whitespace-nowrap">Saldo</th>
+          <th class="px-2 py-3 text-left">Fecha</th>
+          <th class="px-2 py-3 text-left">N° Comp.</th>
+          <th class="px-2 py-3 text-left">Tipo</th>
+          <th class="px-2 py-3 text-leftp">Detalle</th>
+          <th class="px-3 py-3 text-right">Importe</th>
+          <th class="px-3 py-3 text-right">Saldo</th>
         </tr>
       </thead>
       <tbody>
@@ -67,16 +92,16 @@
             const importe = mov.cargo ? mov.cargo : mov.pago ? -mov.pago : 0;
         %>
           <tr class="border-b border-slate-600 hover:bg-slate-700">
-            <td class="px-3 py-2"><%= mov.fecha %></td>
-            <td class="px-3 py-2"><%= mov.numero %></td>
-            <td class="px-3 py-2"><%= mov.tipo %></td>
-            <td class="px-3 py-2 break-words">
+            <td class="px-2 py-2"><%= mov.fecha %></td>
+            <td class="px-2 py-2"><%= mov.numero %></td>
+            <td class="px-2 py-2"><%= mov.tipo %></td>
+            <td class="px-2 py-2 break-words">
               <%= mov.detalle || (mov.cliente ? `Cobro a ${mov.cliente.nombre} ${mov.cliente.apellido}` : "Cobro") %>
             </td>
-            <td class="px-3 py-2 text-right <%= importe < 0 ? 'text-red-400' : 'text-green-400' %>">
+            <td class="px-2 py-2 text-right <%= importe < 0 ? 'text-red-400' : 'text-green-400' %>">
               <%= importe.toLocaleString("es-AR", { style: "currency", currency: "ARS" }) %>
             </td>
-            <td class="px-3 py-2 text-right font-semibold">
+            <td class="px-2 py-2 text-right font-semibold">
               <%= mov.saldo.toLocaleString("es-AR", { style: "currency", currency: "ARS" }) %>
             </td>
           </tr>

@@ -1,47 +1,51 @@
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Planes disponibles</h1>
+<!-- <div class="flex justify-center items-start min-h-[calc(100vh-150px)] px-4 py-10 sm:py-16"> -->
+  <div class="w-full max-w-4xl bg-slate-900/90 backdrop-blur-md border border-slate-700 rounded-xl shadow-2xl text-white p-6 sm:p-8">
 
-  <% if (typeof exito !== 'undefined' && exito) { %>
-    <div class="mb-4 p-4 text-green-700 bg-green-100 border border-green-300 rounded text-sm text-center">
-      <%= exito %>
-    </div>
-  <% } %>
+    <h1 class="text-2xl sm:text-3xl font-bold text-center mb-8">Planes disponibles</h1>
 
-  <div class="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto border border-gray-200">
+    <% if (typeof exito !== 'undefined' && exito) { %>
+      <div class="mb-6 p-4 text-green-300 bg-green-700/20 border border-green-400 rounded text-sm text-center">
+        <%= exito %>
+      </div>
+    <% } %>
+
     <% if (planes.length === 0) { %>
-      <p class="text-center text-gray-600">No hay planes cargados aún.</p>
+      <p class="text-center text-slate-400">No hay planes cargados aún.</p>
     <% } else { %>
-      <table class="w-full table-auto text-sm text-left text-gray-700">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="px-4 py-2">Nombre</th>
-            <th class="px-4 py-2">Tipo</th>
-            <th class="px-4 py-2">Precio</th>
-            <th class="px-4 py-2">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% planes.forEach(plan => { %>
-            <tr class="border-t">
-              <td class="px-4 py-2"><%= plan.nombre %></td>
-              <td class="px-4 py-2"><%= plan.tipo %></td>
-              <td class="px-4 py-2">$<%= plan.precio.toFixed(2) %></td>
-              <td class="px-4 py-2 space-x-2">
-                <a href="/planes/editar/<%= plan._id %>" class="text-blue-600 hover:underline text-sm">Editar</a>
-                <form action="/planes/eliminar/<%= plan._id %>" method="POST" class="inline">
-                  <button type="submit" onclick="return confirm('¿Eliminar este plan?')" class="text-red-500 hover:underline text-sm">Eliminar</button>
-                </form>
-              </td>
+      <div class="overflow-x-auto rounded-md">
+        <table class="w-full table-auto text-sm text-left text-slate-300">
+          <thead class="bg-slate-800 text-slate-400 uppercase text-xs font-semibold">
+            <tr>
+              <th class="px-4 py-3">Nombre</th>
+              <th class="px-4 py-3">Tipo</th>
+              <th class="px-4 py-3">Precio</th>
+              <th class="px-4 py-3">Acciones</th>
             </tr>
-          <% }) %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% planes.forEach(plan => { %>
+              <tr class="border-t border-slate-700 hover:bg-slate-800/50">
+                <td class="px-4 py-2"><%= plan.nombre %></td>
+                <td class="px-4 py-2"><%= plan.tipo %></td>
+                <td class="px-4 py-2">$<%= plan.precio.toFixed(2) %></td>
+                <td class="px-4 py-2 space-x-2">
+                  <a href="/planes/editar/<%= plan._id %>" class="text-blue-400 hover:underline text-sm">Editar</a>
+                  <form action="/planes/eliminar/<%= plan._id %>" method="POST" class="inline">
+                    <button type="submit" onclick="return confirm('¿Eliminar este plan?')" class="text-red-400 hover:underline text-sm">Eliminar</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
     <% } %>
 
     <div class="mt-6 text-right">
-      <a href="/planes/crear" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-sm">
+      <a href="/planes/crear" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded shadow text-sm">
         Crear nuevo plan
       </a>
     </div>
+
   </div>
-</div>
+<!-- </div> -->

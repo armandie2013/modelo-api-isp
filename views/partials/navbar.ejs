@@ -17,33 +17,41 @@
                 <!-- Menú principal -->
                 <div id="menu"
                   class="hidden sm:flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 absolute sm:static top-16 left-0 w-full sm:w-auto bg-white sm:bg-transparent px-4 sm:px-0 py-4 sm:py-0 border-t sm:border-none shadow sm:shadow-none z-20">
+
                   <% if (usuario) { %>
                     <% if (usuario.rol==="admin" ) { %>
-                      <div class="sm:relative sm:group">
-                        <button class="text-sm text-blue-600 hover:underline sm:block hidden">
+                      <div class="relative group">
+                        <button type="button"
+                          class="text-sm text-blue-600 hover:underline flex items-center justify-between w-full sm:w-auto"
+                          onclick="toggleSubmenu('admin')">
                           Admin ▼
                         </button>
-                        <div class="sm:hidden block">
+                        <!-- Menú móvil -->
+                        <div id="submenu-admin"
+                          class="hidden sm:hidden mt-2 space-y-1 bg-white border rounded shadow z-10">
                           <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700">Panel de
                             administración</a>
-                          <a href="/usuarios/cambiar-roles" class="block px-4 py-2 text-sm text-gray-700">Cambiar
-                            roles</a>
+                          
                         </div>
+                        <!-- Menú escritorio -->
                         <div
-                          class="hidden sm:group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
+                          class="hidden sm:group-hover:block sm:absolute top-full left-0 bg-white border shadow-md rounded-md w-52 z-10">
                           <a href="/admin/dashboard"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel de administración</a>
-                          <a href="/usuarios/cambiar-roles"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cambiar roles</a>
+                          
                         </div>
                       </div>
                       <% } %>
+
                         <% if (usuario.rol==="cobrador" ) { %>
-                          <div class="sm:relative sm:group">
-                            <button class="text-sm text-blue-600 hover:underline sm:block hidden">
+                          <div class="relative group">
+                            <button type="button"
+                              class="text-sm text-blue-600 hover:underline flex items-center justify-between w-full sm:w-auto"
+                              onclick="toggleSubmenu('cobrador')">
                               Cobrador ▼
                             </button>
-                            <div class="sm:hidden block">
+                            <div id="submenu-cobrador"
+                              class="hidden sm:hidden mt-2 space-y-1 bg-white border rounded shadow z-10">
                               <a href="/cobrador/panel" class="block px-4 py-2 text-sm text-gray-700">Panel del
                                 cobrador</a>
                               <a href="/retiros/validar-codigo" class="block px-4 py-2 text-sm text-gray-700">Retiro</a>
@@ -51,7 +59,7 @@
                               <span class="block px-4 py-2 text-sm text-gray-400">Historial (próximamente)</span>
                             </div>
                             <div
-                              class="hidden sm:group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
+                              class="hidden sm:group-hover:block sm:absolute top-full left-0 bg-white border shadow-md rounded-md w-52 z-10">
                               <a href="/cobrador/panel"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel del cobrador</a>
                               <a href="/retiros/validar-codigo"
@@ -63,19 +71,23 @@
                             </div>
                           </div>
                           <% } %>
+
                             <% if (usuario.rol==="cliente" ) { %>
-                              <div class="sm:relative sm:group">
-                                <button class="text-sm text-blue-600 hover:underline sm:block hidden">
+                              <div class="relative group">
+                                <button type="button"
+                                  class="text-sm text-blue-600 hover:underline flex items-center justify-between w-full sm:w-auto"
+                                  onclick="toggleSubmenu('cliente')">
                                   Cliente ▼
                                 </button>
-                                <div class="sm:hidden block">
+                                <div id="submenu-cliente"
+                                  class="hidden sm:hidden mt-2 space-y-1 bg-white border rounded shadow z-10">
                                   <a href="/cliente/dashboard" class="block px-4 py-2 text-sm text-gray-700">Panel del
                                     cliente</a>
                                   <span class="block px-4 py-2 text-sm text-gray-400">Consultar pagos
                                     (próximamente)</span>
                                 </div>
                                 <div
-                                  class="hidden sm:group-hover:block sm:absolute top-full bg-white border shadow-md rounded-md w-52 z-10">
+                                  class="hidden sm:group-hover:block sm:absolute top-full left-0 bg-white border shadow-md rounded-md w-52 z-10">
                                   <a href="/cliente/dashboard"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel del
                                     cliente</a>
@@ -90,12 +102,10 @@
                                   class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-4">
                                   <span class="text-gray-700 text-sm">Hola, <%= usuario.nombre %></span>
                                   <form action="/logout" method="POST">
-                                    <button type="submit" class="text-sm text-red-500 hover:underline">
-                                      Cerrar sesión
-                                    </button>
+                                    <button type="submit" class="text-sm text-red-500 hover:underline">Cerrar
+                                      sesión</button>
                                   </form>
                                 </div>
-
                                 <% } else { %>
                                   <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-2">
                                     <a href="/login" class="text-sm text-blue-600 hover:underline">Iniciar sesión</a>
@@ -113,4 +123,9 @@
   toggleBtn.addEventListener("click", () => {
     menu.classList.toggle("hidden");
   });
+
+  function toggleSubmenu(rol) {
+    const submenu = document.getElementById(`submenu-${rol}`);
+    if (submenu) submenu.classList.toggle("hidden");
+  }
 </script>

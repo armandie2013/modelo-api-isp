@@ -73,12 +73,23 @@ export async function obtenerResumenCobrador(cobradorId) {
       minimumFractionDigits: 2,
     });
 
-  const ultimoCodigo = await CodigoRetiro.findOne({
+  // Solo mostrar el código activo (si hay uno)
+  const codigoActivo = await CodigoRetiro.findOne({
     cobrador: cobradorId,
+    estado: "activo",
   }).sort({ creadoEn: -1 });
-  const codigoExpirado = ultimoCodigo
-    ? new Date() > new Date(ultimoCodigo.expiraEn)
+
+  const codigoExpirado = codigoActivo
+    ? new Date() >
+      new Date(codigoActivo.fechaGeneracion.getTime() + 24 * 60 * 60 * 1000)
     : false;
+
+  const saldoFormateado = format(saldo);
+
+  const ultimaFechaRetiro =
+    retiros.length > 0
+      ? new Date(retiros[retiros.length - 1].fecha).toLocaleDateString("es-AR")
+      : null;
 
   return {
     cobrador,
@@ -87,9 +98,9 @@ export async function obtenerResumenCobrador(cobradorId) {
     saldo,
     historial,
     totalCobradoFormateado: format(totalCobrado - totalRetirado),
-    // totalRetiradoFormateado: format(totalRetirado),
-    // saldoFormateado: format(saldo),
-    codigoGenerado: ultimoCodigo?.codigo || null,
+    saldoFormateado,
+    ultimaFechaRetiro,
+    codigoGenerado: codigoActivo?.codigo || null,
     codigoExpirado,
   };
 }

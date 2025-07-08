@@ -1,11 +1,17 @@
 import Plan from "../models/Plan.mjs";
+import { formatearMonedaARS } from "../utils/formatearMoneda.mjs";
 
 export const listarPlanes = async (req, res) => {
   try {
     const planes = await Plan.find().lean();
+    const planesFormateados = planes.map((plan) => ({
+      ...plan,
+      precioFormateado: formatearMonedaARS(plan.precio),
+    }));
+
     res.render("planesViews/dashboardPlanes", {
       titulo: "Planes disponibles",
-      planes,
+      planes: planesFormateados,
     });
   } catch (error) {
     console.error("Error al listar planes:", error);

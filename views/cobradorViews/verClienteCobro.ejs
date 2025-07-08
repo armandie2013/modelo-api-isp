@@ -2,137 +2,107 @@
   <div
     class="w-full max-w-sm sm:max-w-3xl md:max-w-5xl lg:max-w-6xl bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
 
+    <!-- Título -->
     <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6">
-      Datos del Cliente: <%= cliente.nombre %>
-        <%= cliente.apellido %>
+      Datos del Cliente: <%= cliente.nombre %> <%= cliente.apellido %>
     </h1>
 
     <!-- Datos personales -->
     <h2 class="text-xl font-semibold text-white mb-3">Datos Personales</h2>
     <div class="bg-slate-800 border border-slate-600 rounded-lg p-4 sm:p-6 mb-8 shadow">
-      <p><strong>DNI:</strong>
-        <%= cliente.dni %>
-      </p>
-      <p><strong>Email:</strong>
-        <%= cliente.email %>
-      </p>
-      <p><strong>Teléfono:</strong>
-        <%= cliente.telefono %>
-      </p>
-      <p><strong>Dirección:</strong>
-        <%= cliente.direccion %>
-      </p>
-      <p><strong>Plan:</strong>
-        <%= cliente.plan?.nombre %> - <%= cliente.plan?.precioFormateado %>
-      </p>
+      <p><strong>DNI:</strong> <%= cliente.dni %></p>
+      <p><strong>Email:</strong> <%= cliente.email %></p>
+      <p><strong>Teléfono:</strong> <%= cliente.telefono %></p>
+      <p><strong>Dirección:</strong> <%= cliente.direccion %></p>
+      <p><strong>Plan:</strong> <%= cliente.plan?.nombre %> - <%= cliente.plan?.precioFormateado %></p>
     </div>
 
-    <!-- Historial -->
+    <!-- Historial financiero -->
     <h2 class="text-xl font-semibold text-white mb-3">Historial Financiero</h2>
-    <% if (historial.length===0) { %>
+    <% if (historial.length === 0) { %>
       <p class="text-slate-300 mb-4">Sin movimientos aún.</p>
-      <% } else { %>
-        <div class="mb-8 overflow-x-auto bg-slate-800 rounded-lg shadow border border-slate-600">
-          <table class="min-w-full text-sm text-white table-fixed">
+    <% } else { %>
+      <div class="mb-8 overflow-x-auto bg-slate-800 rounded-lg shadow border border-slate-600">
+        <table class="min-w-[900px] w-full text-sm text-white table-fixed">
+          <thead class="bg-slate-700 text-blue-200 uppercase">
+            <tr>
+              <th class="w-10 px-2 py-2">#</th>
+              <th class="w-24 px-2 py-2">Comp.</th>
+              <th class="w-20 px-2 py-2">Tipo</th>
+              <th class="w-24 px-2 py-2">Fecha</th>
+              <th class="w-[250px] px-2 py-2 truncate">Detalle</th>
+              <th class="w-34 px-2 py-2 text-right">Cargo</th>
+              <th class="w-36 px-2 py-2 text-right">Pago</th>
+              <th class="w-36 px-2 py-2 text-right">Saldo</th>
+              <th class="w-28 px-2 py-2 text-center">Recibo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% historial.forEach((item, i) => { %>
+              <tr
+                class="border-b border-slate-600 <%= item.tipo === 'Factura' ? 'text-red-400' : item.tipo === 'Pago' ? 'text-green-400' : 'text-white' %> hover:bg-slate-700">
+                <td class="px-2 py-2"><%= i + 1 %></td>
+                <td class="px-2 py-2"><%= item.numero %></td>
+                <td class="px-2 py-2 capitalize"><%= item.tipo %></td>
+                <td class="px-2 py-2"><%= new Date(item.fecha).toLocaleDateString() %></td>
+                <td class="px-2 py-2 truncate" title="<%= item.detalle || '-' %>"><%= item.detalle || '-' %></td>
+                <td class="px-2 py-2 text-right"><%= item.cargo > 0 ? item.cargoFormateado : '-' %></td>
+                <td class="px-2 py-2 text-right"><%= item.pago > 0 ? item.pagoFormateado : '-' %></td>
+                <td class="px-2 py-2 text-right font-semibold"><%= item.saldoFormateado %></td>
+                <td class="px-2 py-2 text-center">
+                  <% if (item.tipo === 'Pago') { %>
+                    <a href="/cobros/<%= item._id %>/recibo" class="text-blue-400 hover:underline">Ver</a>
+                  <% } else { %> - <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+
+    <!-- Selección de facturas impagas -->
+    <h2 class="text-xl font-semibold text-white mb-3">Seleccionar Facturas a Cobrar</h2>
+    <% if (facturasImpagas.length === 0) { %>
+      <p class="text-slate-300">No hay facturas pendientes.</p>
+    <% } else { %>
+      <form action="/cobros/registrar" method="POST" class="space-y-4"
+        onsubmit="return confirm('¿Confirmás registrar el cobro para las facturas seleccionadas?')">
+        <input type="hidden" name="clienteId" value="<%= cliente._id %>">
+
+        <div class="overflow-x-auto bg-slate-800 border border-slate-600 rounded-lg shadow">
+          <table class="min-w-full text-sm text-white">
             <thead class="bg-slate-700 text-blue-200 uppercase">
               <tr>
-                <th class="w-10 px-2 py-2">#</th>
-                <th class="w-24 px-2 py-2">Comp.</th>
-                <th class="w-20 px-2 py-2">Tipo</th>
-                <th class="w-24 px-2 py-2">Fecha</th>
-                <th class="w-[250px] px-2 py-2 truncate">Detalle</th>
-                <th class="w-36 px-2 py-2 text-right">Cargo</th>
-                <th class="w-36 px-2 py-2 text-right">Pago</th>
-                <th class="w-36 px-2 py-2 text-right">Saldo</th>
-                <th class="w-28 px-2 py-2 text-center">Recibo</th>
+                <th class="px-4 py-2 text-center">Seleccionar</th>
+                <th class="px-4 py-2">Fecha</th>
+                <th class="px-4 py-2">Detalle</th>
+                <th class="px-4 py-2 text-right">Importe</th>
               </tr>
             </thead>
             <tbody>
-              <% historial.forEach((item, i)=> { %>
-                <tr
-                  class="border-b border-slate-600 <%= item.tipo === 'Factura' ? 'text-red-400' : item.tipo === 'Pago' ? 'text-green-400' : 'text-white' %> hover:bg-slate-700">
-                  <td class="px-2 py-2">
-                    <%= i + 1 %>
+              <% facturasImpagas.forEach(f => { %>
+                <tr class="border-b border-slate-600 hover:bg-slate-700">
+                  <td class="px-4 py-2 text-center">
+                    <input type="checkbox" name="facturasSeleccionadas" value="<%= f._id %>" class="form-checkbox">
                   </td>
-                  <td class="px-2 py-2">
-                    <%= item.numero %>
-                  </td>
-                  <td class="px-2 py-2 capitalize">
-                    <%= item.tipo %>
-                  </td>
-                  <td class="px-2 py-2">
-                    <%= new Date(item.fecha).toLocaleDateString() %>
-                  </td>
-                  <td class="px-2 py-2 truncate" title="<%= item.detalle || '-' %>">
-                    <%= item.detalle || '-' %>
-                  </td>
-                  <td class="px-2 py-2 text-right">
-                    <%= item.cargo> 0 ? item.cargoFormateado : '-' %>
-                  </td>
-                  <td class="px-2 py-2 text-right">
-                    <%= item.pago> 0 ? item.pagoFormateado : '-' %>
-                  </td>
-                  <td class="px-2 py-2 text-right font-semibold">
-                    <%= item.saldoFormateado %>
-                  </td>
-                  <td class="px-2 py-2 text-center">
-                    <% if (item.tipo==='Pago' ) { %>
-                      <a href="/cobros/<%= item._id %>/recibo" class="text-blue-400 hover:underline">Ver</a>
-                      <% } else { %> - <% } %>
-                  </td>
+                  <td class="px-4 py-2"><%= new Date(f.fecha).toLocaleDateString() %></td>
+                  <td class="px-4 py-2"><%= f.detalle %></td>
+                  <td class="px-4 py-2 text-right"><%= f.importeFormateado %></td>
                 </tr>
-                <% }) %>
+              <% }) %>
             </tbody>
           </table>
         </div>
-        <% } %>
 
-          <!-- Selección de facturas impagas -->
-          <h2 class="text-xl font-semibold text-white mb-3">Seleccionar Facturas a Cobrar</h2>
-          <% if (facturasImpagas.length===0) { %>
-            <p class="text-slate-300">No hay facturas pendientes.</p>
-            <% } else { %>
-              <form action="/cobros/registrar" method="POST" class="space-y-4"
-                onsubmit="return confirm('¿Confirmás registrar el cobro para las facturas seleccionadas?')">
-                <input type="hidden" name="clienteId" value="<%= cliente._id %>">
-                <div class="overflow-x-auto bg-slate-800 border border-slate-600 rounded-lg shadow">
-                  <table class="min-w-full text-sm text-white">
-                    <thead class="bg-slate-700 text-blue-200 uppercase">
-                      <tr>
-                        <th class="px-4 py-2 text-center">Seleccionar</th>
-                        <th class="px-4 py-2">Fecha</th>
-                        <th class="px-4 py-2">Detalle</th>
-                        <th class="px-4 py-2 text-right">Importe</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% facturasImpagas.forEach(f=> { %>
-                        <tr class="border-b border-slate-600 hover:bg-slate-700">
-                          <td class="px-4 py-2 text-center">
-                            <input type="checkbox" name="facturasSeleccionadas" value="<%= f._id %>"
-                              class="form-checkbox">
-                          </td>
-                          <td class="px-4 py-2">
-                            <%= new Date(f.fecha).toLocaleDateString() %>
-                          </td>
-                          <td class="px-4 py-2">
-                            <%= f.detalle %>
-                          </td>
-                          <td class="px-4 py-2 text-right">
-                            <%= f.importeFormateado %>
-                          </td>
-                        </tr>
-                        <% }) %>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="text-center mt-4">
-                  <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">
-                    Registrar Cobro
-                  </button>
-                </div>
-              </form>
-              <% } %>
+        <div class="text-center mt-4">
+          <button type="submit"
+            class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">
+            Registrar Cobro
+          </button>
+        </div>
+      </form>
+    <% } %>
 
   </div>
 </main>

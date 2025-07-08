@@ -1,12 +1,12 @@
-<main class="flex justify-center items-start px-4 sm:px-6 py-10 min-h-[calc(100vh-200px)]">
-  <div class="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl bg-slate-900/90 backdrop-blur-sm text-white rounded-xl shadow-2xl border border-slate-700 p-6 sm:p-8 lg:p-10">
+<main class="flex justify-center items-start min-h-[calc(100vh-150px)] px-4">
+  <div class="w-full max-w-md bg-slate-900/90 backdrop-blur-sm text-white rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 mt-6">
 
     <!-- Título -->
-    <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center">Crear nuevo plan</h1>
+    <h1 class="text-xl sm:text-2xl font-bold mb-5 text-center">Crear nuevo plan</h1>
 
     <!-- Errores -->
     <% if (errores.length) { %>
-      <div class="bg-red-600/20 text-red-300 p-3 rounded mb-5 text-sm border border-red-500">
+      <div class="bg-red-600/20 text-red-300 p-3 rounded mb-4 text-sm border border-red-500">
         <% errores.forEach(error => { %>
           <p>• <%= error %></p>
         <% }) %>
@@ -14,36 +14,40 @@
     <% } %>
 
     <!-- Formulario -->
-    <form action="/planes/crear" method="POST" class="space-y-6 w-[300px] md:w-[600px]">
+    <form action="/planes/crear" method="POST" class="space-y-4 w-full max-w-md mx-auto">
 
       <!-- Nombre -->
       <div>
-        <label for="nombre" class="block mb-1 text-sm font-semibold text-slate-200">Nombre del plan</label>
+        <label for="nombre" class="block mb-1 text-sm font-medium text-slate-200">Nombre</label>
         <input type="text" id="nombre" name="nombre" placeholder="Nombre del plan" required
           value="<%= datos.nombre || '' %>"
-          class="w-full bg-slate-700 text-white p-3 rounded border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400" />
+          class="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400" />
       </div>
 
       <!-- Tipo -->
       <div>
-        <label for="tipo" class="block mb-1 text-sm font-semibold text-slate-200">Tipo</label>
+        <label for="tipo" class="block mb-1 text-sm font-medium text-slate-200">Tipo</label>
         <input type="text" id="tipo" name="tipo" placeholder="Fibra, Radio, etc." required
           value="<%= datos.tipo || '' %>"
-          class="w-full bg-slate-700 text-white p-3 rounded border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400" />
+          class="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400" />
       </div>
 
       <!-- Precio -->
       <div>
-        <label for="precio" class="block mb-1 text-sm font-semibold text-slate-200">Precio en pesos</label>
-        <input type="number" id="precio" name="precio" step="0.01" placeholder="Ej: 2999.99" required
-          value="<%= datos.precio || '' %>"
-          class="w-full bg-slate-700 text-white p-3 rounded border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400" />
+        <label for="precioVisible" class="block mb-1 text-sm font-medium text-slate-200">Precio</label>
+
+        <!-- Input visible -->
+        <input type="text" id="precioVisible" placeholder="$0,00"
+          class="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400" />
+
+        <!-- Input oculto -->
+        <input type="hidden" id="precio" name="precio" value="<%= datos.precio || '' %>" />
       </div>
 
       <!-- Botón -->
-      <div class="pt-4 text-center">
+      <div class="pt-2 text-center">
         <button type="submit"
-          class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition">
+          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded shadow text-sm">
           Guardar Plan
         </button>
       </div>
@@ -51,3 +55,31 @@
     </form>
   </div>
 </main>
+
+<script>
+  function formatearMonedaARS(numero) {
+    return new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 2,
+    }).format(numero);
+  }
+
+  const inputVisible = document.getElementById('precioVisible');
+  const inputReal = document.getElementById('precio');
+
+  if (inputReal.value) {
+    inputVisible.value = formatearMonedaARS(parseFloat(inputReal.value));
+  }
+
+  inputVisible.addEventListener('input', () => {
+    const raw = inputVisible.value.replace(/\D/g, '');
+    if (raw) {
+      const valorNumerico = parseFloat(raw) / 100;
+      inputVisible.value = formatearMonedaARS(valorNumerico);
+      inputReal.value = valorNumerico.toFixed(2);
+    } else {
+      inputReal.value = '';
+    }
+  });
+</script>

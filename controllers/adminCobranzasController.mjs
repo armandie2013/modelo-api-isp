@@ -15,31 +15,19 @@ export const mostrarPanelAdminCobranzas = async (req, res) => {
     const cobradores = await Usuario.find({ rol: "cobrador" });
 
     const cobradoresConDatos = await Promise.all(
-      cobradores.map(async (cobrador) => {
-        const cobros = await Cobro.find({ cobrador: cobrador._id });
-        const retiros = await RetiroCobrador.find({
-          cobrador: cobrador._id,
-        }).sort({ fecha: -1 });
+  cobradores.map(async (cobrador) => {
+    const resumen = await obtenerResumenCobrador(cobrador._id);
 
-        const montoRecaudado = cobros.reduce(
-          (acc, c) => acc + c.totalCobrado,
-          0
-        );
-        const ultimaFechaRetiro =
-          retiros.length > 0
-            ? new Date(retiros[0].fecha).toLocaleDateString("es-AR")
-            : null;
-
-        return {
-          _id: cobrador._id,
-          nombre: cobrador.nombre,
-          apellido: cobrador.apellido,
-          email: cobrador.email,
-          montoRecaudadoFormateado: formatearMonedaARS(montoRecaudado),
-          ultimaFechaRetiro,
-        };
-      })
-    );
+    return {
+      _id: cobrador._id,
+      nombre: cobrador.nombre,
+      apellido: cobrador.apellido,
+      email: cobrador.email,
+      montoRecaudadoFormateado: resumen.saldoFormateado,
+      ultimaFechaRetiro: resumen.ultimaFechaRetiro || "Sin retiros"
+    };
+  })
+);
 
     // Agrupar facturas por mes
     const facturas = await Factura.find().lean();

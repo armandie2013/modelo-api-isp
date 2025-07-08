@@ -1,19 +1,17 @@
-<div class="container mx-auto px-4 mt-6">
-  <div class="bg-slate-900/90 backdrop-blur-md border border-slate-700 rounded-xl shadow-2xl text-white p-6 sm:p-8">
+<div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8">
+  <div class="w-full max-w-sm sm:max-w-3xl md:max-w-5xl lg:max-w-6xl bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
 
-    <!-- Encabezado con título y botones -->
+    <!-- Encabezado -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-      <div class="flex items-center gap-4 flex-wrap">
-        <form action="/clientes/generar-cargos" method="POST" onsubmit="return confirm('¿Generar cargos para todos los clientes?')">
-          <button type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition shadow">
-            Generar cargos del mes
-          </button>
-        </form>
-      </div>
-      <h1 class="text-2xl font-bold">Listado de Clientes</h1>
+      <form action="/clientes/generar-cargos" method="POST" onsubmit="return confirm('¿Generar cargos para todos los clientes?')">
+        <button type="submit"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition shadow">
+          Generar cargos del mes
+        </button>
+      </form>
+      <h1 class="text-2xl sm:text-3xl font-bold text-center sm:text-left">Listado de Clientes</h1>
       <a href="/clientes/crear"
-        class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition shadow self-start sm:self-auto">
+        class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition shadow">
         Registrar nuevo cliente
       </a>
     </div>
@@ -21,36 +19,38 @@
     <% if (clientes.length === 0) { %>
       <p class="text-center text-slate-300">No hay clientes registrados aún.</p>
     <% } else { %>
-      <div class="overflow-x-auto">
-        <table class="w-full table-auto text-sm bg-white/10 border border-white/20 rounded-lg backdrop-blur-md shadow">
-          <thead class="bg-white/10 text-white uppercase text-xs font-semibold">
+      <div class="bg-slate-800 shadow rounded-lg overflow-x-auto">
+        <table class="min-w-[900px] w-full text-sm text-white">
+          <thead class="bg-slate-700 text-blue-200 uppercase text-xs">
             <tr>
-              <th class="p-3">#</th>
-              <th class="p-3">Nombre</th>
-              <th class="p-3">Apellido</th>
-              <th class="p-3">DNI</th>
-              <th class="p-3">Dirección</th>
-              <th class="p-3">Teléfono</th>
-              <th class="p-3">Correo</th>
-              <th class="p-3">Plan</th>
-              <th class="p-3 text-center">Acciones</th>
+              <th class="px-3 py-3 text-left">#</th>
+              <th class="px-3 py-3 text-left">Nombre</th>
+              <th class="px-3 py-3 text-left">Apellido</th>
+              <th class="px-3 py-3 text-left">DNI</th>
+              <th class="px-3 py-3 text-left w-[180px]">Dirección</th>
+              <th class="px-3 py-3 text-left">Teléfono</th>
+              <th class="px-3 py-3 text-left w-[200px]">Correo</th>
+              <th class="px-3 py-3 text-left w-[200px]">Plan</th>
+              <th class="px-3 py-3 text-left">Precio</th>
+              <th class="px-3 py-3 text-center w-[180px]">Acciones</th>
             </tr>
           </thead>
-          <tbody class="text-white">
+          <tbody>
             <% clientes.forEach((cliente, index) => { %>
-              <tr class="border-t border-white/20 odd:bg-white/5">
-                <td class="p-3"><%= index + 1 %></td>
-                <td class="p-3"><%= cliente.nombre %></td>
-                <td class="p-3"><%= cliente.apellido %></td>
-                <td class="p-3"><%= cliente.dni %></td>
-                <td class="p-3"><%= cliente.direccion %></td>
-                <td class="p-3"><%= cliente.telefono %></td>
-                <td class="p-3"><%= cliente.email %></td>
-                <td class="p-3">
+              <tr class="border-b border-slate-600 hover:bg-slate-700">
+                <td class="px-3 py-2"><%= index + 1 %></td>
+                <td class="px-3 py-2"><%= cliente.nombre %></td>
+                <td class="px-3 py-2"><%= cliente.apellido %></td>
+                <td class="px-3 py-2"><%= cliente.dni %></td>
+                <td class="px-3 py-2 truncate" title="<%= cliente.direccion %>"><%= cliente.direccion %></td>
+                <td class="px-3 py-2"><%= cliente.telefono %></td>
+                <td class="px-3 py-2 truncate" title="<%= cliente.email %>"><%= cliente.email %></td>
+                <td class="px-3 py-2">
                   <span class="block font-medium text-blue-300"><%= cliente.plan?.nombre %></span>
-                  <span class="text-xs text-white/70">$<%= cliente.plan?.precio.toFixed(2) %></span>
+                  <!-- <span class="text-xs text-white/70">$<%= cliente.plan?.precio.toFixed(2) %></span> -->
                 </td>
-                <td class="p-3 text-center space-x-2">
+                <td class="px-3 py-2"><%= cliente.plan?.precio.toFixed(2) %></td>
+                <td class="px-3 py-2 text-center space-x-2">
                   <a href="/clientes/<%= cliente._id %>/historial" class="text-green-400 hover:underline text-sm">Ver</a>
                   <a href="/clientes/editar/<%= cliente._id %>" class="text-blue-400 hover:underline text-sm">Editar</a>
                   <form action="/clientes/eliminar/<%= cliente._id %>" method="POST" class="inline">

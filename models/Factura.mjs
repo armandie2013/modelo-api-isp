@@ -6,10 +6,8 @@ const facturaSchema = new mongoose.Schema({
   detalle: { type: String, required: true },
   importe: { type: Number, required: true },
   numeroDeComprobante: { type: Number, required: true, unique: true },
-  pagada: {
-  type: Boolean,
-  default: false
-}
+  pagada: { type: Boolean, default: false },
+  fechaPago: { type: Date, default: null}
 });
 
 const Factura = mongoose.model('Factura', facturaSchema);

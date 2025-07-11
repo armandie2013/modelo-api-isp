@@ -8,28 +8,39 @@ import Retiro from "../models/RetiroCobrador.mjs";
 import { formatearMonedaARS } from "../utils/formatearMoneda.mjs";
 import { obtenerResumenCajaCobrador } from "../services/cajaService.mjs";
 import { obtenerResumenCobrador } from "../services/cobradorService.mjs";
+import { obtenerTotalRetirosConfirmados } from "../services/adminService.mjs";
+import { obtenerRecaudacionRealDelMesActual } from "../services/adminService.mjs";
 
 
 export const mostrarPanelAdminCobranzas = async (req, res) => {
   try {
+    const totalRetiros = await obtenerTotalRetirosConfirmados();
+const recaudacionRealMes = await obtenerRecaudacionRealDelMesActual(); // <- MOVIDA AQUÍ
+
+const saldoDisponible = recaudacionRealMes - totalRetiros;
+
+const totalRetirosFormateado = formatearMonedaARS(totalRetiros);
+const recaudacionRealFormateada = formatearMonedaARS(recaudacionRealMes);
+const saldoDisponibleFormateado = formatearMonedaARS(saldoDisponible);
+    
+
     const cobradores = await Usuario.find({ rol: "cobrador" });
 
     const cobradoresConDatos = await Promise.all(
-  cobradores.map(async (cobrador) => {
-    const resumen = await obtenerResumenCobrador(cobrador._id);
+      cobradores.map(async (cobrador) => {
+        const resumen = await obtenerResumenCobrador(cobrador._id);
 
-    return {
-      _id: cobrador._id,
-      nombre: cobrador.nombre,
-      apellido: cobrador.apellido,
-      email: cobrador.email,
-      montoRecaudadoFormateado: resumen.saldoFormateado,
-      ultimaFechaRetiro: resumen.ultimaFechaRetiro || "Sin retiros"
-    };
-  })
-);
+        return {
+          _id: cobrador._id,
+          nombre: cobrador.nombre,
+          apellido: cobrador.apellido,
+          email: cobrador.email,
+          montoRecaudadoFormateado: resumen.saldoFormateado,
+          ultimaFechaRetiro: resumen.ultimaFechaRetiro || "Sin retiros"
+        };
+      })
+    );
 
-    // Agrupar facturas por mes
     const facturas = await Factura.find().lean();
     const recaudacionesPorMes = {};
 
@@ -57,22 +68,20 @@ export const mostrarPanelAdminCobranzas = async (req, res) => {
       })
     ).sort((a, b) => new Date(`${a.anio}-${a.key.split('-')[1]}-01`) - new Date(`${b.anio}-${b.key.split('-')[1]}-01`));
 
-    // Calcular total de retiros
-    const retirosTotales = await Retiro.find();
-    const totalRetiros = retirosTotales.reduce((acc, r) => acc + (r.monto || 0), 0);
-    const totalRetirosFormateado = formatearMonedaARS(totalRetiros);
+    
+    
 
     res.render("adminViews/panelAdminCobranzas", {
       titulo: "Panel de Cobranzas",
       cobradores: cobradoresConDatos,
       tarjetasRecaudacion,
       totalRetirosFormateado,
+      recaudacionRealFormateada,
+      saldoDisponibleFormateado
     });
+
   } catch (error) {
-    console.error(
-      "Error al mostrar el panel del administrador de cobranzas:",
-      error
-    );
+    console.error("Error al mostrar el panel del administrador de cobranzas:", error);
     res.status(500).render("errorGenerico", {
       titulo: "Error",
       mensaje: "Hubo un problema al cargar el panel de cobranzas.",

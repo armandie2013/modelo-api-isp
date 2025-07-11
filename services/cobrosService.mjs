@@ -39,9 +39,15 @@ console.log("¿Es ObjectId?", mongoose.Types.ObjectId.isValid(cobradorId));
 
   // 4. Actualizar las facturas como pagadas
   await Factura.updateMany(
-    { _id: { $in: facturas.map(f => f._id) } },
-    { $set: { pagada: true, pagadoEn: nuevoCobro._id } }
-  );
+  { _id: { $in: facturas.map(f => f._id) } },
+  {
+    $set: {
+      pagada: true,
+      fechaPago: new Date(),
+      pagadoEn: nuevoCobro._id
+    }
+  }
+);
 
   return nuevoCobro;
 };

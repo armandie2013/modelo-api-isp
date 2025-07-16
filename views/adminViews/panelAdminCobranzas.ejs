@@ -1,71 +1,143 @@
-<div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8">
+<div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8 font-[Roboto]">
   <div class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
-
     
-    <h1 class="text-3xl font-bold text-white mb-8 text-center">Panel de Cobranzas</h1>
+    <h1 class="text-2xl sm:text-3xl font-bold text-white mb-8 text-center">Panel de Cobranzas</h1>
 
-    <!-- NUEVAS tarjetas de resumen -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-      
-      <!-- Recaudación Real del Mes -->
-      <div class="bg-green-100/90 border-l-4 border-green-500 text-green-900 p-4 rounded-lg shadow">
-        <h2 class="font-bold text-lg mb-1">Recaudación Efectiva</h2>
-        <p class="text-sm text-green-800">Ingresado por cobradores</p>
-        <p class="text-xl font-semibold"><%= recaudacionRealFormateada %></p>
-      </div>
+    <!-- Carrusel / Grilla de resumen financiero -->
+    <div class="relative w-full mb-10">
+      <div id="resumenCarrusel"
+        class="flex md:grid md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
 
-      <!-- Total Retiros -->
-      <div class="bg-red-100/90 border-l-4 border-red-500 text-red-900 p-4 rounded-lg shadow">
-        <h2 class="font-bold text-lg mb-1">Total Retiros Administrador</h2>
-        <p class="text-sm text-red-800">Egresos autorizados</p>
-        <p class="text-xl font-semibold"><%= totalRetirosFormateado %></p>
-      </div>
-
-      <!-- Saldo Disponible -->
-      <div class="bg-yellow-100/90 border-l-4 border-yellow-500 text-yellow-900 p-4 rounded-lg shadow">
-        <h2 class="font-bold text-lg mb-1">Saldo Disponible</h2>
-        <p class="text-sm text-yellow-800">Para próximos retiros</p>
-        <p class="text-xl font-semibold"><%= saldoDisponibleFormateado %></p>
-      </div>
-
-    </div>
-
-    <!-- Tarjetas de resumen mensual (ya existentes) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-      <% tarjetasRecaudacion.forEach(t => { %>
-        <div class="bg-yellow-100/90 border-l-4 border-yellow-500 text-yellow-900 p-4 rounded-lg shadow">
-          <h2 class="font-bold text-lg mb-1">Recaudación Estimada</h2>
-          <p class="text-sm text-yellow-800">Mes: <%= t.mes %>/<%= t.anio %></p>
-          <p class="text-xl font-semibold"><%= t.total %></p>
+        <!-- Recaudación Real -->
+        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
+          <div class="bg-green-100/90 border-l-4 border-green-500 text-green-900 p-4 rounded-lg shadow">
+            <h2 class="font-bold text-lg mb-1">Recaudación Efectiva</h2>
+            <p class="text-sm text-green-800">Ingresado por cobradores</p>
+            <p class="text-xl font-semibold"><%= recaudacionRealFormateada %></p>
+          </div>
         </div>
-      <% }) %>
+
+        <!-- Total Retiros -->
+        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
+          <div class="bg-red-100/90 border-l-4 border-red-500 text-red-900 p-4 rounded-lg shadow">
+            <h2 class="font-bold text-lg mb-1">Total Retiros Administrador</h2>
+            <p class="text-sm text-red-800">Egresos autorizados</p>
+            <p class="text-xl font-semibold"><%= totalRetirosFormateado %></p>
+          </div>
+        </div>
+
+        <!-- Saldo Disponible -->
+        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
+          <div class="bg-yellow-100/90 border-l-4 border-yellow-500 text-yellow-900 p-4 rounded-lg shadow">
+            <h2 class="font-bold text-lg mb-1">Saldo Disponible</h2>
+            <p class="text-sm text-yellow-800">Para próximos retiros</p>
+            <p class="text-xl font-semibold"><%= saldoDisponibleFormateado %></p>
+          </div>
+        </div>
+
+        <!-- Tarjetas Recaudación Estimada -->
+        <% tarjetasRecaudacion.forEach(t => { %>
+        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
+          <div class="bg-yellow-100/90 border-l-4 border-yellow-500 text-yellow-900 p-4 rounded-lg shadow">
+            <h2 class="font-bold text-lg mb-1">Recaudación Estimada</h2>
+            <p class="text-sm text-yellow-800">Mes: <%= t.mes %>/<%= t.anio %></p>
+            <p class="text-xl font-semibold"><%= t.total %></p>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+
+      <!-- Dots -->
+      <div class="flex justify-center mt-4 space-x-2 md:hidden" id="dotsResumen">
+        <% const totalSlides = 3 + tarjetasRecaudacion.length; for (let i = 0; i < totalSlides; i++) { %>
+        <button class="w-2.5 h-2.5 bg-white/30 rounded-full <% if (i === 0) { %>bg-white<% } %>"
+          data-slide="<%= i %>"></button>
+        <% } %>
+      </div>
     </div>
 
-    <!-- Listado de cobradores -->
+    <!-- Cobradores -->
     <% if (cobradores.length === 0) { %>
-      <p class="text-center text-slate-300">No hay cobradores registrados.</p>
+    <p class="text-center text-slate-300">No hay cobradores registrados.</p>
     <% } else { %>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <% cobradores.forEach(c => { %>
+    <div class="relative w-full">
+      <div id="cobradoresCarrusel"
+        class="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
+
+        <% cobradores.forEach((c, i) => { %>
+        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
           <div class="bg-white/10 border-l-4 border-blue-500 text-white p-6 rounded-lg shadow backdrop-blur">
-            <h2 class="text-xl font-semibold mb-2"><%= c.nombre %> <%= c.apellido %></h2>
-            <p class="text-sm mb-1">
-              <span class="font-medium">Email:</span> <%= c.email %>
-            </p>
-            <p class="text-green-400 font-bold text-lg mt-3 mb-1">
-              Recaudado: <%= c.montoRecaudadoFormateado %>
-            </p>
-            <p class="text-sm text-white/70 mb-4">
-              Último retiro: <%= c.ultimaFechaRetiro || "Sin retiros" %>
-            </p>
+            <h2 class="text-lg font-medium mb-2"><%= c.nombre %> <%= c.apellido %></h2>
+            <!-- <p class="text-sm mb-1"><span class="font-medium">Email:</span> <%= c.email %></p> -->
+            <p class="text-green-400 font-bold text-lg mt-3 mb-1">Recaudado: <%= c.montoRecaudadoFormateado %></p>
+            <p class="text-sm text-white/70 mb-4">Último retiro: <%= c.ultimaFechaRetiro || "Sin retiros" %></p>
             <a href="/admin/cobrador/<%= c._id %>/panel"
               class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition">
               Ver panel del cobrador
             </a>
           </div>
+        </div>
         <% }) %>
       </div>
+
+      <!-- Dots -->
+      <div class="flex justify-center mt-4 space-x-2 md:hidden" id="dotsCobradores">
+        <% cobradores.forEach((_, i) => { %>
+        <button class="w-2.5 h-2.5 bg-white/30 rounded-full <% if (i === 0) { %>bg-white<% } %>"
+          data-slide="<%= i %>"></button>
+        <% }) %>
+      </div>
+    </div>
     <% } %>
 
   </div>
 </div>
+
+<!-- Scripts -->
+<script>
+  const carrusel = document.getElementById("resumenCarrusel");
+  const dots = document.querySelectorAll("#dotsResumen button");
+
+  dots.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      carrusel.scrollTo({
+        left: carrusel.clientWidth * index,
+        behavior: "smooth",
+      });
+
+      dots.forEach(d => d.classList.remove("bg-white"));
+      dot.classList.add("bg-white");
+    });
+  });
+
+  carrusel.addEventListener("scroll", () => {
+    const index = Math.round(carrusel.scrollLeft / carrusel.clientWidth);
+    dots.forEach((d, i) => {
+      d.classList.remove("bg-white", "bg-white/30");
+      d.classList.add(i === index ? "bg-white" : "bg-white/30");
+    });
+  });
+
+  const carruselCobradores = document.getElementById("cobradoresCarrusel");
+  const dotsCobradores = document.querySelectorAll("#dotsCobradores button");
+
+  dotsCobradores.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      carruselCobradores.scrollTo({
+        left: carruselCobradores.clientWidth * index,
+        behavior: "smooth",
+      });
+
+      dotsCobradores.forEach(d => d.classList.remove("bg-white"));
+      dot.classList.add("bg-white");
+    });
+  });
+
+  carruselCobradores.addEventListener("scroll", () => {
+    const index = Math.round(carruselCobradores.scrollLeft / carruselCobradores.clientWidth);
+    dotsCobradores.forEach((d, i) => {
+      d.classList.toggle("bg-white", i === index);
+      d.classList.toggle("bg-white/30", i !== index);
+    });
+  });
+</script>

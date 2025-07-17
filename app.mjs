@@ -49,26 +49,40 @@ app.use(express.json());
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 👉 Configuración de sesión (solo una vez)
+// 👉 Configuración de sesión
 app.use(session({
   secret: 'clave_secreta_segura',
   resave: false,
   saveUninitialized: false,
+  rolling: true,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI,
-    ttl: 60 * 60, // Tiempo de vida de la sesión en segundos (1 hora)
+    ttl: 60 * 5, // 5 minutos
   }),
   cookie: {
-    maxAge: 60 * 60 * 1000, // 1 hora en milisegundos
-    httpOnly: true, // seguridad: evita acceso JS
-    secure: false, // true solo si usás HTTPS
+    maxAge: 5 * 60 * 1000, // 5 minutos
+    httpOnly: true,
+    secure: false,
   },
 }));
 
-// 👉 Configuración de flash (mensajes temporales)
+// 👉 Evita modificación de sesión en rutas públicas si no hay login
+app.use((req, res, next) => {
+  const rutasQueNoNecesitanSesion = ["/", "/login", "/registro"];
+  if (!req.session?.usuario && rutasQueNoNecesitanSesion.includes(req.path)) {
+    return next(); // No tocar nada de la sesión
+  }
+  next();
+});
+
+// 👉 Configuración de flash segura (solo si hay sesión activa con usuario)
 app.use(flash());
 app.use((req, res, next) => {
-  res.locals.mensajesFlash = req.flash();
+  if (req.session?.usuario) {
+    res.locals.mensajesFlash = req.flash();
+  } else {
+    res.locals.mensajesFlash = {};
+  }
   next();
 });
 

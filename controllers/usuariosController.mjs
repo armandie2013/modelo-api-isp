@@ -87,3 +87,13 @@ export const procesarEdicionRol = async (req, res) => {
     res.status(500).send('Error al actualizar el rol');
   }
 };
+
+export const eliminarUsuario = async (req, res) => {
+  try {
+    await Usuario.findByIdAndDelete(req.params.id);
+    res.redirect("/usuarios/dashboard");
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).send("Error al eliminar usuario");
+  }
+};

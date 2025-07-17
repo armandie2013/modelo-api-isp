@@ -5,7 +5,8 @@ import {
   mostrarDashboardUsuarios,
   actualizarRolesUsuarios,
   mostrarFormularioEditarRol,
-  procesarEdicionRol
+  procesarEdicionRol,
+  eliminarUsuario
 } from '../controllers/usuariosController.mjs';
 import { verificarSesion } from '../middlewares/verificarSesion.mjs';
 import { verificarAdmin } from '../middlewares/verificarAdmin.mjs';
@@ -23,5 +24,8 @@ router.post('/usuarios/cambiar-roles', verificarSesion, verificarAdmin, cambiarR
 // Edición individual de rol
 router.get('/usuarios/editar/:id', verificarSesion, verificarAdmin, mostrarFormularioEditarRol);
 router.post('/usuarios/editar/:id', verificarSesion, verificarAdmin, procesarEdicionRol);
+
+// Eliminar usuario
+router.post('/usuarios/eliminar/:id',verificarSesion, verificarAdmin, eliminarUsuario);
 
 export default router;

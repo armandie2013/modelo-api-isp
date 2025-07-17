@@ -16,50 +16,44 @@
 
                 <!-- Menú principal -->
                 <div id="menu"
-                  class="hidden sm:flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 absolute sm:static top-16 left-0 w-full sm:w-auto bg-white sm:bg-transparent px-4 sm:px-0 py-4 sm:py-0 border-t sm:border-none shadow sm:shadow-none z-20">
+  class="hidden sm:flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 absolute sm:static top-16 left-0 w-full sm:w-auto bg-white sm:bg-transparent px-4 sm:px-0 py-4 sm:py-0 border-t sm:border-none shadow sm:shadow-none z-20 transition-all duration-300 ease-in-out sm:opacity-100 sm:scale-100">
 
                   <% if (usuario) { %>
+
+                    <!-- ADMIN -->
                     <% if (usuario.rol==="admin" ) { %>
-                      <div class="relative group">
+                      <!-- Escritorio -->
+                      <div class="hidden sm:block relative group">
                         <button type="button"
-                          class="text-sm text-blue-600 hover:underline flex items-center justify-between w-full sm:w-auto"
-                          onclick="toggleSubmenu('admin')">
+                          class="text-sm text-blue-600 hover:underline flex items-center justify-between w-full sm:w-auto">
                           Admin ▼
                         </button>
-                        <!-- Menú móvil -->
-                        <div id="submenu-admin"
-                          class="hidden sm:hidden mt-2 space-y-1 bg-white border rounded shadow z-10">
-                          <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700">Panel de
-                            administración</a>
-                          
-                        </div>
-                        <!-- Menú escritorio -->
+                        <!-- Submenú escritorio -->
                         <div
-                          class="hidden sm:group-hover:block sm:absolute top-full left-0 bg-white border shadow-md rounded-md w-52 z-10">
+                          class="absolute hidden group-hover:block top-full left-0 bg-white border shadow-md rounded-md w-52 z-10">
                           <a href="/admin/dashboard"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel de administración</a>
-                          
                         </div>
+                      </div>
+
+                      <!-- Móvil -->
+                      <div class="block sm:hidden flex flex-col space-y-1">
+                        <a href="/admin/dashboard"
+                          class="block px-4 py-2 text-sm text-gray-700 border rounded shadow">Panel de
+                          administración</a>
                       </div>
                       <% } %>
 
+                        <!-- COBRADOR -->
                         <% if (usuario.rol==="cobrador" ) { %>
-                          <div class="relative group">
+                          <!-- Escritorio -->
+                          <div class="hidden sm:block relative group">
                             <button type="button"
-                              class="text-sm text-blue-600 hover:underline flex items-center justify-between w-full sm:w-auto"
-                              onclick="toggleSubmenu('cobrador')">
+                              class="text-sm text-blue-600 hover:underline flex items-center justify-between w-full sm:w-auto">
                               Cobrador ▼
                             </button>
-                            <div id="submenu-cobrador"
-                              class="hidden sm:hidden mt-2 space-y-1 bg-white border rounded shadow z-10">
-                              <a href="/cobrador/panel" class="block px-4 py-2 text-sm text-gray-700">Panel del
-                                cobrador</a>
-                              <a href="/retiros/validar-codigo" class="block px-4 py-2 text-sm text-gray-700">Retiro</a>
-                              <span class="block px-4 py-2 text-sm text-gray-400">Registrar pago (próximamente)</span>
-                              <span class="block px-4 py-2 text-sm text-gray-400">Historial (próximamente)</span>
-                            </div>
                             <div
-                              class="hidden sm:group-hover:block sm:absolute top-full left-0 bg-white border shadow-md rounded-md w-52 z-10">
+                              class="absolute hidden group-hover:block top-full left-0 bg-white border shadow-md rounded-md w-52 z-10">
                               <a href="/cobrador/panel"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel del cobrador</a>
                               <a href="/retiros/validar-codigo"
@@ -70,24 +64,28 @@
                                 (próximamente)</span>
                             </div>
                           </div>
+
+                          <!-- Móvil -->
+                          <div class="block sm:hidden flex flex-col space-y-1">
+                            <a href="/cobrador/panel"
+                              class="block px-4 py-2 text-sm text-gray-700 border rounded shadow">Panel del cobrador</a>
+                            <a href="/retiros/validar-codigo"
+                              class="block px-4 py-2 text-sm text-gray-700 border rounded shadow">Retiro</a>
+                            <span class="block px-4 py-2 text-sm text-gray-400">Registrar pago (próximamente)</span>
+                            <span class="block px-4 py-2 text-sm text-gray-400">Historial (próximamente)</span>
+                          </div>
                           <% } %>
 
+                            <!-- CLIENTE -->
                             <% if (usuario.rol==="cliente" ) { %>
-                              <div class="relative group">
+                              <!-- Escritorio -->
+                              <div class="hidden sm:block relative group">
                                 <button type="button"
-                                  class="text-sm text-blue-600 hover:underline flex items-center justify-between w-full sm:w-auto"
-                                  onclick="toggleSubmenu('cliente')">
+                                  class="text-sm text-blue-600 hover:underline flex items-center justify-between w-full sm:w-auto">
                                   Cliente ▼
                                 </button>
-                                <div id="submenu-cliente"
-                                  class="hidden sm:hidden mt-2 space-y-1 bg-white border rounded shadow z-10">
-                                  <a href="/cliente/dashboard" class="block px-4 py-2 text-sm text-gray-700">Panel del
-                                    cliente</a>
-                                  <span class="block px-4 py-2 text-sm text-gray-400">Consultar pagos
-                                    (próximamente)</span>
-                                </div>
                                 <div
-                                  class="hidden sm:group-hover:block sm:absolute top-full left-0 bg-white border shadow-md rounded-md w-52 z-10">
+                                  class="absolute hidden group-hover:block top-full left-0 bg-white border shadow-md rounded-md w-52 z-10">
                                   <a href="/cliente/dashboard"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Panel del
                                     cliente</a>
@@ -95,9 +93,18 @@
                                     (próximamente)</span>
                                 </div>
                               </div>
+
+                              <!-- Móvil -->
+                              <div class="block sm:hidden flex flex-col space-y-1">
+                                <a href="/cliente/dashboard"
+                                  class="block px-4 py-2 text-sm text-gray-700 border rounded shadow">Panel del
+                                  cliente</a>
+                                <span class="block px-4 py-2 text-sm text-gray-400">Consultar pagos
+                                  (próximamente)</span>
+                              </div>
                               <% } %>
 
-                                <!-- Bloque de usuario -->
+                                <!-- BLOQUE DE USUARIO -->
                                 <div
                                   class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-4">
                                   <span class="text-gray-700 text-sm">Hola, <%= usuario.nombre %></span>
@@ -106,7 +113,9 @@
                                       sesión</button>
                                   </form>
                                 </div>
+
                                 <% } else { %>
+                                  <!-- SI NO HAY USUARIO LOGUEADO -->
                                   <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-2">
                                     <a href="/login" class="text-sm text-blue-600 hover:underline">Iniciar sesión</a>
                                     <a href="/registro" class="text-sm text-blue-600 hover:underline">Registrarse</a>
@@ -120,12 +129,44 @@
   const toggleBtn = document.getElementById("menu-toggle");
   const menu = document.getElementById("menu");
 
-  toggleBtn.addEventListener("click", () => {
-    menu.classList.toggle("hidden");
+  function isMobile() {
+    return window.innerWidth < 640;
+  }
+
+  function showMenu() {
+    menu.classList.remove("hidden");
+    if (isMobile()) {
+      setTimeout(() => {
+        menu.classList.add("scale-100", "opacity-100");
+        menu.classList.remove("scale-95", "opacity-0");
+      }, 10);
+    }
+  }
+
+  function hideMenu() {
+    if (isMobile()) {
+      menu.classList.remove("scale-100", "opacity-100");
+      menu.classList.add("scale-95", "opacity-0");
+      setTimeout(() => {
+        menu.classList.add("hidden");
+      }, 250);
+    } else {
+      menu.classList.add("hidden");
+    }
+  }
+
+  toggleBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isVisible = !menu.classList.contains("hidden");
+    isVisible ? hideMenu() : showMenu();
   });
 
-  function toggleSubmenu(rol) {
-    const submenu = document.getElementById(`submenu-${rol}`);
-    if (submenu) submenu.classList.toggle("hidden");
-  }
+  document.addEventListener("click", (e) => {
+    const clickOutsideMenu = !menu.contains(e.target) && e.target !== toggleBtn;
+    const isVisible = !menu.classList.contains("hidden");
+
+    if (isMobile() && isVisible && clickOutsideMenu) {
+      hideMenu();
+    }
+  });
 </script>

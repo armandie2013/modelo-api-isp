@@ -57,10 +57,10 @@ app.use(session({
   rolling: true,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI,
-    ttl: 60 * 5, // 5 minutos
+    ttl: 60 * 30, // 30 minutos
   }),
   cookie: {
-    maxAge: 5 * 60 * 1000, // 5 minutos
+    maxAge: 30 * 60 * 1000, // 30 minutos
     httpOnly: true,
     secure: false,
   },

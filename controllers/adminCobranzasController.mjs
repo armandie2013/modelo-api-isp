@@ -104,6 +104,7 @@ export const mostrarPanelCobradorDesdeAdmin = async (req, res) => {
     }
 
     res.render("adminViews/panelCobradorDesdeAdmin", {
+      titulo:"Panel Cobrador",
       cobrador: resumen.cobrador,
       totalCobradoFormateado: resumen.totalCobradoFormateado,
       totalRetiradoFormateado: resumen.totalRetiradoFormateado,

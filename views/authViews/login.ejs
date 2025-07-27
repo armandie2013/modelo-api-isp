@@ -2,6 +2,7 @@
   <div class="w-full max-w-md mt-8 p-6 sm:p-8 bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700">
 
     <h1 class="text-2xl font-bold text-center text-white mb-6">Iniciar Sesión</h1>
+    
 
     <form action="/login" method="POST" class="space-y-5">
 
@@ -20,3 +21,18 @@
 
   </div>
 </main>
+<% if (errores && errores.length > 0) { %>
+  <script>
+    Swal.fire({
+  toast: true,
+  position: 'top-end',
+  icon: 'error',
+  title: '<%= errores[0] %>',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  width: '300px' // opcional
+
+    });
+  </script>
+<% } %>

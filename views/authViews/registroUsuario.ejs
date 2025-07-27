@@ -3,13 +3,7 @@
 
     <h1 class="text-2xl font-bold text-center text-white mb-6">Registro de Usuario</h1>
 
-    <% if (errores.length) { %>
-      <div class="bg-red-600/20 text-red-300 p-3 rounded mb-5 text-sm text-center border border-red-500">
-        <% errores.forEach(error => { %>
-          <p><%= error %></p>
-        <% }) %>
-      </div>
-    <% } %>
+    
 
     <form action="/registro" method="POST" class="space-y-4">
 
@@ -46,6 +40,23 @@
     </form>
   </div>
 </main>
+
+<% if (errores && errores.length > 0) { %>
+  <script>
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      html: `<ul style="text-align:left; padding-left:1rem;">` +
+        `<% errores.forEach(function(e) { %><li><%= e %></li><% }) %>` +
+        `</ul>`,
+      confirmButtonColor: '#d33',
+      width: '400px',
+      heightAuto: false,
+      timer: 4000,
+      timerProgressBar: true
+    });
+  </script>
+<% } %>
 
 <script>
   function capitalizarPrimeraLetra(campoId) {

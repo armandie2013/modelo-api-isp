@@ -24,9 +24,19 @@ export const procesarRegistro = async (req, res) => {
     await registrarUsuario(req.body);
     res.redirect("/login");
   } catch (error) {
+    let mensajeError = "Ocurrió un error al registrar el usuario.";
+
+    if (error.code === 11000) {
+      if (error.keyPattern && error.keyPattern.email) {
+        mensajeError = "El correo electrónico ya está registrado.";
+      } else if (error.keyPattern && error.keyPattern.dni) {
+        mensajeError = "El DNI ya está registrado.";
+      }
+    }
+
     res.render("authViews/registroUsuario", {
       titulo: "Registro de Usuario",
-      errores: [error.message],
+      errores: [mensajeError],
       datos: req.body,
     });
   }

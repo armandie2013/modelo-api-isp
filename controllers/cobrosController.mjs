@@ -137,6 +137,7 @@ export async function mostrarPanelCobrador(req, res) {
     });
 
     res.render("cobradorViews/panelCobrador", {
+      titulo:"Panel Cobrador",
       movimientos,
       montoFormateado,
       ultimosCobros // 👈 Agregado acá

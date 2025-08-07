@@ -6,6 +6,7 @@ import {
   procesarLogin,
   cerrarSesion
 } from '../controllers/authController.mjs';
+import loginLimiter from '../middlewares/loginLimiter.mjs';
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get('/registro', mostrarFormularioRegistro);
 router.post('/registro', procesarRegistro);
 
 router.get('/login', mostrarFormularioLogin);
-router.post('/login', procesarLogin);
+router.post('/login', loginLimiter, procesarLogin);
 
 router.post('/logout', cerrarSesion);
 

@@ -2,37 +2,54 @@
   <div class="w-full max-w-md mt-8 p-6 sm:p-8 bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700">
 
     <h1 class="text-2xl font-bold text-center text-white mb-6">Iniciar Sesión</h1>
-    
 
     <form action="/login" method="POST" class="space-y-5">
 
-      <input type="email" name="email" placeholder="Correo electrónico" required
+      <input type="email" id="email" name="email" placeholder="Correo electrónico" required
         class="w-full px-4 py-2 rounded-md bg-slate-800 text-white/70 placeholder-white/50 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-sm transition" />
 
-      <input type="password" name="password" placeholder="Contraseña" required
+      <input type="password" id="password" name="password" placeholder="Contraseña" required
         class="w-full px-4 py-2 rounded-md bg-slate-800 text-white/70 placeholder-white/50 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-sm transition" />
 
       <button type="submit"
         class="w-full py-2 rounded-md bg-blue-600 text-white hover:bg-blue-500 transition duration-300 shadow">
         Ingresar
       </button>
-      
+
     </form>
 
   </div>
 </main>
+
 <% if (errores && errores.length > 0) { %>
   <script>
     Swal.fire({
-  toast: true,
-  position: 'top-end',
-  icon: 'error',
-  title: '<%= errores[0] %>',
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: true,
-  width: '300px' // opcional
-
+      toast: true,
+      position: 'top-end',
+      icon: 'error',
+      title: '<%= errores[0] %>',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      width: '300px'
     });
   </script>
 <% } %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputs = [document.getElementById("email"), document.getElementById("password")];
+
+    inputs.forEach(input => {
+      const originalPlaceholder = input.placeholder;
+
+      input.addEventListener("focus", function () {
+        this.placeholder = "";
+      });
+
+      input.addEventListener("blur", function () {
+        this.placeholder = originalPlaceholder;
+      });
+    });
+  });
+</script>

@@ -1,143 +1,356 @@
 <div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8 font-[Roboto]">
-  <div class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
-    
-    <h1 class="text-2xl sm:text-3xl font-bold text-white mb-8 text-center">Panel de Cobranzas</h1>
+  <div
+    class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
+           bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
+           backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
+           p-4 sm:p-6 md:p-10 text-white"
+  >
 
-    <!-- Carrusel / Grilla de resumen financiero -->
-    <div class="relative w-full mb-10">
-      <div id="resumenCarrusel"
-        class="flex md:grid md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
+    <!-- Encabezado -->
+    <header class="mb-6 sm:mb-10">
+      <p class="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 mb-2">
+        Cobranzas
+      </p>
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
+            Panel de Cobranzas
+          </h1>
+          <p class="text-sm sm:text-base text-slate-300 mt-1 max-w-2xl">
+            Monitoreá la recaudación total, los retiros del administrador y el saldo disponible,
+            además del desempeño de cada cobrador.
+          </p>
+        </div>
+
+        <!-- Badge estado / resumen rápido -->
+        <div
+          class="inline-flex items-center gap-2 rounded-full bg-slate-800/70 border border-slate-600/70
+                 px-3 py-1 text-xs sm:text-sm text-slate-200 shadow-md"
+        >
+          <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>
+            <%= cobradores.length %> cobrador<%= cobradores.length === 1 ? '' : 'es' %> activo<%= cobradores.length === 1 ? '' : 's' %>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Resumen financiero: carrusel / grid -->
+    <section class="relative w-full mb-10" aria-label="Resumen financiero">
+      <div
+        id="resumenCarrusel"
+        class="flex md:grid md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-x-auto
+               snap-x snap-mandatory scroll-smooth scrollbar-hide"
+      >
 
         <!-- Recaudación Real -->
-        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
-          <div class="bg-green-100/90 border-l-4 border-green-500 text-green-900 p-4 rounded-lg shadow">
-            <h2 class="font-bold text-lg mb-1">Recaudación Efectiva</h2>
-            <p class="text-sm text-green-800">Ingresado por cobradores</p>
-            <p class="text-xl font-semibold"><%= recaudacionRealFormateada %></p>
+        <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
+          <div
+            class="relative bg-slate-900/70 border border-emerald-500/70 rounded-xl p-4 sm:p-5
+                   shadow-md hover:shadow-xl transition-all duration-200"
+          >
+            <div
+              class="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full
+                     bg-emerald-500/15 blur-xl"
+            ></div>
+
+            <div class="flex items-start gap-3">
+              <div
+                class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
+                       bg-emerald-500/15 border border-emerald-400/60"
+              >
+                <!-- Icono dinero -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7h16M4 17h16M7 7v10M17 7v10M10 11h1a2 2 0 1 1 0 4h-1m0-6h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+
+              <div class="flex-1">
+                <h2 class="font-semibold text-base sm:text-lg text-emerald-200 mb-0.5">
+                  Recaudación Efectiva
+                </h2>
+                <p class="text-xs sm:text-sm text-emerald-100/80 mb-3">
+                  Importe ingresado por todos los cobradores.
+                </p>
+                <p class="text-xl sm:text-2xl font-bold text-emerald-300">
+                  <%= recaudacionRealFormateada %>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Total Retiros -->
-        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
-          <div class="bg-red-100/90 border-l-4 border-red-500 text-red-900 p-4 rounded-lg shadow">
-            <h2 class="font-bold text-lg mb-1">Total Retiros Administrador</h2>
-            <p class="text-sm text-red-800">Egresos autorizados</p>
-            <p class="text-xl font-semibold"><%= totalRetirosFormateado %></p>
+        <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
+          <div
+            class="relative bg-slate-900/70 border border-rose-500/70 rounded-xl p-4 sm:p-5
+                   shadow-md hover:shadow-xl transition-all duration-200"
+          >
+            <div
+              class="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full
+                     bg-rose-500/15 blur-xl"
+            ></div>
+
+            <div class="flex items-start gap-3">
+              <div
+                class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
+                       bg-rose-500/15 border border-rose-400/60"
+              >
+                <!-- Icono retiro -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-rose-200" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+
+              <div class="flex-1">
+                <h2 class="font-semibold text-base sm:text-lg text-rose-200 mb-0.5">
+                  Total Retiros Administrador
+                </h2>
+                <p class="text-xs sm:text-sm text-rose-100/80 mb-3">
+                  Egresos realizados desde caja central.
+                </p>
+                <p class="text-xl sm:text-2xl font-bold text-rose-200">
+                  <%= totalRetirosFormateado %>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Saldo Disponible -->
-        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
-          <div class="bg-yellow-100/90 border-l-4 border-yellow-500 text-yellow-900 p-4 rounded-lg shadow">
-            <h2 class="font-bold text-lg mb-1">Saldo Disponible</h2>
-            <p class="text-sm text-yellow-800">Para próximos retiros</p>
-            <p class="text-xl font-semibold"><%= saldoDisponibleFormateado %></p>
+        <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
+          <div
+            class="relative bg-slate-900/70 border border-amber-400/70 rounded-xl p-4 sm:p-5
+                   shadow-md hover:shadow-xl transition-all duration-200"
+          >
+            <div
+              class="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full
+                     bg-amber-400/15 blur-xl"
+            ></div>
+
+            <div class="flex items-start gap-3">
+              <div
+                class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
+                       bg-amber-400/15 border border-amber-300/60"
+              >
+                <!-- Icono saldo -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-200" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M9 17h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+
+              <div class="flex-1">
+                <h2 class="font-semibold text-base sm:text-lg text-amber-200 mb-0.5">
+                  Saldo Disponible
+                </h2>
+                <p class="text-xs sm:text-sm text-amber-100/80 mb-3">
+                  Monto pendiente de retiro por parte del administrador.
+                </p>
+                <p class="text-xl sm:text-2xl font-bold text-amber-200">
+                  <%= saldoDisponibleFormateado %>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Tarjetas Recaudación Estimada -->
         <% tarjetasRecaudacion.forEach(t => { %>
-        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
-          <div class="bg-yellow-100/90 border-l-4 border-yellow-500 text-yellow-900 p-4 rounded-lg shadow">
-            <h2 class="font-bold text-lg mb-1">Recaudación Estimada</h2>
-            <p class="text-sm text-yellow-800">Mes: <%= t.mes %>/<%= t.anio %></p>
-            <p class="text-xl font-semibold"><%= t.total %></p>
+          <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
+            <div
+              class="relative bg-slate-900/70 border border-cyan-400/70 rounded-xl p-4 sm:p-5
+                     shadow-md hover:shadow-xl transition-all duration-200"
+            >
+              <div
+                class="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full
+                       bg-cyan-400/15 blur-xl"
+              ></div>
+
+              <div class="flex items-start gap-3">
+                <div
+                  class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
+                         bg-cyan-400/15 border border-cyan-300/60"
+                >
+                  <!-- Icono calendario -->
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-200" viewBox="0 0 24 24" fill="none">
+                    <path d="M7 4v3M17 4v3M4 9h16M6 5h12a2 2 0 0 1 2 2v11H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+
+                <div class="flex-1">
+                  <h2 class="font-semibold text-base sm:text-lg text-cyan-200 mb-0.5">
+                    Recaudación Estimada
+                  </h2>
+                  <p class="text-xs sm:text-sm text-cyan-100/80 mb-3">
+                    Mes: <span class="font-medium"><%= t.mes %>/<%= t.anio %></span>
+                  </p>
+                  <p class="text-xl sm:text-2xl font-bold text-cyan-100">
+                    <%= t.total %>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
         <% }) %>
       </div>
 
-      <!-- Dots -->
+      <!-- Dots resumen (solo mobile) -->
       <div class="flex justify-center mt-4 space-x-2 md:hidden" id="dotsResumen">
         <% const totalSlides = 3 + tarjetasRecaudacion.length; for (let i = 0; i < totalSlides; i++) { %>
-        <button class="w-2.5 h-2.5 bg-white/30 rounded-full <% if (i === 0) { %>bg-white<% } %>"
-          data-slide="<%= i %>"></button>
+          <button
+            class="w-2.5 h-2.5 rounded-full transition-colors
+                   <%= i === 0 ? 'bg-white' : 'bg-white/30' %>"
+            data-slide="<%= i %>"
+          ></button>
         <% } %>
       </div>
-    </div>
+    </section>
 
     <!-- Cobradores -->
-    <% if (cobradores.length === 0) { %>
-    <p class="text-center text-slate-300">No hay cobradores registrados.</p>
-    <% } else { %>
-    <div class="relative w-full">
-      <div id="cobradoresCarrusel"
-        class="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
+    <section aria-label="Cobradores">
+      <% if (cobradores.length === 0) { %>
+        <p class="text-center text-slate-300">
+          No hay cobradores registrados.
+        </p>
+      <% } else { %>
+        <div class="mb-4 flex items-center justify-between gap-2">
+          <h2 class="text-lg sm:text-xl font-semibold text-slate-100">
+            Cobradores
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400">
+            Detalle de recaudación por cobrador.
+          </p>
+        </div>
 
-        <% cobradores.forEach((c, i) => { %>
-        <div class="min-w-full md:min-w-0 px-4 md:px-0 snap-center">
-          <div class="bg-white/10 border-l-4 border-blue-500 text-white p-6 rounded-lg shadow backdrop-blur">
-            <h2 class="text-lg font-medium mb-2"><%= c.nombre %> <%= c.apellido %></h2>
-            <!-- <p class="text-sm mb-1"><span class="font-medium">Email:</span> <%= c.email %></p> -->
-            <p class="text-green-400 font-bold text-lg mt-3 mb-1">Recaudado: <%= c.montoRecaudadoFormateado %></p>
-            <p class="text-sm text-white/70 mb-4">Último retiro: <%= c.ultimaFechaRetiro || "Sin retiros" %></p>
-            <a href="/admin/cobrador/<%= c._id %>/panel"
-              class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition">
-              Ver panel del cobrador
-            </a>
+        <div class="relative w-full">
+          <div
+            id="cobradoresCarrusel"
+            class="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4
+                   overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide"
+          >
+            <% cobradores.forEach((c, i) => { %>
+              <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
+                <div
+                  class="bg-slate-900/70 border border-sky-500/70 text-white p-5 sm:p-6 rounded-xl
+                         shadow-md hover:shadow-xl hover:border-sky-400/80 transition-all duration-200
+                         backdrop-blur"
+                >
+                  <div class="flex items-center justify-between gap-2 mb-3">
+                    <div>
+                      <h3 class="text-base sm:text-lg font-semibold">
+                        <%= c.nombre %> <%= c.apellido %>
+                      </h3>
+                      <p class="text-xs sm:text-sm text-slate-300/80">
+                        Cobrador
+                      </p>
+                    </div>
+                    <span
+                      class="inline-flex items-center rounded-full bg-slate-800/80 border border-slate-600 px-2 py-0.5
+                             text-[11px] uppercase tracking-wide text-slate-200"
+                    >
+                      Panel
+                    </span>
+                  </div>
+
+                  <p class="text-sm text-slate-200 mb-1">
+                    <span class="font-medium text-emerald-300">Recaudado:</span>
+                  </p>
+                  <p class="text-lg sm:text-xl font-bold text-emerald-300 mb-2">
+                    <%= c.montoRecaudadoFormateado %>
+                  </p>
+
+                  <p class="text-xs sm:text-sm text-slate-300/90 mb-4">
+                    <span class="font-medium text-slate-200">Último retiro:</span>
+                    <span class="ml-1">
+                      <%= c.ultimaFechaRetiro || "Sin retiros" %>
+                    </span>
+                  </p>
+
+                  <a
+                    href="/admin/cobrador/<%= c._id %>/panel"
+                    class="block w-full text-center bg-sky-600 hover:bg-sky-700 text-white
+                           py-2.5 rounded-lg text-sm font-medium transition"
+                  >
+                    Ver panel del cobrador
+                  </a>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+
+          <!-- Dots cobradores (solo mobile) -->
+          <div class="flex justify-center mt-4 space-x-2 md:hidden" id="dotsCobradores">
+            <% cobradores.forEach((_, i) => { %>
+              <button
+                class="w-2.5 h-2.5 rounded-full transition-colors
+                       <%= i === 0 ? 'bg-white' : 'bg-white/30' %>"
+                data-slide="<%= i %>"
+              ></button>
+            <% }) %>
           </div>
         </div>
-        <% }) %>
-      </div>
-
-      <!-- Dots -->
-      <div class="flex justify-center mt-4 space-x-2 md:hidden" id="dotsCobradores">
-        <% cobradores.forEach((_, i) => { %>
-        <button class="w-2.5 h-2.5 bg-white/30 rounded-full <% if (i === 0) { %>bg-white<% } %>"
-          data-slide="<%= i %>"></button>
-        <% }) %>
-      </div>
-    </div>
-    <% } %>
+      <% } %>
+    </section>
 
   </div>
 </div>
 
-<!-- Scripts -->
+<!-- Scripts carruseles -->
 <script>
+  // Carrusel resumen
   const carrusel = document.getElementById("resumenCarrusel");
   const dots = document.querySelectorAll("#dotsResumen button");
 
-  dots.forEach((dot, index) => {
-    dot.addEventListener("click", () => {
-      carrusel.scrollTo({
-        left: carrusel.clientWidth * index,
-        behavior: "smooth",
+  if (carrusel && dots.length) {
+    dots.forEach((dot, index) => {
+      dot.addEventListener("click", () => {
+        carrusel.scrollTo({
+          left: carrusel.clientWidth * index,
+          behavior: "smooth",
+        });
+
+        dots.forEach(d => d.classList.remove("bg-white"));
+        dots.forEach(d => d.classList.add("bg-white/30"));
+        dot.classList.remove("bg-white/30");
+        dot.classList.add("bg-white");
       });
-
-      dots.forEach(d => d.classList.remove("bg-white"));
-      dot.classList.add("bg-white");
     });
-  });
 
-  carrusel.addEventListener("scroll", () => {
-    const index = Math.round(carrusel.scrollLeft / carrusel.clientWidth);
-    dots.forEach((d, i) => {
-      d.classList.remove("bg-white", "bg-white/30");
-      d.classList.add(i === index ? "bg-white" : "bg-white/30");
+    carrusel.addEventListener("scroll", () => {
+      const index = Math.round(carrusel.scrollLeft / carrusel.clientWidth);
+      dots.forEach((d, i) => {
+        d.classList.toggle("bg-white", i === index);
+        d.classList.toggle("bg-white/30", i !== index);
+      });
     });
-  });
+  }
 
+  // Carrusel cobradores
   const carruselCobradores = document.getElementById("cobradoresCarrusel");
   const dotsCobradores = document.querySelectorAll("#dotsCobradores button");
 
-  dotsCobradores.forEach((dot, index) => {
-    dot.addEventListener("click", () => {
-      carruselCobradores.scrollTo({
-        left: carruselCobradores.clientWidth * index,
-        behavior: "smooth",
+  if (carruselCobradores && dotsCobradores.length) {
+    dotsCobradores.forEach((dot, index) => {
+      dot.addEventListener("click", () => {
+        carruselCobradores.scrollTo({
+          left: carruselCobradores.clientWidth * index,
+          behavior: "smooth",
+        });
+
+        dotsCobradores.forEach(d => d.classList.remove("bg-white"));
+        dotsCobradores.forEach(d => d.classList.add("bg-white/30"));
+        dot.classList.remove("bg-white/30");
+        dot.classList.add("bg-white");
       });
-
-      dotsCobradores.forEach(d => d.classList.remove("bg-white"));
-      dot.classList.add("bg-white");
     });
-  });
 
-  carruselCobradores.addEventListener("scroll", () => {
-    const index = Math.round(carruselCobradores.scrollLeft / carruselCobradores.clientWidth);
-    dotsCobradores.forEach((d, i) => {
-      d.classList.toggle("bg-white", i === index);
-      d.classList.toggle("bg-white/30", i !== index);
+    carruselCobradores.addEventListener("scroll", () => {
+      const index = Math.round(carruselCobradores.scrollLeft / carruselCobradores.clientWidth);
+      dotsCobradores.forEach((d, i) => {
+        d.classList.toggle("bg-white", i === index);
+        d.classList.toggle("bg-white/30", i !== index);
+      });
     });
-  });
+  }
 </script>

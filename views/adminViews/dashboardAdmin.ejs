@@ -1,27 +1,52 @@
-<div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-10">
+<style>
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
+
+  /* Bottom sheet (solo mobile) */
+  .sheet-backdrop{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.55);
+    backdrop-filter: blur(4px);
+    display:none;
+    z-index:50;
+  }
+  .sheet{
+    position:fixed; left:0; right:0; bottom:0;
+    transform:translateY(110%);
+    transition:transform .22s ease;
+    z-index:60;
+  }
+  .sheet.open{ transform:translateY(0); }
+  .sheet-backdrop.show{ display:block; }
+</style>
+
+<!-- ✅ SOLO CAMBIÉ LA ALTURA/ESPACIO VERTICAL (py) PARA QUE QUEDE A LA MISMA DISTANCIA -->
+<!-- Antes: py-6 sm:py-10 | Ahora: py-0 sm:py-5 -->
+<div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-0 sm:py-5">
   <div
     class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
            bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
            backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
-           px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 text-white"
+           px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 text-white safe-bottom"
   >
 
     <!-- Encabezado -->
-    <header class="mb-6 sm:mb-10">
+    <header class="mb-5 sm:mb-8">
       <p class="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 mb-2">
         Administración
       </p>
+
       <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div>
+        <div class="min-w-0">
           <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
             Panel de Administración
           </h1>
           <p class="text-sm sm:text-base text-slate-300 mt-1 max-w-2xl">
-            Gestiona usuarios, planes y clientes desde un único panel centralizado.
+            Gestioná usuarios, planes y clientes desde un único panel centralizado.
           </p>
         </div>
 
-        <!-- Espacio para un resumen rápido / badge -->
         <div
           class="inline-flex items-center gap-2 rounded-full bg-slate-800/70 border border-slate-600/70
                  px-3 py-1 text-xs sm:text-sm text-slate-200 shadow-md"
@@ -32,31 +57,42 @@
       </div>
     </header>
 
-    <!-- Grid principal -->
-    <section
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-      role="navigation"
-      aria-label="Accesos de administración"
-    >
-      <!-- Usuarios: roles -->
-      <a
-        href="/usuarios/dashboard"
-        class="group relative block bg-slate-900/60 border border-slate-700/80 rounded-xl p-5 sm:p-6
-               shadow-md hover:shadow-xl hover:border-sky-500/70 hover:bg-slate-900/80
-               transition-all duration-200 ease-out"
-      >
-        <!-- Decoración de fondo -->
-        <div
-          class="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full
-                 bg-sky-500/10 blur-2xl group-hover:bg-sky-400/20"
-        ></div>
+    <!-- Buscador -->
+    <section class="mb-4 sm:mb-6">
+      <div class="relative">
+        <input
+          id="buscadorAdmin"
+          type="text"
+          placeholder="Buscar módulo… (usuarios, planes, clientes)"
+          class="w-full bg-slate-900/60 border border-slate-700/80 rounded-xl px-4 py-3
+                 text-sm text-white placeholder:text-slate-400 outline-none
+                 focus:border-sky-500/80 focus:ring-2 focus:ring-sky-500/20"
+        />
+        <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none">
+            <path d="M21 21l-4.3-4.3m1.3-5.2a7 7 0 1 1-14 0a7 7 0 0 1 14 0Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </section>
 
-        <div class="flex items-start gap-3">
-          <!-- Icono -->
-          <div
-            class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
-                   bg-sky-500/15 border border-sky-500/40"
-          >
+    <!-- ===== MOBILE (lista + sheet) ===== -->
+    <section id="listaAdminMobile" class="space-y-2 lg:hidden" aria-label="Accesos administración (móvil)">
+
+      <!-- Roles -->
+      <button
+        type="button"
+        class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
+               hover:bg-slate-900/70 hover:border-sky-400/60 transition
+               focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+        data-name="roles accesos usuarios permisos"
+        data-title="Roles y accesos"
+        data-desc="Asigná o modificá el rol de acceso a los usuarios registrados en el sistema."
+        data-href="/usuarios/dashboard"
+        data-color="sky"
+      >
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full bg-sky-500/15 border border-sky-500/40 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-sky-300" viewBox="0 0 24 24" fill="none">
               <path d="M15 14a3 3 0 1 0-6 0v5h6v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -64,20 +100,167 @@
               <path d="M7 16.27A2 2 0 0 0 6 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold text-slate-100 truncate">Roles y accesos</p>
+            <p class="text-xs text-slate-300/80 truncate">Gestionar permisos y roles</p>
+          </div>
+          <div class="text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </button>
 
+      <!-- Usuarios -->
+      <button
+        type="button"
+        class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
+               hover:bg-slate-900/70 hover:border-indigo-400/60 transition
+               focus:outline-none focus:ring-2 focus:ring-indigo-400/30"
+        data-name="usuarios registrados listado"
+        data-title="Usuarios registrados"
+        data-desc="Consultá la lista de usuarios activos y realizá acciones administrativas."
+        data-href="/usuarios/dashboard"
+        data-color="indigo"
+      >
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-300" viewBox="0 0 24 24" fill="none">
+              <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold text-slate-100 truncate">Usuarios registrados</p>
+            <p class="text-xs text-slate-300/80 truncate">Ver listado y acciones</p>
+          </div>
+          <div class="text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </button>
+
+      <!-- Planes -->
+      <button
+        type="button"
+        class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
+               hover:bg-slate-900/70 hover:border-emerald-400/60 transition
+               focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
+        data-name="planes internet tv servicios precios"
+        data-title="Planes"
+        data-desc="Consultá, creá y editá planes de servicios de Internet y TV."
+        data-href="/planes/listado"
+        data-color="emerald"
+      >
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300" viewBox="0 0 24 24" fill="none">
+              <path d="M5 5h14v10H5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M9 19h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold text-slate-100 truncate">Planes</p>
+            <p class="text-xs text-slate-300/80 truncate">Administrar servicios</p>
+          </div>
+          <div class="text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </button>
+
+      <!-- Clientes -->
+      <button
+        type="button"
+        class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
+               hover:bg-slate-900/70 hover:border-amber-300/60 transition
+               focus:outline-none focus:ring-2 focus:ring-amber-300/30"
+        data-name="clientes alta edicion consulta"
+        data-title="Clientes"
+        data-desc="Alta, edición y consulta de clientes y sus servicios contratados."
+        data-href="/clientes/dashboard"
+        data-color="amber"
+      >
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full bg-amber-400/15 border border-amber-400/40 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-200" viewBox="0 0 24 24" fill="none">
+              <path d="M16 13a4 4 0 1 0-8 0v5h8v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold text-slate-100 truncate">Clientes</p>
+            <p class="text-xs text-slate-300/80 truncate">Gestionar clientes y servicios</p>
+          </div>
+          <div class="text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </button>
+
+      <!-- Próximos módulos -->
+      <button
+        type="button"
+        class="admin-item admin-item-mobile w-full text-left bg-slate-900/30 border border-dashed border-slate-600/70 rounded-2xl p-4
+               hover:bg-slate-900/45 transition"
+        data-name="proximos modulos reportes auditoria caja cobradores"
+        data-title="Próximos módulos"
+        data-desc="Aquí podrás agregar accesos a reportes, estadísticas, auditorías, caja, cobradores y más."
+        data-href="#"
+        data-color="slate"
+      >
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full bg-slate-500/10 border border-slate-600/50 flex items-center justify-center">
+            <span class="text-slate-300 font-bold">+</span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold text-slate-200 truncate">Próximos módulos</p>
+            <p class="text-xs text-slate-400 truncate">Sección editable a futuro</p>
+          </div>
+          <div class="text-slate-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </button>
+    </section>
+
+    <!-- ===== DESKTOP (grid) ===== -->
+    <section
+      id="gridAdminDesktop"
+      class="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-6"
+      aria-label="Accesos administración (PC)"
+    >
+      <!-- Roles -->
+      <a
+        href="/usuarios/dashboard"
+        class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
+               shadow-md hover:shadow-xl hover:border-sky-500/70 hover:bg-slate-900/80 transition-all"
+        data-name="roles accesos usuarios permisos"
+      >
+        <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-sky-500/10 blur-2xl group-hover:bg-sky-400/20"></div>
+        <div class="flex items-start gap-4">
+          <div class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-sky-500/15 border border-sky-500/40">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-sky-300" viewBox="0 0 24 24" fill="none">
+              <path d="M15 14a3 3 0 1 0-6 0v5h6v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18 21v-3a2 2 0 0 0-1-1.73" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 16.27A2 2 0 0 0 6 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
           <div class="flex-1">
-            <h2 class="text-lg sm:text-xl font-semibold text-sky-300 mb-1">
-              Roles y accesos
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-300 mb-3">
-              Asigna o modifica el rol de acceso a los usuarios registrados en el sistema.
-            </p>
-            <span
-              class="inline-flex items-center gap-1 text-xs sm:text-sm text-sky-300 font-medium
-                     group-hover:gap-2 transition-all"
-            >
+            <h2 class="text-xl font-semibold text-sky-300 mb-1">Roles y accesos</h2>
+            <p class="text-sm text-slate-300 mb-4">Asigná o modificá roles y permisos de usuarios.</p>
+            <span class="inline-flex items-center gap-2 text-sm text-sky-300 font-medium">
               Gestionar usuarios
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z"/>
               </svg>
             </span>
@@ -85,41 +268,26 @@
         </div>
       </a>
 
-      <!-- Usuarios: listado -->
+      <!-- Usuarios -->
       <a
         href="/usuarios/dashboard"
-        class="group relative block bg-slate-900/60 border border-slate-700/80 rounded-xl p-5 sm:p-6
-               shadow-md hover:shadow-xl hover:border-indigo-500/70 hover:bg-slate-900/80
-               transition-all duration-200 ease-out"
+        class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
+               shadow-md hover:shadow-xl hover:border-indigo-500/70 hover:bg-slate-900/80 transition-all"
+        data-name="usuarios registrados listado"
       >
-        <div
-          class="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full
-                 bg-indigo-500/10 blur-2xl group-hover:bg-indigo-400/20"
-        ></div>
-
-        <div class="flex items-start gap-3">
-          <div
-            class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
-                   bg-indigo-500/15 border border-indigo-500/40"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-300" viewBox="0 0 24 24" fill="none">
+        <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-indigo-500/10 blur-2xl group-hover:bg-indigo-400/20"></div>
+        <div class="flex items-start gap-4">
+          <div class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-indigo-500/15 border border-indigo-500/40">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-300" viewBox="0 0 24 24" fill="none">
               <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-
           <div class="flex-1">
-            <h2 class="text-lg sm:text-xl font-semibold text-indigo-300 mb-1">
-              Usuarios registrados
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-300 mb-3">
-              Consulta la lista de usuarios activos y realiza acciones administrativas.
-            </p>
-            <span
-              class="inline-flex items-center gap-1 text-xs sm:text-sm text-indigo-300 font-medium
-                     group-hover:gap-2 transition-all"
-            >
-              Ver listado completo
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+            <h2 class="text-xl font-semibold text-indigo-300 mb-1">Usuarios registrados</h2>
+            <p class="text-sm text-slate-300 mb-4">Listado completo y acciones administrativas.</p>
+            <span class="inline-flex items-center gap-2 text-sm text-indigo-300 font-medium">
+              Ver listado
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z"/>
               </svg>
             </span>
@@ -130,39 +298,24 @@
       <!-- Planes -->
       <a
         href="/planes/listado"
-        class="group relative block bg-slate-900/60 border border-slate-700/80 rounded-xl p-5 sm:p-6
-               shadow-md hover:shadow-xl hover:border-emerald-500/70 hover:bg-slate-900/80
-               transition-all duration-200 ease-out"
+        class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
+               shadow-md hover:shadow-xl hover:border-emerald-500/70 hover:bg-slate-900/80 transition-all"
+        data-name="planes internet tv servicios precios"
       >
-        <div
-          class="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full
-                 bg-emerald-500/10 blur-2xl group-hover:bg-emerald-400/20"
-        ></div>
-
-        <div class="flex items-start gap-3">
-          <div
-            class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
-                   bg-emerald-500/15 border border-emerald-500/40"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300" viewBox="0 0 24 24" fill="none">
+        <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl group-hover:bg-emerald-400/20"></div>
+        <div class="flex items-start gap-4">
+          <div class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/40">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none">
               <path d="M5 5h14v10H5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
               <path d="M9 19h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
             </svg>
           </div>
-
           <div class="flex-1">
-            <h2 class="text-lg sm:text-xl font-semibold text-emerald-300 mb-1">
-              Planes
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-300 mb-3">
-              Consulta, crea y edita planes de servicios de Internet y TV.
-            </p>
-            <span
-              class="inline-flex items-center gap-1 text-xs sm:text-sm text-emerald-300 font-medium
-                     group-hover:gap-2 transition-all"
-            >
+            <h2 class="text-xl font-semibold text-emerald-300 mb-1">Planes</h2>
+            <p class="text-sm text-slate-300 mb-4">Crear, editar y consultar planes.</p>
+            <span class="inline-flex items-center gap-2 text-sm text-emerald-300 font-medium">
               Administrar planes
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z"/>
               </svg>
             </span>
@@ -173,39 +326,24 @@
       <!-- Clientes -->
       <a
         href="/clientes/dashboard"
-        class="group relative block bg-slate-900/60 border border-slate-700/80 rounded-xl p-5 sm:p-6
-               shadow-md hover:shadow-xl hover:border-amber-400/70 hover:bg-slate-900/80
-               transition-all duration-200 ease-out"
+        class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
+               shadow-md hover:shadow-xl hover:border-amber-400/70 hover:bg-slate-900/80 transition-all"
+        data-name="clientes alta edicion consulta"
       >
-        <div
-          class="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full
-                 bg-amber-400/10 blur-2xl group-hover:bg-amber-300/20"
-        ></div>
-
-        <div class="flex items-start gap-3">
-          <div
-            class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
-                   bg-amber-400/15 border border-amber-400/40"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-200" viewBox="0 0 24 24" fill="none">
+        <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-amber-400/10 blur-2xl group-hover:bg-amber-300/20"></div>
+        <div class="flex items-start gap-4">
+          <div class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-amber-400/15 border border-amber-400/40">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-200" viewBox="0 0 24 24" fill="none">
               <path d="M16 13a4 4 0 1 0-8 0v5h8v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M12 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-
           <div class="flex-1">
-            <h2 class="text-lg sm:text-xl font-semibold text-amber-300 mb-1">
-              Clientes
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-300 mb-3">
-              Alta, edición y consulta de clientes y sus servicios contratados.
-            </p>
-            <span
-              class="inline-flex items-center gap-1 text-xs sm:text-sm text-amber-200 font-medium
-                     group-hover:gap-2 transition-all"
-            >
+            <h2 class="text-xl font-semibold text-amber-300 mb-1">Clientes</h2>
+            <p class="text-sm text-slate-300 mb-4">Alta, edición y consulta de clientes.</p>
+            <span class="inline-flex items-center gap-2 text-sm text-amber-200 font-medium">
               Gestionar clientes
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z"/>
               </svg>
             </span>
@@ -213,23 +351,140 @@
         </div>
       </a>
 
-      <!-- Placeholder próximos módulos -->
+      <!-- Próximos módulos -->
       <div
-        class="relative bg-slate-900/40 border border-dashed border-slate-600/70 rounded-xl p-5 sm:p-6
-               flex flex-col items-center justify-center text-center text-slate-400"
+        class="admin-item admin-item-desktop relative bg-slate-900/40 border border-dashed border-slate-600/70 rounded-2xl p-6
+               flex flex-col justify-center text-slate-400"
+        data-name="proximos modulos reportes auditoria caja cobradores"
       >
-        <div
-          class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.15),_transparent_60%)]"
-        ></div>
-
-        <p class="text-xs sm:text-sm mb-2 font-medium uppercase tracking-[0.2em] text-slate-500">
-          Próximos módulos
-        </p>
-        <p class="text-sm sm:text-base max-w-xs">
-          Aquí podrás agregar accesos a reportes, estadísticas, auditorías, caja,
-          cobradores y más funcionalidades administrativas.
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold">Próximos módulos</p>
+        <p class="text-sm mt-2 max-w-md">
+          Aquí podrás agregar accesos a reportes, estadísticas, auditorías, caja, cobradores y más.
         </p>
       </div>
     </section>
+
+    <div id="sinResultadosAdmin" class="hidden mt-6 text-center text-slate-300">
+      No se encontraron módulos.
+    </div>
+
   </div>
 </div>
+
+<!-- Bottom sheet (solo mobile) -->
+<div id="sheetBackdrop" class="sheet-backdrop lg:hidden"></div>
+
+<div id="sheet" class="sheet px-2 sm:px-4 pb-4 lg:hidden">
+  <div class="max-w-xl mx-auto">
+    <div class="bg-slate-950/95 border border-slate-700/80 rounded-2xl shadow-2xl p-4">
+      <div class="flex justify-center mb-3">
+        <div class="h-1.5 w-10 rounded-full bg-white/20"></div>
+      </div>
+
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <div class="min-w-0">
+          <p id="sheetTitle" class="text-lg font-extrabold text-slate-100 truncate">—</p>
+          <p id="sheetDesc" class="text-sm text-slate-300/80 mt-1">—</p>
+        </div>
+        <button id="sheetCerrar" class="shrink-0 rounded-xl bg-slate-800/70 border border-slate-600 px-3 py-2 text-sm hover:bg-slate-800">
+          Cerrar
+        </button>
+      </div>
+
+      <a
+        id="sheetLink"
+        href="#"
+        class="block w-full text-center bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white
+               py-3 rounded-xl text-sm font-semibold transition
+               focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+      >
+        Ir al módulo
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const $buscador = document.getElementById("buscadorAdmin");
+  const $sin = document.getElementById("sinResultadosAdmin");
+
+  // Sheet (mobile)
+  const $backdrop = document.getElementById("sheetBackdrop");
+  const $sheet = document.getElementById("sheet");
+  const $cerrar = document.getElementById("sheetCerrar");
+  const $title = document.getElementById("sheetTitle");
+  const $desc = document.getElementById("sheetDesc");
+  const $link = document.getElementById("sheetLink");
+
+  const openSheet = () => {
+    $backdrop.classList.add("show");
+    $sheet.classList.add("open");
+  };
+  const closeSheet = () => {
+    $sheet.classList.remove("open");
+    $backdrop.classList.remove("show");
+  };
+
+  $cerrar?.addEventListener("click", closeSheet);
+  $backdrop?.addEventListener("click", closeSheet);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+
+  // Filtrado (aplica a mobile y desktop)
+  const applyFilter = () => {
+    const q = ($buscador?.value || "").trim().toLowerCase();
+    const items = Array.from(document.querySelectorAll(".admin-item"));
+
+    let visible = 0;
+    items.forEach(el => {
+      const haystack = (el.dataset.name || "").toLowerCase();
+      const ok = !q || haystack.includes(q);
+      el.classList.toggle("hidden", !ok);
+      if (ok) visible++;
+    });
+
+    $sin.classList.toggle("hidden", visible !== 0);
+  };
+
+  $buscador?.addEventListener("input", applyFilter);
+  applyFilter();
+
+  // Click en MOBILE lista → abre sheet SIEMPRE (sin depender de matchMedia)
+  const mobileList = document.getElementById("listaAdminMobile");
+
+  mobileList?.addEventListener("click", (e) => {
+    const btn = e.target.closest(".admin-item-mobile");
+    if (!btn) return;
+
+    e.preventDefault();
+
+    const title = btn.dataset.title || "—";
+    const desc = btn.dataset.desc || "—";
+    const href = btn.dataset.href || "#";
+    const color = btn.dataset.color || "sky";
+
+    $title.textContent = title;
+    $desc.textContent = desc;
+    $link.textContent = href === "#" ? "Próximamente" : "Ir al módulo";
+    $link.href = href;
+
+    const map = {
+      sky: "bg-sky-600 hover:bg-sky-700 active:bg-sky-800 focus:ring-sky-400/40",
+      indigo: "bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 focus:ring-indigo-400/40",
+      emerald: "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 focus:ring-emerald-400/40",
+      amber: "bg-amber-500 hover:bg-amber-600 active:bg-amber-700 focus:ring-amber-300/40",
+      slate: "bg-slate-700 hover:bg-slate-600 active:bg-slate-800 focus:ring-slate-300/30",
+    };
+
+    $link.className =
+      "block w-full text-center text-white py-3 rounded-xl text-sm font-semibold transition focus:outline-none focus:ring-2 " +
+      (map[color] || map.sky);
+
+    openSheet();
+  });
+
+  // Si cambia a desktop y el sheet estaba abierto, cerrarlo.
+  window.addEventListener("resize", () => {
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    if (isDesktop) closeSheet();
+  });
+</script>

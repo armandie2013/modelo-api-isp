@@ -1,26 +1,71 @@
 <main class="flex-1 flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8">
-  <div class="w-full max-w-sm sm:max-w-3xl md:max-w-5xl lg:max-w-6xl bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
+  <div
+    class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
+           bg-slate-900/70 backdrop-blur-md
+           rounded-2xl shadow-xl border border-slate-700/70
+           p-4 sm:p-6 md:p-10 text-white"
+  >
 
-    <h1 class="text-2xl font-bold text-center mb-6">Confirmar Retiro</h1>
+    <!-- Header -->
+    <header class="mb-8">
+      <p class="text-xs uppercase tracking-widest text-slate-400 mb-2">
+        Retiros
+      </p>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+        Confirmar retiro
+      </h1>
+      <p class="text-sm text-slate-300 mt-1 max-w-xl">
+        Revisá los datos del retiro autorizado y confirmá para registrar el movimiento.
+      </p>
+    </header>
 
-    <p class="mb-2 text-sm sm:text-base">
-      <strong class="text-slate-300">Importe autorizado:</strong>
-      <span class="text-green-400 font-semibold text-lg">
-        <%= montoFormateado %>
-      </span>
-    </p>
+    <!-- Card principal -->
+    <div class="flex justify-center">
+      <div
+        class="w-full max-w-md bg-slate-800/80
+               border border-slate-600/70 rounded-2xl
+               p-6 sm:p-8 shadow-lg"
+      >
 
-    <p class="mb-6 text-sm sm:text-base">
-      <strong class="text-slate-300">Autorizado por:</strong>
-      <%= adminNombre %>
-    </p>
+        <div class="space-y-4">
+          <div class="rounded-xl border border-slate-600/70 bg-slate-900/60 p-4">
+            <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">
+              Importe autorizado
+            </p>
+            <p class="text-2xl sm:text-3xl font-extrabold text-emerald-300 break-words">
+              <%= montoFormateado %>
+            </p>
+          </div>
 
-    <form action="/retiros/confirmar-retiro" method="POST" class="space-y-4">
-      <input type="hidden" name="codigo" value="<%= codigoAutorizacion %>">
-      <button type="submit"
-        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition">
-        Confirmar Retiro
-      </button>
-    </form>
+          <div class="rounded-xl border border-slate-600/70 bg-slate-900/60 p-4">
+            <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">
+              Autorizado por
+            </p>
+            <p class="text-sm sm:text-base text-slate-200 font-semibold">
+              <%= adminNombre %>
+            </p>
+          </div>
+        </div>
+
+        <form action="/retiros/confirmar-retiro" method="POST" class="mt-6">
+          <input type="hidden" name="codigo" value="<%= codigoAutorizacion %>">
+
+          <button
+            type="submit"
+            class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800
+                   text-white font-semibold py-3 rounded-xl
+                   shadow-md hover:shadow-lg transition"
+          >
+            Confirmar retiro
+          </button>
+
+          <p class="text-xs text-slate-400 mt-3 text-center">
+            Al confirmar, se registrará el retiro en el historial del cobrador.
+          </p>
+        </form>
+
+      </div>
+    </div>
+
   </div>
 </main>

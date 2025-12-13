@@ -1,356 +1,334 @@
-<div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8 font-[Roboto]">
+<%
+  const totalCobradores = (cobradores || []).length;
+
+  const tarjetasOrdenadas = (tarjetasRecaudacion || []).slice().sort((a, b) => {
+    const ak = String(a.key || `${a.anio}-${String(a.mes).padStart(2,'0')}`);
+    const bk = String(b.key || `${b.anio}-${String(b.mes).padStart(2,'0')}`);
+    return bk.localeCompare(ak);
+  });
+%>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
+
+  /* ✅ Medida única para TODA la app (panel + sheet) */
+  .app-shell {
+    padding-left: 6px;   /* antes px-1 */
+    padding-right: 6px;
+    padding-top: 2px;    /* menos aire arriba */
+    padding-bottom: 0px;
+  }
+  @media (min-width: 640px) {
+    .app-shell {
+      padding-left: 12px;
+      padding-right: 12px;
+      padding-top: 10px;
+    }
+  }
+  @media (min-width: 768px) {
+    .app-shell {
+      padding-left: 16px;
+      padding-right: 16px;
+      padding-top: 14px;
+    }
+  }
+
+  /* Bottom sheet */
+  .sheet-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(4px);
+    display: none;
+    z-index: 50;
+  }
+  .sheet {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    transform: translateY(110%);
+    transition: transform .22s ease;
+    z-index: 60;
+  }
+  .sheet.open { transform: translateY(0); }
+  .sheet-backdrop.show { display: block; }
+</style>
+
+<!-- ✅ SOLO márgenes: menos arriba + más ancho útil -->
+<div class="min-h-[calc(100vh-300px)] app-shell font-[Roboto]">
   <div
     class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
            bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
            backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
-           p-4 sm:p-6 md:p-10 text-white"
+           p-4 sm:p-6 md:p-10 text-white safe-bottom"
   >
 
-    <!-- Encabezado -->
-    <header class="mb-6 sm:mb-10">
-      <p class="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 mb-2">
-        Cobranzas
-      </p>
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div>
-          <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
+    <!-- Header -->
+    <header class="mb-5 sm:mb-8">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-[11px] sm:text-sm uppercase tracking-[0.25em] text-slate-400 mb-1">
+            Cobranzas
+          </p>
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
             Panel de Cobranzas
           </h1>
           <p class="text-sm sm:text-base text-slate-300 mt-1 max-w-2xl">
-            Monitoreá la recaudación total, los retiros del administrador y el saldo disponible,
-            además del desempeño de cada cobrador.
+            Resumen general + acceso rápido a cada cobrador.
           </p>
         </div>
 
-        <!-- Badge estado / resumen rápido -->
-        <div
-          class="inline-flex items-center gap-2 rounded-full bg-slate-800/70 border border-slate-600/70
-                 px-3 py-1 text-xs sm:text-sm text-slate-200 shadow-md"
-        >
+        <div class="shrink-0 inline-flex items-center gap-2 rounded-full bg-slate-800/70 border border-slate-600/70
+                    px-3 py-1 text-xs sm:text-sm text-slate-200 shadow-md">
           <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>
-            <%= cobradores.length %> cobrador<%= cobradores.length === 1 ? '' : 'es' %> activo<%= cobradores.length === 1 ? '' : 's' %>
-          </span>
+          <span><%= totalCobradores %> cobrador<%= totalCobradores === 1 ? '' : 'es' %></span>
         </div>
       </div>
     </header>
 
-    <!-- Resumen financiero: carrusel / grid -->
-    <section class="relative w-full mb-10" aria-label="Resumen financiero">
-      <div
-        id="resumenCarrusel"
-        class="flex md:grid md:grid-cols-3 xl:grid-cols-4 gap-4 overflow-x-auto
-               snap-x snap-mandatory scroll-smooth scrollbar-hide"
-      >
+    <!-- KPIs compactos -->
+    <section aria-label="Resumen" class="mb-5 sm:mb-8">
+      <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
 
-        <!-- Recaudación Real -->
-        <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
-          <div
-            class="relative bg-slate-900/70 border border-emerald-500/70 rounded-xl p-4 sm:p-5
-                   shadow-md hover:shadow-xl transition-all duration-200"
-          >
-            <div
-              class="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full
-                     bg-emerald-500/15 blur-xl"
-            ></div>
-
-            <div class="flex items-start gap-3">
-              <div
-                class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
-                       bg-emerald-500/15 border border-emerald-400/60"
-              >
-                <!-- Icono dinero -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 7h16M4 17h16M7 7v10M17 7v10M10 11h1a2 2 0 1 1 0 4h-1m0-6h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-
-              <div class="flex-1">
-                <h2 class="font-semibold text-base sm:text-lg text-emerald-200 mb-0.5">
-                  Recaudación Efectiva
-                </h2>
-                <p class="text-xs sm:text-sm text-emerald-100/80 mb-3">
-                  Importe ingresado por todos los cobradores.
-                </p>
-                <p class="text-xl sm:text-2xl font-bold text-emerald-300">
-                  <%= recaudacionRealFormateada %>
-                </p>
-              </div>
-            </div>
+        <div class="col-span-2 sm:col-span-1">
+          <div class="bg-slate-900/70 border border-emerald-500/60 rounded-xl p-4 shadow-md">
+            <p class="text-[11px] uppercase tracking-wide text-emerald-200/90">Recaudación efectiva</p>
+            <p class="text-xl sm:text-2xl font-extrabold text-emerald-300 mt-1"><%= recaudacionRealFormateada %></p>
+            <p class="text-xs sm:text-sm text-emerald-100/70 mt-1">Total ingresado.</p>
           </div>
         </div>
 
-        <!-- Total Retiros -->
-        <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
-          <div
-            class="relative bg-slate-900/70 border border-rose-500/70 rounded-xl p-4 sm:p-5
-                   shadow-md hover:shadow-xl transition-all duration-200"
-          >
-            <div
-              class="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full
-                     bg-rose-500/15 blur-xl"
-            ></div>
-
-            <div class="flex items-start gap-3">
-              <div
-                class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
-                       bg-rose-500/15 border border-rose-400/60"
-              >
-                <!-- Icono retiro -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-rose-200" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-
-              <div class="flex-1">
-                <h2 class="font-semibold text-base sm:text-lg text-rose-200 mb-0.5">
-                  Total Retiros Administrador
-                </h2>
-                <p class="text-xs sm:text-sm text-rose-100/80 mb-3">
-                  Egresos realizados desde caja central.
-                </p>
-                <p class="text-xl sm:text-2xl font-bold text-rose-200">
-                  <%= totalRetirosFormateado %>
-                </p>
-              </div>
-            </div>
+        <div>
+          <div class="bg-slate-900/70 border border-rose-500/60 rounded-xl p-4 shadow-md h-full">
+            <p class="text-[11px] uppercase tracking-wide text-rose-200/90">Retiros admin</p>
+            <p class="text-lg sm:text-2xl font-extrabold text-rose-200 mt-1"><%= totalRetirosFormateado %></p>
+            <p class="text-xs sm:text-sm text-rose-100/70 mt-1">Egresos caja.</p>
           </div>
         </div>
 
-        <!-- Saldo Disponible -->
-        <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
-          <div
-            class="relative bg-slate-900/70 border border-amber-400/70 rounded-xl p-4 sm:p-5
-                   shadow-md hover:shadow-xl transition-all duration-200"
-          >
-            <div
-              class="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full
-                     bg-amber-400/15 blur-xl"
-            ></div>
-
-            <div class="flex items-start gap-3">
-              <div
-                class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
-                       bg-amber-400/15 border border-amber-300/60"
-              >
-                <!-- Icono saldo -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-200" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                  <path d="M9 17h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-              </div>
-
-              <div class="flex-1">
-                <h2 class="font-semibold text-base sm:text-lg text-amber-200 mb-0.5">
-                  Saldo Disponible
-                </h2>
-                <p class="text-xs sm:text-sm text-amber-100/80 mb-3">
-                  Monto pendiente de retiro por parte del administrador.
-                </p>
-                <p class="text-xl sm:text-2xl font-bold text-amber-200">
-                  <%= saldoDisponibleFormateado %>
-                </p>
-              </div>
-            </div>
+        <div>
+          <div class="bg-slate-900/70 border border-amber-400/60 rounded-xl p-4 shadow-md h-full">
+            <p class="text-[11px] uppercase tracking-wide text-amber-200/90">Saldo disponible</p>
+            <p class="text-lg sm:text-2xl font-extrabold text-amber-200 mt-1"><%= saldoDisponibleFormateado %></p>
+            <p class="text-xs sm:text-sm text-amber-100/70 mt-1">Pendiente retiro.</p>
           </div>
         </div>
 
-        <!-- Tarjetas Recaudación Estimada -->
-        <% tarjetasRecaudacion.forEach(t => { %>
-          <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
-            <div
-              class="relative bg-slate-900/70 border border-cyan-400/70 rounded-xl p-4 sm:p-5
-                     shadow-md hover:shadow-xl transition-all duration-200"
-            >
-              <div
-                class="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full
-                       bg-cyan-400/15 blur-xl"
-              ></div>
-
-              <div class="flex items-start gap-3">
-                <div
-                  class="mt-1 flex h-9 w-9 items-center justify-center rounded-full
-                         bg-cyan-400/15 border border-cyan-300/60"
-                >
-                  <!-- Icono calendario -->
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-200" viewBox="0 0 24 24" fill="none">
-                    <path d="M7 4v3M17 4v3M4 9h16M6 5h12a2 2 0 0 1 2 2v11H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                  </svg>
-                </div>
-
-                <div class="flex-1">
-                  <h2 class="font-semibold text-base sm:text-lg text-cyan-200 mb-0.5">
-                    Recaudación Estimada
-                  </h2>
-                  <p class="text-xs sm:text-sm text-cyan-100/80 mb-3">
-                    Mes: <span class="font-medium"><%= t.mes %>/<%= t.anio %></span>
-                  </p>
-                  <p class="text-xl sm:text-2xl font-bold text-cyan-100">
-                    <%= t.total %>
-                  </p>
-                </div>
+        <!-- Chips estimado -->
+        <div class="col-span-2 sm:col-span-3 xl:col-span-4">
+          <div class="bg-slate-900/50 border border-slate-700/70 rounded-xl p-4 shadow-md">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm sm:text-base font-semibold text-slate-100">Recaudación estimada</p>
+                <p class="text-xs sm:text-sm text-slate-300/80">Por mes (scroll horizontal).</p>
               </div>
+              <span class="text-[11px] sm:text-xs text-slate-400">Deslizá →</span>
             </div>
-          </div>
-        <% }) %>
-      </div>
 
-      <!-- Dots resumen (solo mobile) -->
-      <div class="flex justify-center mt-4 space-x-2 md:hidden" id="dotsResumen">
-        <% const totalSlides = 3 + tarjetasRecaudacion.length; for (let i = 0; i < totalSlides; i++) { %>
-          <button
-            class="w-2.5 h-2.5 rounded-full transition-colors
-                   <%= i === 0 ? 'bg-white' : 'bg-white/30' %>"
-            data-slide="<%= i %>"
-          ></button>
-        <% } %>
+            <% if (!tarjetasOrdenadas.length) { %>
+              <p class="text-sm text-slate-300 mt-3">Sin datos de estimación.</p>
+            <% } else { %>
+              <div class="flex gap-2 overflow-x-auto no-scrollbar mt-3 pb-1">
+                <% tarjetasOrdenadas.forEach(t => { %>
+                  <div class="shrink-0 rounded-full border border-cyan-400/40 bg-slate-950/40 px-3 py-2">
+                    <p class="text-[11px] text-cyan-200/90 leading-none">
+                      <span class="font-semibold"><%= t.mes %></span>/<%= t.anio %>
+                    </p>
+                    <p class="text-sm font-bold text-cyan-100 mt-1 leading-none"><%= t.total %></p>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
       </div>
     </section>
 
-    <!-- Cobradores -->
+    <!-- Lista + buscador -->
     <section aria-label="Cobradores">
-      <% if (cobradores.length === 0) { %>
-        <p class="text-center text-slate-300">
-          No hay cobradores registrados.
-        </p>
+      <% if (!cobradores || cobradores.length === 0) { %>
+        <p class="text-center text-slate-300">No hay cobradores registrados.</p>
       <% } else { %>
-        <div class="mb-4 flex items-center justify-between gap-2">
-          <h2 class="text-lg sm:text-xl font-semibold text-slate-100">
-            Cobradores
-          </h2>
-          <p class="text-xs sm:text-sm text-slate-400">
-            Detalle de recaudación por cobrador.
-          </p>
+
+        <div class="mb-3 sm:mb-4 flex items-end justify-between gap-3">
+          <div>
+            <h2 class="text-lg sm:text-xl font-semibold text-slate-100">Cobradores</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Tocá uno para ver el detalle.</p>
+          </div>
         </div>
 
-        <div class="relative w-full">
-          <div
-            id="cobradoresCarrusel"
-            class="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4
-                   overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide"
-          >
-            <% cobradores.forEach((c, i) => { %>
-              <div class="min-w-full md:min-w-0 px-2 sm:px-0 snap-center">
-                <div
-                  class="bg-slate-900/70 border border-sky-500/70 text-white p-5 sm:p-6 rounded-xl
-                         shadow-md hover:shadow-xl hover:border-sky-400/80 transition-all duration-200
-                         backdrop-blur"
-                >
-                  <div class="flex items-center justify-between gap-2 mb-3">
-                    <div>
-                      <h3 class="text-base sm:text-lg font-semibold">
-                        <%= c.nombre %> <%= c.apellido %>
-                      </h3>
-                      <p class="text-xs sm:text-sm text-slate-300/80">
-                        Cobrador
-                      </p>
-                    </div>
-                    <span
-                      class="inline-flex items-center rounded-full bg-slate-800/80 border border-slate-600 px-2 py-0.5
-                             text-[11px] uppercase tracking-wide text-slate-200"
-                    >
-                      Panel
-                    </span>
-                  </div>
+        <div class="mb-4">
+          <input
+            id="buscador"
+            type="text"
+            placeholder="Buscar cobrador…"
+            class="w-full bg-slate-900/60 border border-slate-700/80 rounded-xl px-4 py-3
+                   text-sm text-white placeholder:text-slate-400 outline-none
+                   focus:border-sky-500/80 focus:ring-2 focus:ring-sky-500/20"
+          />
+        </div>
 
-                  <p class="text-sm text-slate-200 mb-1">
-                    <span class="font-medium text-emerald-300">Recaudado:</span>
-                  </p>
-                  <p class="text-lg sm:text-xl font-bold text-emerald-300 mb-2">
-                    <%= c.montoRecaudadoFormateado %>
-                  </p>
+        <div id="lista" class="space-y-2">
+          <% cobradores.forEach((c) => { %>
+            <%
+              const fullName = `${c.nombre || ''} ${c.apellido || ''}`.trim();
+              const initials = ((c.nombre ? c.nombre[0] : '') + (c.apellido ? c.apellido[0] : '')).toUpperCase() || 'C';
+            %>
 
-                  <p class="text-xs sm:text-sm text-slate-300/90 mb-4">
-                    <span class="font-medium text-slate-200">Último retiro:</span>
-                    <span class="ml-1">
-                      <%= c.ultimaFechaRetiro || "Sin retiros" %>
-                    </span>
-                  </p>
+            <button
+              type="button"
+              class="w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-3 sm:p-4
+                     hover:border-sky-400/70 hover:bg-slate-900/70 transition
+                     focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+              data-name="<%= fullName.toLowerCase() %>"
+              data-id="<%= c._id %>"
+              data-fullname="<%= fullName.replace(/"/g, '&quot;') %>"
+              data-recaudado="<%= String(c.montoRecaudadoFormateado || '').replace(/"/g, '&quot;') %>"
+              data-ultimoretiro="<%= String(c.ultimaFechaRetiro || 'Sin retiros').replace(/"/g, '&quot;') %>"
+            >
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-full bg-slate-800/80 border border-slate-600/70 flex items-center justify-center font-bold text-slate-200">
+                  <%= initials %>
+                </div>
 
-                  <a
-                    href="/admin/cobrador/<%= c._id %>/panel"
-                    class="block w-full text-center bg-sky-600 hover:bg-sky-700 text-white
-                           py-2.5 rounded-lg text-sm font-medium transition"
-                  >
-                    Ver panel del cobrador
-                  </a>
+                <div class="min-w-0 flex-1">
+                  <p class="font-semibold text-slate-100 truncate"><%= fullName %></p>
+                  <p class="text-xs text-slate-300/80 truncate">
+                    Recaudado: <span class="font-semibold text-emerald-300"><%= c.montoRecaudadoFormateado %></span>
+                  </p>
+                </div>
+
+                <div class="text-slate-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </div>
               </div>
-            <% }) %>
-          </div>
-
-          <!-- Dots cobradores (solo mobile) -->
-          <div class="flex justify-center mt-4 space-x-2 md:hidden" id="dotsCobradores">
-            <% cobradores.forEach((_, i) => { %>
-              <button
-                class="w-2.5 h-2.5 rounded-full transition-colors
-                       <%= i === 0 ? 'bg-white' : 'bg-white/30' %>"
-                data-slide="<%= i %>"
-              ></button>
-            <% }) %>
-          </div>
+            </button>
+          <% }) %>
         </div>
+
+        <div id="sinResultados" class="hidden mt-6 text-center text-slate-300">
+          No se encontraron cobradores.
+        </div>
+
       <% } %>
     </section>
 
   </div>
 </div>
 
-<!-- Scripts carruseles -->
+<!-- Bottom sheet -->
+<div id="sheetBackdrop" class="sheet-backdrop"></div>
+
+<!-- ✅ Sheet con la MISMA medida lateral que el panel (usando app-shell) -->
+<div id="sheet" class="sheet pb-10">
+  <div class="app-shell">
+    <div class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto">
+      <div class="bg-slate-950/95 border border-slate-700/80 rounded-2xl shadow-2xl p-4">
+        <div class="flex justify-center mb-3">
+          <div class="h-1.5 w-10 rounded-full bg-white/20"></div>
+        </div>
+
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="min-w-0">
+            <p id="sheetNombre" class="text-lg font-extrabold text-slate-100 truncate">—</p>
+            <p class="text-xs text-slate-400">Detalle rápido del cobrador</p>
+          </div>
+          <button id="sheetCerrar" class="shrink-0 rounded-xl bg-slate-800/70 border border-slate-600 px-3 py-2 text-sm hover:bg-slate-800">
+            Cerrar
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="rounded-xl border border-emerald-500/30 bg-slate-900/60 p-3">
+            <p class="text-[11px] uppercase tracking-wide text-emerald-200/90">Recaudado</p>
+            <p id="sheetRecaudado" class="text-base sm:text-lg font-extrabold text-emerald-300 mt-1">—</p>
+          </div>
+          <div class="rounded-xl border border-slate-700/70 bg-slate-900/60 p-3">
+            <p class="text-[11px] uppercase tracking-wide text-slate-300/80">Último retiro</p>
+            <p id="sheetUltimoRetiro" class="text-sm sm:text-base font-semibold text-slate-100 mt-1">—</p>
+          </div>
+        </div>
+
+        <a
+          id="sheetLink"
+          href="#"
+          class="block w-full text-center bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white
+                 py-3 rounded-xl text-sm font-semibold transition
+                 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+        >
+          Ir al panel del cobrador
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-  // Carrusel resumen
-  const carrusel = document.getElementById("resumenCarrusel");
-  const dots = document.querySelectorAll("#dotsResumen button");
+  const $buscador = document.getElementById("buscador");
+  const $lista = document.getElementById("lista");
+  const $sin = document.getElementById("sinResultados");
 
-  if (carrusel && dots.length) {
-    dots.forEach((dot, index) => {
-      dot.addEventListener("click", () => {
-        carrusel.scrollTo({
-          left: carrusel.clientWidth * index,
-          behavior: "smooth",
-        });
+  const $backdrop = document.getElementById("sheetBackdrop");
+  const $sheet = document.getElementById("sheet");
+  const $cerrar = document.getElementById("sheetCerrar");
 
-        dots.forEach(d => d.classList.remove("bg-white"));
-        dots.forEach(d => d.classList.add("bg-white/30"));
-        dot.classList.remove("bg-white/30");
-        dot.classList.add("bg-white");
+  const $nombre = document.getElementById("sheetNombre");
+  const $recaudado = document.getElementById("sheetRecaudado");
+  const $ult = document.getElementById("sheetUltimoRetiro");
+  const $link = document.getElementById("sheetLink");
+
+  const openSheet = () => {
+    $backdrop.classList.add("show");
+    $sheet.classList.add("open");
+  };
+  const closeSheet = () => {
+    $sheet.classList.remove("open");
+    $backdrop.classList.remove("show");
+  };
+
+  $cerrar?.addEventListener("click", closeSheet);
+  $backdrop?.addEventListener("click", closeSheet);
+
+  // Filtrado lista
+  if ($buscador && $lista) {
+    const applyFilter = () => {
+      const q = $buscador.value.trim().toLowerCase();
+      const items = Array.from($lista.querySelectorAll("button[data-name]"));
+      let visible = 0;
+
+      items.forEach(btn => {
+        const name = btn.dataset.name || "";
+        const ok = !q || name.includes(q);
+        btn.classList.toggle("hidden", !ok);
+        if (ok) visible++;
       });
-    });
 
-    carrusel.addEventListener("scroll", () => {
-      const index = Math.round(carrusel.scrollLeft / carrusel.clientWidth);
-      dots.forEach((d, i) => {
-        d.classList.toggle("bg-white", i === index);
-        d.classList.toggle("bg-white/30", i !== index);
-      });
+      if ($sin) $sin.classList.toggle("hidden", visible !== 0);
+    };
+
+    $buscador.addEventListener("input", applyFilter);
+    applyFilter();
+  }
+
+  // Click item → abre bottom sheet
+  if ($lista) {
+    $lista.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-id]");
+      if (!btn) return;
+
+      const id = btn.dataset.id;
+      $nombre.textContent = btn.dataset.fullname || "—";
+      $recaudado.textContent = btn.dataset.recaudado || "—";
+      $ult.textContent = btn.dataset.ultimoretiro || "—";
+      $link.href = `/admin/cobrador/${id}/panel`;
+
+      openSheet();
     });
   }
 
-  // Carrusel cobradores
-  const carruselCobradores = document.getElementById("cobradoresCarrusel");
-  const dotsCobradores = document.querySelectorAll("#dotsCobradores button");
-
-  if (carruselCobradores && dotsCobradores.length) {
-    dotsCobradores.forEach((dot, index) => {
-      dot.addEventListener("click", () => {
-        carruselCobradores.scrollTo({
-          left: carruselCobradores.clientWidth * index,
-          behavior: "smooth",
-        });
-
-        dotsCobradores.forEach(d => d.classList.remove("bg-white"));
-        dotsCobradores.forEach(d => d.classList.add("bg-white/30"));
-        dot.classList.remove("bg-white/30");
-        dot.classList.add("bg-white");
-      });
-    });
-
-    carruselCobradores.addEventListener("scroll", () => {
-      const index = Math.round(carruselCobradores.scrollLeft / carruselCobradores.clientWidth);
-      dotsCobradores.forEach((d, i) => {
-        d.classList.toggle("bg-white", i === index);
-        d.classList.toggle("bg-white/30", i !== index);
-      });
-    });
-  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSheet();
+  });
 </script>

@@ -1,9 +1,53 @@
-<div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8">
+<style>
+  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
+
+  /* ✅ Medida única para TODA la app */
+  .app-shell{
+    padding-left:6px;
+    padding-right:6px;
+    padding-top:2px;
+    padding-bottom:0;
+  }
+  @media (min-width: 640px){
+    .app-shell{
+      padding-left:12px;
+      padding-right:12px;
+      padding-top:10px;
+    }
+  }
+  @media (min-width: 768px){
+    .app-shell{
+      padding-left:16px;
+      padding-right:16px;
+      padding-top:14px;
+    }
+  }
+
+  /* Bottom sheet (solo mobile) */
+  .sheet-backdrop{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.55);
+    backdrop-filter: blur(4px);
+    display:none;
+    z-index:50;
+  }
+  .sheet{
+    position:fixed; left:0; right:0; bottom:0;
+    transform:translateY(110%);
+    transition:transform .22s ease;
+    z-index:60;
+  }
+  .sheet.open{ transform:translateY(0); }
+  .sheet-backdrop.show{ display:block; }
+</style>
+
+<!-- ✅ Wrapper unificado (mismo alto y mismos márgenes) -->
+<div class="flex items-start justify-center min-h-[calc(100vh-200px)] app-shell">
   <div
     class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
            bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
            backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
-           p-4 sm:p-6 md:p-10 text-white"
+           p-4 sm:p-6 md:p-10 text-white safe-bottom"
   >
 
     <!-- Encabezado -->
@@ -24,16 +68,22 @@
     </header>
 
     <% const secciones = [
-      { titulo: 'Listado Administradores', usuarios: admins, color: 'blue' },
-      { titulo: 'Listado Cobradores', usuarios: cobradores, color: 'red' },
-      { titulo: 'Listado Clientes', usuarios: clientes, color: 'green' }
+      { key: 'admins', titulo: 'Listado Administradores', usuarios: admins, color: 'blue' },
+      { key: 'cobradores', titulo: 'Listado Cobradores', usuarios: cobradores, color: 'red' },
+      { key: 'clientes', titulo: 'Listado Clientes', usuarios: clientes, color: 'green' }
     ]; %>
 
+    <% const rolLabel = (rol) => rol === 'admin' ? 'Admin' : (rol === 'cobrador' ? 'Cobrador' : 'Cliente'); %>
+    <% const rolClasses = (rol) => {
+      if (rol === 'admin') return 'bg-blue-500/15 text-blue-300 border border-blue-400/40';
+      if (rol === 'cobrador') return 'bg-red-500/15 text-red-300 border border-red-400/40';
+      return 'bg-green-500/15 text-green-300 border border-green-400/40';
+    }; %>
+
     <% secciones.forEach(seccion => { %>
-      <section
-        class="mb-8 sm:mb-10 rounded-xl border border-slate-700/80 bg-slate-900/60 shadow-md"
-      >
-        <!-- Header de sección -->
+      <section class="mb-8 sm:mb-10 rounded-xl border border-slate-700/80 bg-slate-900/60 shadow-md">
+
+        <!-- Header sección -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-5 pt-4 sm:pt-5 pb-3 border-b border-slate-700/70">
           <div class="flex items-center gap-2">
             <span class="inline-flex h-2.5 w-2.5 rounded-full bg-<%= seccion.color %>-400"></span>
@@ -41,10 +91,8 @@
               <%= seccion.titulo %>
             </h2>
           </div>
-          <div
-            class="inline-flex items-center gap-2 rounded-full bg-slate-800/80 border border-slate-600/80
-                   px-3 py-1 text-[11px] sm:text-xs text-slate-200"
-          >
+
+          <div class="inline-flex items-center gap-2 rounded-full bg-slate-800/80 border border-slate-600/80 px-3 py-1 text-[11px] sm:text-xs text-slate-200">
             <span class="uppercase tracking-wide text-slate-400">Totales</span>
             <span class="text-sm font-semibold text-<%= seccion.color %>-300">
               <%= seccion.usuarios.length %>
@@ -52,77 +100,90 @@
           </div>
         </div>
 
-        <!-- Contenido de sección -->
+        <!-- Contenido -->
         <div class="px-3 sm:px-5 pb-4 sm:pb-5 pt-2">
           <% if (seccion.usuarios.length === 0) { %>
             <p class="text-slate-400 italic text-xs sm:text-sm py-3">
               No hay usuarios en esta categoría.
             </p>
           <% } else { %>
-            <div class="overflow-x-auto rounded-md border border-slate-700/80 bg-slate-900/80">
-              <table
-                class="w-full min-w-[720px] text-xs sm:text-sm text-left border-collapse"
-              >
-                <thead
-                  class="bg-slate-800/90 text-slate-200 text-[11px] sm:text-xs uppercase tracking-wide"
+
+            <!-- ===== MOBILE: cards + sheet (sin tablas) ===== -->
+            <div class="lg:hidden space-y-2" id="listaUsuariosMobile-<%= seccion.key %>">
+              <% seccion.usuarios.forEach((usuario) => { %>
+                <button
+                  type="button"
+                  class="usuario-item usuario-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
+                         hover:bg-slate-900/70 transition focus:outline-none focus:ring-2 focus:ring-slate-400/20"
+                  data-nombre="<%= usuario.nombre %>"
+                  data-apellido="<%= usuario.apellido %>"
+                  data-email="<%= usuario.email %>"
+                  data-dni="<%= usuario.dni %>"
+                  data-rol="<%= usuario.rol %>"
+                  data-edit="/usuarios/editar/<%= usuario._id %>"
+                  data-delete="/usuarios/eliminar/<%= usuario._id %>"
                 >
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                      <p class="font-semibold text-slate-100 truncate">
+                        <%= usuario.apellido %>, <%= usuario.nombre %>
+                      </p>
+                      <p class="text-xs text-slate-300/80 truncate">
+                        <%= usuario.email %>
+                      </p>
+                      <p class="text-xs text-slate-400 mt-1">
+                        DNI: <span class="text-slate-200"><%= usuario.dni %></span>
+                      </p>
+                    </div>
+
+                    <div class="shrink-0 flex flex-col items-end gap-2">
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium <%= rolClasses(usuario.rol) %>">
+                        <%= rolLabel(usuario.rol) %>
+                      </span>
+
+                      <span class="text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                          <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              <% }) %>
+            </div>
+
+            <!-- ===== DESKTOP: tabla (aprovecha pantalla) ===== -->
+            <div class="hidden lg:block overflow-x-auto rounded-md border border-slate-700/80 bg-slate-900/80">
+              <table class="w-full min-w-[920px] text-sm text-left border-collapse">
+                <thead class="bg-slate-800/90 text-slate-200 text-xs uppercase tracking-wide">
                   <tr>
-                    <th class="px-3 sm:px-4 py-2.5 sm:py-3 w-12">#</th>
-                    <th class="px-3 sm:px-4 py-2.5 sm:py-3 w-32">Nombre</th>
-                    <th class="px-3 sm:px-4 py-2.5 sm:py-3 w-32">Apellido</th>
-                    <th class="px-3 sm:px-4 py-2.5 sm:py-3 w-64">Email</th>
-                    <th class="px-3 sm:px-4 py-2.5 sm:py-3 w-32">DNI</th>
-                    <th class="px-3 sm:px-4 py-2.5 sm:py-3 w-24">Rol</th>
-                    <th class="px-3 sm:px-4 py-2.5 sm:py-3 w-40 text-center">Acciones</th>
+                    <th class="px-4 py-3 w-12">#</th>
+                    <th class="px-4 py-3 w-36">Nombre</th>
+                    <th class="px-4 py-3 w-36">Apellido</th>
+                    <th class="px-4 py-3">Email</th>
+                    <th class="px-4 py-3 w-36">DNI</th>
+                    <th class="px-4 py-3 w-28">Rol</th>
+                    <th class="px-4 py-3 w-44 text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% seccion.usuarios.forEach((usuario, index) => { %>
                     <tr class="border-t border-slate-700 hover:bg-slate-800/80 transition-colors">
-                      <td class="px-3 sm:px-4 py-2.5 sm:py-3 align-middle text-slate-300">
-                        <%= index + 1 %>
+                      <td class="px-4 py-3 align-middle text-slate-300"><%= index + 1 %></td>
+                      <td class="px-4 py-3 align-middle text-slate-100 truncate"><%= usuario.nombre %></td>
+                      <td class="px-4 py-3 align-middle text-slate-100 truncate"><%= usuario.apellido %></td>
+                      <td class="px-4 py-3 align-middle text-slate-200 truncate"><%= usuario.email %></td>
+                      <td class="px-4 py-3 align-middle text-slate-200"><%= usuario.dni %></td>
+                      <td class="px-4 py-3 align-middle">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium <%= rolClasses(usuario.rol) %>">
+                          <%= rolLabel(usuario.rol) %>
+                        </span>
                       </td>
-                      <td class="px-3 sm:px-4 py-2.5 sm:py-3 align-middle truncate text-slate-100">
-                        <%= usuario.nombre %>
-                      </td>
-                      <td class="px-3 sm:px-4 py-2.5 sm:py-3 align-middle truncate text-slate-100">
-                        <%= usuario.apellido %>
-                      </td>
-                      <td class="px-3 sm:px-4 py-2.5 sm:py-3 align-middle truncate text-slate-200">
-                        <%= usuario.email %>
-                      </td>
-                      <td class="px-3 sm:px-4 py-2.5 sm:py-3 align-middle text-slate-200">
-                        <%= usuario.dni %>
-                      </td>
-                      <td class="px-3 sm:px-4 py-2.5 sm:py-3 align-middle">
-                        <% if (usuario.rol === 'admin') { %>
-                          <span
-                            class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium
-                                   bg-blue-500/15 text-blue-300 border border-blue-400/40"
-                          >
-                            Admin
-                          </span>
-                        <% } else if (usuario.rol === 'cobrador') { %>
-                          <span
-                            class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium
-                                   bg-red-500/15 text-red-300 border border-red-400/40"
-                          >
-                            Cobrador
-                          </span>
-                        <% } else { %>
-                          <span
-                            class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium
-                                   bg-green-500/15 text-green-300 border border-green-400/40"
-                          >
-                            Cliente
-                          </span>
-                        <% } %>
-                      </td>
-                      <td class="px-3 sm:px-4 py-2.5 sm:py-3 align-middle">
+                      <td class="px-4 py-3 align-middle">
                         <div class="flex flex-wrap items-center justify-center gap-2">
                           <a
                             href="/usuarios/editar/<%= usuario._id %>"
-                            class="inline-flex items-center px-3 py-1.5 rounded-full text-[11px] sm:text-xs
+                            class="inline-flex items-center px-3 py-1.5 rounded-full text-xs
                                    font-medium border border-sky-400/60 text-sky-300 bg-sky-500/10
                                    hover:bg-sky-500/20 hover:border-sky-300 transition-colors"
                           >
@@ -137,7 +198,7 @@
                           >
                             <button
                               type="submit"
-                              class="inline-flex items-center px-3 py-1.5 rounded-full text-[11px] sm:text-xs
+                              class="inline-flex items-center px-3 py-1.5 rounded-full text-xs
                                      font-medium border border-rose-400/60 text-rose-300 bg-rose-500/10
                                      hover:bg-rose-500/20 hover:border-rose-300 transition-colors"
                             >
@@ -151,6 +212,7 @@
                 </tbody>
               </table>
             </div>
+
           <% } %>
         </div>
       </section>
@@ -158,3 +220,112 @@
 
   </div>
 </div>
+
+<!-- Bottom sheet (solo mobile) -->
+<div id="sheetBackdropUsuarios" class="sheet-backdrop lg:hidden"></div>
+
+<!-- ✅ Sheet con MISMO ancho útil que el panel (app-shell + mismos max-w) -->
+<div id="sheetUsuarios" class="sheet pb-4 lg:hidden">
+  <div class="app-shell">
+    <div class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto">
+      <div class="bg-slate-950/95 border border-slate-700/80 rounded-2xl shadow-2xl p-4">
+        <div class="flex justify-center mb-3">
+          <div class="h-1.5 w-10 rounded-full bg-white/20"></div>
+        </div>
+
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="min-w-0">
+            <p id="sheetUsuarioTitulo" class="text-lg font-extrabold text-slate-100 truncate">—</p>
+            <p id="sheetUsuarioSub" class="text-sm text-slate-300/80 mt-1 truncate">—</p>
+            <p id="sheetUsuarioExtra" class="text-xs text-slate-400 mt-2">—</p>
+          </div>
+          <button id="sheetUsuarioCerrar" class="shrink-0 rounded-xl bg-slate-800/70 border border-slate-600 px-3 py-2 text-sm hover:bg-slate-800">
+            Cerrar
+          </button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2">
+          <a
+            id="sheetUsuarioEditar"
+            href="#"
+            class="block w-full text-center bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white
+                   py-3 rounded-xl text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+          >
+            Editar rol
+          </a>
+
+          <form id="sheetUsuarioEliminarForm" action="#" method="POST" class="w-full" onsubmit="return confirm('¿Eliminar este usuario?')">
+            <button
+              type="submit"
+              class="w-full text-center bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white
+                     py-3 rounded-xl text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-rose-300/40"
+            >
+              Eliminar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Sheet refs
+  const $backdropU = document.getElementById("sheetBackdropUsuarios");
+  const $sheetU = document.getElementById("sheetUsuarios");
+  const $cerrarU = document.getElementById("sheetUsuarioCerrar");
+
+  const $tU = document.getElementById("sheetUsuarioTitulo");
+  const $sU = document.getElementById("sheetUsuarioSub");
+  const $xU = document.getElementById("sheetUsuarioExtra");
+
+  const $editU = document.getElementById("sheetUsuarioEditar");
+  const $delFormU = document.getElementById("sheetUsuarioEliminarForm");
+
+  const openSheetU = () => {
+    $backdropU.classList.add("show");
+    $sheetU.classList.add("open");
+  };
+  const closeSheetU = () => {
+    $sheetU.classList.remove("open");
+    $backdropU.classList.remove("show");
+  };
+
+  $cerrarU?.addEventListener("click", closeSheetU);
+  $backdropU?.addEventListener("click", closeSheetU);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheetU(); });
+
+  // Delegación: cualquier click en un item mobile abre el sheet
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".usuario-item-mobile");
+    if (!btn) return;
+
+    e.preventDefault();
+
+    const nombre = btn.dataset.nombre || "";
+    const apellido = btn.dataset.apellido || "";
+    const email = btn.dataset.email || "";
+    const dni = btn.dataset.dni || "";
+    const rol = btn.dataset.rol || "";
+
+    const edit = btn.dataset.edit || "#";
+    const del = btn.dataset.delete || "#";
+
+    const rolNice = rol === "admin" ? "Admin" : (rol === "cobrador" ? "Cobrador" : "Cliente");
+
+    $tU.textContent = `${apellido}, ${nombre}`;
+    $sU.textContent = email || "—";
+    $xU.textContent = `DNI: ${dni || "—"} · Rol: ${rolNice}`;
+
+    $editU.href = edit;
+    $delFormU.action = del;
+
+    openSheetU();
+  });
+
+  // Si pasás a desktop, cerramos el sheet (por si quedó abierto)
+  window.addEventListener("resize", () => {
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    if (isDesktop) closeSheetU();
+  });
+</script>

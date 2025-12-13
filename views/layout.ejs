@@ -4,37 +4,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>
-    <%= titulo %>
-  </title>
+
+  <title><%= titulo %></title>
+
+  
   <script src="https://cdn.tailwindcss.com"></script>
+
+  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  
   <style>
     input:-webkit-autofill {
       -webkit-box-shadow: 0 0 0px 1000px #1e293b inset;
-      /* mismo color que bg-slate-800 */
       -webkit-text-fill-color: rgba(255, 255, 255, 0.7);
-      /* igual que text-white/70 */
       transition: background-color 5000s ease-in-out 0s;
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    rel="stylesheet"
+  />
 </head>
 
-<body class="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 text-white min-h-screen flex flex-col" style="font-family:'Roboto', sans-serif;">
+<body
+  class="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900
+         text-white min-h-screen flex flex-col"
+  style="font-family:'Roboto', sans-serif;"
+>
 
-  <!-- Navbar -->
+  
   <%- include('partials/navbar') %>
 
-    <!-- Contenido principal -->
-    <!-- <main class="flex-1 flex items-start justify-center px-4 py-2 border-green-500 border-2"> -->
-    <main class="flex-1 px-4 py-8">
-      <%- body %>
-    </main>
+ 
+  <main class="flex-1 py-4">
+    <%- body %>
+  </main>
 
-    <!-- Footer -->
-    <%- include('partials/footer') %>
+  
+  <%- include('partials/footer') %>
 
 </body>
-
 </html>

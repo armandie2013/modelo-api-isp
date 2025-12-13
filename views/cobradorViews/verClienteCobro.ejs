@@ -1,108 +1,175 @@
-<main class="flex-1 flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8">
+<style>
+  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
+
+  /* Medida única para toda la app */
+  .app-shell { padding-left: 6px; padding-right: 6px; padding-top: 0px; padding-bottom: 0px; }
+  @media (min-width: 640px) { .app-shell { padding-left: 12px; padding-right: 12px; } }
+  @media (min-width: 768px) { .app-shell { padding-left: 16px; padding-right: 16px; } }
+</style>
+
+<div class="flex items-start justify-center min-h-[calc(100vh-200px)] app-shell py-6 sm:py-8">
   <div
-    class="w-full max-w-sm sm:max-w-3xl md:max-w-5xl lg:max-w-6xl bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
+    class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
+           bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
+           backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
+           p-4 sm:p-6 md:p-10 text-white safe-bottom overflow-x-hidden"
+  >
 
-    <!-- Título -->
-    <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6">
-      Datos del Cliente: <%= cliente.nombre %> <%= cliente.apellido %>
-    </h1>
+    <!-- ================= HEADER ================= -->
+    <header class="mb-8">
+      <p class="text-xs uppercase tracking-widest text-slate-400 mb-2">
+        Cobros · Cliente
+      </p>
 
-    <!-- Datos personales -->
-    <h2 class="text-xl font-semibold text-white mb-3">Datos Personales</h2>
-    <div class="bg-slate-800 border border-slate-600 rounded-lg p-4 sm:p-6 mb-8 shadow">
-      <p><strong>DNI:</strong> <%= cliente.dni %></p>
-      <p><strong>Email:</strong> <%= cliente.email %></p>
-      <p><strong>Teléfono:</strong> <%= cliente.telefono %></p>
-      <p><strong>Dirección:</strong> <%= cliente.direccion %></p>
-      <p><strong>Plan:</strong> <%= cliente.plan?.nombre %> - <%= cliente.plan?.precioFormateado %></p>
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
+        <%= cliente.nombre %> <%= cliente.apellido %>
+      </h1>
+
+      <!-- Datos compactos -->
+      <div class="mt-2 text-sm text-slate-300 space-y-1">
+        <p>
+          <span class="text-slate-400">DNI:</span>
+          <%= cliente.dni %>
+        </p>
+
+        <p>
+          <span class="text-slate-400">Teléfono:</span>
+          <%= cliente.telefono || "—" %>
+        </p>
+
+        <p>
+          <span class="text-slate-400">Plan:</span>
+          <%= cliente.plan?.nombre || "—" %>
+          <% if (cliente.plan?.precioFormateado) { %>
+            – <span class="text-emerald-300 font-medium"><%= cliente.plan.precioFormateado %></span>
+          <% } %>
+        </p>
+      </div>
+    </header>
+
+    <!-- ================= SALDO ================= -->
+    <div class="rounded-xl p-4 shadow-md mb-8
+                <%= saldoActual > 0 
+                    ? 'bg-slate-900/70 border border-rose-500/60' 
+                    : 'bg-slate-900/70 border border-emerald-500/60' %>">
+
+      <p class="text-xs uppercase tracking-wide
+                <%= saldoActual > 0 ? 'text-rose-200/90' : 'text-emerald-200/90' %>">
+        Saldo actual del cliente
+      </p>
+
+      <p class="text-2xl sm:text-3xl font-extrabold mt-1 break-words
+                <%= saldoActual > 0 ? 'text-rose-400' : 'text-emerald-300' %>">
+        <%= saldoFormateado %>
+      </p>
+
+      <!-- <p class="text-xs mt-2
+                <%= saldoActual < 0 ? 'text-rose-200/80' : 'text-emerald-200/80' %>">
+        <%= saldoActual < 0 
+            ? 'En rojo: el cliente debe.' 
+            : 'En verde: saldo a favor del cliente.' %>
+      </p> -->
     </div>
 
-    <!-- Historial financiero -->
-    <h2 class="text-xl font-semibold text-white mb-3">Historial Financiero</h2>
-    <% if (historial.length === 0) { %>
-      <p class="text-slate-300 mb-4">Sin movimientos aún.</p>
-    <% } else { %>
-      <div class="mb-8 overflow-x-auto bg-slate-800 rounded-lg shadow border border-slate-600">
-        <table class="min-w-[900px] w-full text-sm text-white table-fixed">
-          <thead class="bg-slate-700 text-blue-200 uppercase">
-            <tr>
-              <th class="w-10 px-2 py-2">#</th>
-              <th class="w-24 px-2 py-2">Comp.</th>
-              <th class="w-20 px-2 py-2">Tipo</th>
-              <th class="w-24 px-2 py-2">Fecha</th>
-              <th class="w-[250px] px-2 py-2 truncate">Detalle</th>
-              <th class="w-34 px-2 py-2 text-right">Cargo</th>
-              <th class="w-36 px-2 py-2 text-right">Pago</th>
-              <th class="w-36 px-2 py-2 text-right">Saldo</th>
-              <th class="w-28 px-2 py-2 text-center">Recibo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% historial.forEach((item, i) => { %>
-              <tr
-                class="border-b border-slate-600 <%= item.tipo === 'Factura' ? 'text-red-400' : item.tipo === 'Pago' ? 'text-green-400' : 'text-white' %> hover:bg-slate-700">
-                <td class="px-2 py-2"><%= i + 1 %></td>
-                <td class="px-2 py-2"><%= item.numero %></td>
-                <td class="px-2 py-2 capitalize"><%= item.tipo %></td>
-                <td class="px-2 py-2"><%= new Date(item.fecha).toLocaleDateString() %></td>
-                <td class="px-2 py-2 truncate" title="<%= item.detalle || '-' %>"><%= item.detalle || '-' %></td>
-                <td class="px-2 py-2 text-right"><%= item.cargo > 0 ? item.cargoFormateado : '-' %></td>
-                <td class="px-2 py-2 text-right"><%= item.pago > 0 ? item.pagoFormateado : '-' %></td>
-                <td class="px-2 py-2 text-right font-semibold"><%= item.saldoFormateado %></td>
-                <td class="px-2 py-2 text-center">
-                  <% if (item.tipo === 'Pago') { %>
-                    <a href="/cobros/<%= item._id %>/recibo" class="text-blue-400 hover:underline">Ver</a>
-                  <% } else { %> - <% } %>
-                </td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
-    <% } %>
+    <!-- ================= HISTORIAL ================= -->
+    <div class="mb-10">
+      <h2 class="text-lg font-semibold mb-4">Historial financiero</h2>
 
-    <!-- Selección de facturas impagas -->
-    <h2 class="text-xl font-semibold text-white mb-3">Seleccionar Facturas a Cobrar</h2>
-    <% if (facturasImpagas.length === 0) { %>
-      <p class="text-slate-300">No hay facturas pendientes.</p>
-    <% } else { %>
-      <form action="/cobros/registrar" method="POST" class="space-y-4"
-        onsubmit="return confirm('¿Confirmás registrar el cobro para las facturas seleccionadas?')">
-        <input type="hidden" name="clienteId" value="<%= cliente._id %>">
-
-        <div class="overflow-x-auto bg-slate-800 border border-slate-600 rounded-lg shadow">
-          <table class="min-w-full text-sm text-white">
-            <thead class="bg-slate-700 text-blue-200 uppercase">
+      <div class="bg-slate-900/70 rounded-xl border border-slate-700/80 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-[820px] w-full text-sm">
+            <thead class="bg-slate-800 text-sky-200 uppercase text-xs">
               <tr>
-                <th class="px-4 py-2 text-center">Seleccionar</th>
-                <th class="px-4 py-2">Fecha</th>
-                <th class="px-4 py-2">Detalle</th>
-                <th class="px-4 py-2 text-right">Importe</th>
+                <th class="px-3 py-3 text-left">Fecha</th>
+                <th class="px-3 py-3 text-left">Comp.</th>
+                <th class="px-3 py-3 text-left">Tipo</th>
+                <th class="px-3 py-3 text-left">Detalle</th>
+                <th class="px-3 py-3 text-right">Importe</th>
+                <th class="px-3 py-3 text-right">Saldo</th>
               </tr>
             </thead>
             <tbody>
-              <% facturasImpagas.forEach(f => { %>
-                <tr class="border-b border-slate-600 hover:bg-slate-700">
-                  <td class="px-4 py-2 text-center">
-                    <input type="checkbox" name="facturasSeleccionadas" value="<%= f._id %>" class="form-checkbox">
+              <% if (historial.length === 0) { %>
+                <tr>
+                  <td colspan="6" class="py-4 text-center text-slate-400">
+                    Sin movimientos aún.
                   </td>
-                  <td class="px-4 py-2"><%= new Date(f.fecha).toLocaleDateString() %></td>
-                  <td class="px-4 py-2"><%= f.detalle %></td>
-                  <td class="px-4 py-2 text-right"><%= f.importeFormateado %></td>
                 </tr>
-              <% }) %>
+              <% } else { historial.forEach(mov => { %>
+                <tr class="border-t border-slate-700 hover:bg-slate-800/80">
+                  <td class="px-3 py-2 whitespace-nowrap">
+                    <%= new Date(mov.fecha).toLocaleDateString("es-AR") %>
+                  </td>
+                  <td class="px-3 py-2"><%= mov.numero || "-" %></td>
+                  <td class="px-3 py-2 capitalize"><%= mov.tipo %></td>
+                  <td class="px-3 py-2 truncate max-w-[280px]">
+                    <%= mov.detalle || "-" %>
+                  </td>
+                  <td class="px-3 py-2 text-right <%= mov.importe < 0 ? 'text-rose-400' : 'text-emerald-400' %>">
+                    <%= mov.importeFormateado %>
+                  </td>
+                  <td class="px-3 py-2 text-right font-semibold">
+                    <%= mov.saldoFormateado %>
+                  </td>
+                </tr>
+              <% }) } %>
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
 
-        <div class="text-center mt-4">
-          <button type="submit"
-            class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">
-            Registrar Cobro
+    <!-- ================= FACTURAS IMPAGAS ================= -->
+    <h2 class="text-lg font-semibold mb-4">Facturas impagas</h2>
+
+    <% if (facturasImpagas.length === 0) { %>
+      <p class="text-slate-400">No hay facturas pendientes.</p>
+    <% } else { %>
+      <form action="/cobros/registrar" method="POST"
+            onsubmit="return confirm('¿Confirmás registrar el cobro?')">
+        <input type="hidden" name="clienteId" value="<%= cliente._id %>">
+
+        <div class="bg-slate-900/70 rounded-xl border border-slate-700/80 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-[600px] w-full text-sm">
+              <thead class="bg-slate-800 text-sky-200 uppercase text-xs">
+                <tr>
+                  <th class="px-4 py-3 text-center">✔</th>
+                  <th class="px-4 py-3">Fecha</th>
+                  <th class="px-4 py-3">Detalle</th>
+                  <th class="px-4 py-3 text-right">Importe</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% facturasImpagas.forEach(f => { %>
+                  <tr class="border-t border-slate-700 hover:bg-slate-800/80">
+                    <td class="px-4 py-2 text-center">
+                      <input type="checkbox" name="facturasSeleccionadas" value="<%= f._id %>">
+                    </td>
+                    <td class="px-4 py-2">
+                      <%= new Date(f.fecha).toLocaleDateString("es-AR") %>
+                    </td>
+                    <td class="px-4 py-2"><%= f.detalle %></td>
+                    <td class="px-4 py-2 text-right">
+                      <%= f.importeFormateado %>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="text-center mt-6">
+          <button
+            type="submit"
+            class="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg font-semibold shadow">
+            Registrar cobro
           </button>
         </div>
       </form>
     <% } %>
 
   </div>
-</main>
+</div>
+

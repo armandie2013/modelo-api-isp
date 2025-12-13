@@ -36,8 +36,16 @@ export const procesarBusquedaCliente = async (req, res) => {
       cliente.plan.precioFormateado = formatearMonedaARS(cliente.plan.precio);
     }
 
+    // 📊 Historial financiero del cliente
     const historial = await obtenerHistorialFinanciero(cliente._id);
 
+    // ✅ Saldo actual del cliente (último registro del historial)
+    const saldoActual =
+      historial.length > 0 ? historial[historial.length - 1].saldo : 0;
+
+    const saldoFormateado = formatearMonedaARS(saldoActual);
+
+    // 📄 Facturas impagas
     const facturasImpagas = await Factura.find({
       cliente: cliente._id,
       pagada: false,
@@ -52,6 +60,11 @@ export const procesarBusquedaCliente = async (req, res) => {
       cliente,
       historial,
       facturasImpagas: facturasImpagasFormateadas,
+
+      // ✅ estas 2 son las que vas a usar en la vista
+      saldoActual,
+      saldoFormateado,
+
       usuario: req.session.usuario,
     });
   } catch (error) {
@@ -59,6 +72,8 @@ export const procesarBusquedaCliente = async (req, res) => {
     res.status(500).send("Error al procesar búsqueda");
   }
 };
+
+
 
 export const procesarCobro = async (req, res) => {
   try {

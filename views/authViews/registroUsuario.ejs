@@ -1,99 +1,308 @@
-<main class="flex-1 flex justify-center items-start px-4 min-h-[calc(100vh-200px)]">
-  <div class="w-full max-w-md mt-8 p-6 sm:p-8 bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700">
+<main class="flex-1 flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8">
+  <div
+    class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
+           bg-slate-900/70 backdrop-blur-md
+           rounded-2xl shadow-xl border border-slate-700/70
+           p-4 sm:p-6 md:p-10 text-white"
+  >
 
-    <h1 class="text-2xl font-bold text-center text-white mb-6">Registro de Usuario</h1>
+    <!-- Header simple -->
+    <header class="mb-8">
+      <p class="text-xs uppercase tracking-widest text-slate-400 mb-2">
+        Acceso
+      </p>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+        Registro de usuario
+      </h1>
+      <p class="text-sm text-slate-300 mt-1 max-w-xl">
+        Completá tus datos para crear la cuenta.
+      </p>
+    </header>
 
-    
+    <!-- Card centrada -->
+    <div class="flex justify-center">
+      <div class="w-full max-w-md bg-slate-800/70 border border-slate-600/70 rounded-2xl p-6 sm:p-8 shadow-lg">
 
-    <form action="/registro" method="POST" class="space-y-4">
+        <form action="/registro" method="POST" class="space-y-4" id="registroForm">
 
-      <!-- Nombre -->
-      <input type="text" name="nombre" placeholder="Nombre" required value="<%= datos.nombre || '' %>"
-        class="w-full px-4 py-2 rounded-md bg-slate-800 text-white/70 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-sm" />
+          <!-- Nombre -->
+          <div class="space-y-1">
+            <label for="nombre" class="block text-sm font-medium text-slate-300">Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              placeholder="Nombre"
+              required
+              value="<%= (datos && datos.nombre) ? datos.nombre : '' %>"
+              class="w-full px-4 py-3 rounded-xl
+                     bg-slate-900 text-white placeholder-white/35
+                     border border-slate-600
+                     focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                     transition"
+            />
+          </div>
 
-      <!-- Apellido -->
-      <input type="text" name="apellido" placeholder="Apellido" required value="<%= datos.apellido || '' %>"
-        class="w-full px-4 py-2 rounded-md bg-slate-800 text-white/70 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-sm" />
+          <!-- Apellido -->
+          <div class="space-y-1">
+            <label for="apellido" class="block text-sm font-medium text-slate-300">Apellido</label>
+            <input
+              type="text"
+              id="apellido"
+              name="apellido"
+              placeholder="Apellido"
+              required
+              value="<%= (datos && datos.apellido) ? datos.apellido : '' %>"
+              class="w-full px-4 py-3 rounded-xl
+                     bg-slate-900 text-white placeholder-white/35
+                     border border-slate-600
+                     focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                     transition"
+            />
+          </div>
 
-      <!-- Email -->
-      <input type="email" name="email" placeholder="Correo electrónico" required value="<%= datos.email || '' %>"
-        class="w-full px-4 py-2 rounded-md bg-slate-800 text-white/70 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-sm" />
+          <!-- Email -->
+          <div class="space-y-1">
+            <label for="email" class="block text-sm font-medium text-slate-300">Correo electrónico</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="correo@ejemplo.com"
+              required
+              autocomplete="email"
+              value="<%= (datos && datos.email) ? datos.email : '' %>"
+              class="w-full px-4 py-3 rounded-xl
+                     bg-slate-900 text-white placeholder-white/35
+                     border border-slate-600
+                     focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                     transition"
+            />
+          </div>
 
-      <!-- DNI -->
-      <input type="text" name="dni" placeholder="DNI" required value="<%= datos.dni || '' %>"
-        class="w-full px-4 py-2 rounded-md bg-slate-800 text-white/70 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-sm" />
+          <!-- DNI -->
+          <div class="space-y-1">
+            <label for="dni" class="block text-sm font-medium text-slate-300">DNI</label>
+            <input
+              type="text"
+              id="dni"
+              name="dni"
+              placeholder="DNI (8 dígitos)"
+              required
+              inputmode="numeric"
+              value="<%= (datos && datos.dni) ? datos.dni : '' %>"
+              class="w-full px-4 py-3 rounded-xl
+                     bg-slate-900 text-white placeholder-white/35
+                     border border-slate-600
+                     focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                     transition"
+            />
+          </div>
 
-      <!-- Contraseña -->
-      <input type="password" name="password" placeholder="Contraseña" required
-        class="w-full px-4 py-2 rounded-md bg-slate-800 text-white/70 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-sm" />
+          <!-- Password -->
+          <div class="space-y-1">
+            <label for="password" class="block text-sm font-medium text-slate-300">Contraseña</label>
+            <div class="relative">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Contraseña"
+                required
+                autocomplete="new-password"
+                class="w-full px-4 py-3 rounded-xl
+                       bg-slate-900 text-white placeholder-white/35
+                       border border-slate-600
+                       focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                       transition pr-12"
+              />
+              <button
+                type="button"
+                class="absolute right-2 top-1/2 -translate-y-1/2
+                       rounded-lg px-2 py-2
+                       text-slate-300 hover:text-white
+                       hover:bg-slate-800/70 transition"
+                data-toggle="password"
+                aria-label="Mostrar u ocultar contraseña"
+              >
+                <svg class="h-5 w-5" data-eye="open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+                <svg class="h-5 w-5 hidden" data-eye="closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                  <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M9.5 5.2A10.6 10.6 0 0 1 12 5c6.5 0 10 7 10 7a18.1 18.1 0 0 1-4 5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M6.2 6.2C3.5 8.7 2 12 2 12s3.5 7 10 7c1 0 1.9-.1 2.8-.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
 
-      <!-- Confirmar contraseña -->
-      <input type="password" name="confirmarPassword" placeholder="Repetir Contraseña" required
-        class="w-full px-4 py-2 rounded-md bg-slate-800 text-white/70 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-sm" />
+          <!-- Confirmar Password -->
+          <div class="space-y-1">
+            <label for="confirmarPassword" class="block text-sm font-medium text-slate-300">Repetir contraseña</label>
+            <div class="relative">
+              <input
+                type="password"
+                id="confirmarPassword"
+                name="confirmarPassword"
+                placeholder="Repetir contraseña"
+                required
+                autocomplete="new-password"
+                class="w-full px-4 py-3 rounded-xl
+                       bg-slate-900 text-white placeholder-white/35
+                       border border-slate-600
+                       focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                       transition pr-12"
+              />
+              <button
+                type="button"
+                class="absolute right-2 top-1/2 -translate-y-1/2
+                       rounded-lg px-2 py-2
+                       text-slate-300 hover:text-white
+                       hover:bg-slate-800/70 transition"
+                data-toggle="confirmarPassword"
+                aria-label="Mostrar u ocultar contraseña"
+              >
+                <svg class="h-5 w-5" data-eye="open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+                <svg class="h-5 w-5 hidden" data-eye="closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                  <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M9.5 5.2A10.6 10.6 0 0 1 12 5c6.5 0 10 7 10 7a18.1 18.1 0 0 1-4 5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M6.2 6.2C3.5 8.7 2 12 2 12s3.5 7 10 7c1 0 1.9-.1 2.8-.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
 
-      <!-- Botón -->
-      <button type="submit"
-        class="w-full py-2 rounded-md bg-blue-600 text-white hover:bg-blue-500 transition duration-300 shadow">
-        Registrarse
-      </button>
+          <!-- Botón -->
+          <button
+            type="submit"
+            class="w-full bg-sky-600 hover:bg-sky-700 active:bg-sky-800
+                   text-white font-semibold py-3 rounded-xl
+                   shadow-md hover:shadow-lg transition"
+          >
+            Registrarme
+          </button>
 
-    </form>
+          <!-- Links -->
+          <div class="flex items-center justify-between text-sm text-slate-300">
+            <a href="/login" class="text-sky-300 hover:text-sky-200 underline underline-offset-4">
+              Ya tengo cuenta
+            </a>
+            <span class="text-slate-400">
+              Datos seguros
+            </span>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
   </div>
 </main>
 
-<% if (errores && errores.length > 0) { %>
-  <script>
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      html: `<ul style="text-align:left; padding-left:1rem;">` +
-        `<% errores.forEach(function(e) { %><li><%= e %></li><% }) %>` +
-        `</ul>`,
-      confirmButtonColor: '#d33',
-      width: '400px',
-      heightAuto: false,
-      timer: 4000,
-      timerProgressBar: true
-    });
-  </script>
-<% } %>
+<!-- Errores: sin EJS dentro del JS -->
+<div
+  id="flashErroresRegistro"
+  data-errores="<%= (errores && errores.length) ? JSON.stringify(errores).replace(/</g,'\\u003c') : '[]' %>"
+  class="hidden"
+></div>
 
 <script>
-  function capitalizarPrimeraLetra(campoId) {
-    const input = document.getElementById(campoId);
-    input.value = input.value
+  function capitalizarWords(v) {
+    return String(v || "")
       .toLowerCase()
-      .replace(/\b\w/g, letra => letra.toUpperCase());
+      .replace(/\b\w/g, (l) => l.toUpperCase());
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const campos = ["nombre", "apellido"];
-    campos.forEach(campoId => {
-      const input = document.getElementsByName(campoId)[0];
-      if (input) {
-        input.setAttribute("id", campoId);
-        input.addEventListener("blur", () => capitalizarPrimeraLetra(campoId));
+    const form = document.getElementById("registroForm");
+
+    // ✅ Placeholder: al focus se borra; al blur vuelve SOLO si está vacío
+    const inputs = Array.from(form.querySelectorAll("input"));
+    inputs.forEach((input) => {
+      const original = input.getAttribute("placeholder") || "";
+      input.dataset.ph = original;
+
+      input.addEventListener("focus", () => {
+        input.setAttribute("placeholder", "");
+      });
+
+      input.addEventListener("blur", () => {
+        // trim
+        input.value = (input.value || "").trim();
+
+        // volver placeholder si quedó vacío
+        if (!input.value) {
+          input.setAttribute("placeholder", input.dataset.ph || original);
+        }
+
+        // capitalizar nombre/apellido
+        if (input.id === "nombre" || input.id === "apellido") {
+          input.value = capitalizarWords(input.value);
+        }
+
+        // dni solo números (8)
+        if (input.id === "dni") {
+          input.value = input.value.replace(/\D/g, "").slice(0, 8);
+        }
+      });
+
+      // dni: restringir mientras escribe
+      if (input.id === "dni") {
+        input.addEventListener("input", () => {
+          input.value = input.value.replace(/\D/g, "").slice(0, 8);
+        });
       }
     });
-  });
-</script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("form");
+    // ✅ Mostrar/Ocultar contraseña (ambos campos)
+    document.querySelectorAll("[data-toggle]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-toggle");
+        const field = document.getElementById(targetId);
+        if (!field) return;
 
-    // Eliminar espacios al salir de cada campo
-    form.querySelectorAll("input").forEach(input => {
-      input.addEventListener("blur", () => {
-        input.value = input.value.trim();
+        const toText = field.type === "password";
+        field.type = toText ? "text" : "password";
+
+        const eyeOpen = btn.querySelector('[data-eye="open"]');
+        const eyeClosed = btn.querySelector('[data-eye="closed"]');
+        if (eyeOpen && eyeClosed) {
+          eyeOpen.classList.toggle("hidden", toText);
+          eyeClosed.classList.toggle("hidden", !toText);
+        }
       });
     });
 
-    // Eliminar espacios al enviar
+    // ✅ Trim al enviar
     form.addEventListener("submit", () => {
-      form.querySelectorAll("input").forEach(input => {
-        input.value = input.value.trim();
-      });
+      inputs.forEach((i) => i.value = (i.value || "").trim());
     });
+
+    // ✅ Swal errores
+    const flash = document.getElementById("flashErroresRegistro");
+    let errs = [];
+    try { errs = JSON.parse(flash?.dataset?.errores || "[]"); } catch { errs = []; }
+
+    if (Array.isArray(errs) && errs.length > 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Revisá estos campos",
+        html: `<ul style="text-align:left; padding-left:1rem; margin:0;">
+          ${errs.map(e => `<li>${String(e)}</li>`).join("")}
+        </ul>`,
+        confirmButtonColor: "#e11d48",
+        width: "clamp(320px, 92vw, 520px)",
+        heightAuto: false,
+        timer: 4500,
+        timerProgressBar: true
+      });
+    }
   });
 </script>

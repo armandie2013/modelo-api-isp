@@ -77,34 +77,48 @@
               </tr>
             </thead>
             <tbody>
-              <% ultimosCobros.forEach(cobro=> { %>
-                <tr class="border-t border-slate-700 hover:bg-slate-800/80 transition-colors">
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    <%= new Date(cobro.fecha).toLocaleDateString() %>
-                  </td>
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    <%= cobro.numeroComprobante %>
-                  </td>
-                  <td class="px-3 py-2 truncate max-w-[180px] sm:max-w-[260px]">
-                    <%= cobro.cliente %>
-                  </td>
-                  <td class="px-3 py-2 text-right whitespace-nowrap">
-                    <%= cobro.importe.toLocaleString("es-AR", { style: "currency" , currency: "ARS" }) %>
-                  </td>
-                  <td class="px-3 py-2 text-right whitespace-nowrap">
-                    <a href="/cobros/<%= cobro.idComprobante %>/recibo" class="text-sky-300 underline text-sm">
-                      Ver
-                    </a>
+              <%
+                const ultimosCobrosOrdenados = (ultimosCobros || [])
+                  .slice()
+                  .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+              %>
+
+              <% if (!ultimosCobrosOrdenados.length) { %>
+                <tr>
+                  <td colspan="5" class="text-center py-4 text-slate-400">
+                    Sin cobros aún.
                   </td>
                 </tr>
-              <% }) %>
+              <% } else { %>
+                <% ultimosCobrosOrdenados.forEach(cobro => { %>
+                  <tr class="border-t border-slate-700 hover:bg-slate-800/80 transition-colors">
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      <%= new Date(cobro.fecha).toLocaleDateString("es-AR") %>
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      <%= cobro.numeroComprobante %>
+                    </td>
+                    <td class="px-3 py-2 truncate max-w-[180px] sm:max-w-[260px]">
+                      <%= cobro.cliente %>
+                    </td>
+                    <td class="px-3 py-2 text-right whitespace-nowrap">
+                      <%= Number(cobro.importe || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" }) %>
+                    </td>
+                    <td class="px-3 py-2 text-right whitespace-nowrap">
+                      <a href="/cobros/<%= cobro.idComprobante %>/recibo" class="text-sky-300 underline text-sm">
+                        Ver
+                      </a>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- Historial -->
+    <!-- Historial financiero -->
     <div class="mt-8 sm:mt-10">
       <h2 class="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
         Historial financiero
@@ -123,35 +137,65 @@
                 <th class="px-3 py-3 text-right">Saldo</th>
               </tr>
             </thead>
+
             <tbody>
-              <% if (movimientos.length===0) { %>
+              <%
+                const movsAsc = (movimientos || [])
+                  .slice()
+                  .sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+                const movsDesc = movsAsc.slice().reverse();
+
+                // Saldo total real (hasta hoy)
+                let saldoTotal = 0;
+                movsAsc.forEach(m => { saldoTotal += Number(m.importe || 0); });
+
+                // Mostramos de nuevo a viejo, y el saldo "retrocede"
+                let saldoMostrado = saldoTotal;
+              %>
+
+              <% if (!movsDesc.length) { %>
                 <tr>
                   <td colspan="6" class="text-center py-4 text-slate-400">
                     Sin movimientos aún.
                   </td>
                 </tr>
-              <% } else { let saldo=0; movimientos.slice().reverse().forEach(mov=> { saldo += mov.importe; %>
-                <tr class="border-t border-slate-700 hover:bg-slate-800/80 transition-colors">
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    <%= new Date(mov.fecha).toLocaleDateString("es-AR") %>
-                  </td>
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    <%= mov.numeroComprobante || "-" %>
-                  </td>
-                  <td class="px-3 py-2 capitalize whitespace-nowrap">
-                    <%= mov.tipo %>
-                  </td>
-                  <td class="px-3 py-2 truncate max-w-[220px] sm:max-w-[360px]">
-                    <%= mov.detalle %>
-                  </td>
-                  <td class="px-3 py-2 text-right whitespace-nowrap <%= mov.importe < 0 ? 'text-rose-400' : 'text-emerald-400' %>">
-                    <%= mov.importe.toLocaleString("es-AR", { style: "currency" , currency: "ARS" }) %>
-                  </td>
-                  <td class="px-3 py-2 text-right whitespace-nowrap font-semibold">
-                    <%= saldo.toLocaleString("es-AR", { style: "currency" , currency: "ARS" }) %>
-                  </td>
-                </tr>
-              <% }) } %>
+              <% } else { %>
+
+                <% movsDesc.forEach(mov => { %>
+                  <tr class="border-t border-slate-700 hover:bg-slate-800/80 transition-colors">
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      <%= new Date(mov.fecha).toLocaleDateString("es-AR") %>
+                    </td>
+
+                    <td class="px-3 py-2 whitespace-nowrap">
+                      <%= mov.numeroComprobante || "-" %>
+                    </td>
+
+                    <td class="px-3 py-2 capitalize whitespace-nowrap">
+                      <%= mov.tipo %>
+                    </td>
+
+                    <td class="px-3 py-2 truncate max-w-[220px] sm:max-w-[360px]">
+                      <%= mov.detalle %>
+                    </td>
+
+                    <td class="px-3 py-2 text-right whitespace-nowrap <%= Number(mov.importe || 0) < 0 ? 'text-rose-400' : 'text-emerald-400' %>">
+                      <%= Number(mov.importe || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" }) %>
+                    </td>
+
+                    <td class="px-3 py-2 text-right whitespace-nowrap font-semibold">
+                      <%= Number(saldoMostrado || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" }) %>
+                    </td>
+                  </tr>
+
+                  <%
+                    // Retrocedemos el saldo para el siguiente (más viejo)
+                    saldoMostrado -= Number(mov.importe || 0);
+                  %>
+                <% }) %>
+
+              <% } %>
             </tbody>
           </table>
         </div>

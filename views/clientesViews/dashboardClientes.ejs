@@ -1,69 +1,240 @@
-<div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8">
-  <div class="w-full max-w-sm sm:max-w-3xl md:max-w-5xl lg:max-w-6xl bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
+<main>
+  <style>
+    .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
+  </style>
 
-    <!-- Encabezado -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-      <form action="/clientes/generar-cargos" method="POST" onsubmit="return confirm('¿Generar cargos para todos los clientes?')">
-        <button type="submit"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition shadow">
-          Generar cargos del mes
-        </button>
-      </form>
-      <h1 class="text-2xl sm:text-3xl font-bold text-center sm:text-left">Listado de Clientes</h1>
-      <a href="/clientes/crear"
-        class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition shadow">
-        Registrar nuevo cliente
-      </a>
-    </div>
+  <!-- ✅ Mismo shell que Admin -->
+  <div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-0 sm:py-5">
+    <div
+      class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
+             bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
+             backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
+             px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 text-white safe-bottom"
+    >
 
-    <% if (clientes.length === 0) { %>
-      <p class="text-center text-slate-300">No hay clientes registrados aún.</p>
-    <% } else { %>
-      <div class="bg-slate-800 shadow rounded-lg overflow-x-auto">
-        <table class="min-w-[900px] w-full text-sm text-white">
-          <thead class="bg-slate-700 text-blue-200 uppercase text-xs">
-            <tr>
-              <th class="px-3 py-3 text-left">#</th>
-              <th class="px-3 py-3 text-left">Nombre</th>
-              <th class="px-3 py-3 text-left">Apellido</th>
-              <th class="px-3 py-3 text-left">DNI</th>
-              <th class="px-3 py-3 text-left w-[180px]">Dirección</th>
-              <th class="px-3 py-3 text-left">Teléfono</th>
-              <th class="px-3 py-3 text-left w-[200px]">Correo</th>
-              <th class="px-3 py-3 text-left w-[200px]">Plan</th>
-              <th class="px-3 py-3 text-left">Precio</th>
-              <th class="px-3 py-3 text-center w-[180px]">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% clientes.forEach((cliente, index) => { %>
-              <tr class="border-b border-slate-600 hover:bg-slate-700">
-                <td class="px-3 py-2"><%= index + 1 %></td>
-                <td class="px-3 py-2"><%= cliente.nombre %></td>
-                <td class="px-3 py-2"><%= cliente.apellido %></td>
-                <td class="px-3 py-2"><%= cliente.dni %></td>
-                <td class="px-3 py-2 truncate" title="<%= cliente.direccion %>"><%= cliente.direccion %></td>
-                <td class="px-3 py-2"><%= cliente.telefono %></td>
-                <td class="px-3 py-2 truncate" title="<%= cliente.email %>"><%= cliente.email %></td>
-                <td class="px-3 py-2">
-                  <span class="block font-medium text-blue-300"><%= cliente.plan?.nombre %></span>
-                  <!-- <span class="text-xs text-white/70">$<%= cliente.plan?.precio.toFixed(2) %></span> -->
-                </td>
-                <td class="px-3 py-2"><%= cliente.plan?.precio.toFixed(2) %></td>
-                <td class="px-3 py-2 text-center space-x-2">
-                  <a href="/clientes/<%= cliente._id %>/historial" class="text-green-400 hover:underline text-sm">Ver</a>
-                  <a href="/clientes/editar/<%= cliente._id %>" class="text-blue-400 hover:underline text-sm">Editar</a>
-                  <form action="/clientes/eliminar/<%= cliente._id %>" method="POST" class="inline">
-                    <button type="submit" onclick="return confirm('¿Eliminar este cliente?')"
-                      class="text-red-400 hover:underline text-sm">Eliminar</button>
-                  </form>
-                </td>
+      <!-- Header -->
+      <header class="mb-6 sm:mb-8">
+        <p class="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 mb-2">
+          Administración · Clientes
+        </p>
+
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+          <div class="min-w-0">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
+              Listado de clientes
+            </h1>
+            <p class="text-sm sm:text-base text-slate-300 mt-1 max-w-2xl">
+              Gestioná clientes, planes y accesos rápidos al historial.
+            </p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 sm:justify-end">
+            <form action="/clientes/generar-cargos" method="POST"
+                  onsubmit="return confirm('¿Generar cargos para todos los clientes?')">
+              <button
+                type="submit"
+                class="inline-flex items-center justify-center
+                       bg-sky-600 hover:bg-sky-700 active:bg-sky-800
+                       text-white font-semibold
+                       py-2.5 px-5 rounded-xl
+                       shadow-md hover:shadow-lg transition
+                       whitespace-nowrap"
+              >
+                Generar cargos del mes
+              </button>
+            </form>
+
+            <a
+              href="/clientes/crear"
+              class="inline-flex items-center justify-center
+                     bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800
+                     text-white font-semibold
+                     py-2.5 px-5 rounded-xl
+                     shadow-md hover:shadow-lg transition
+                     whitespace-nowrap"
+            >
+              Registrar nuevo cliente
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <% if (!clientes || clientes.length === 0) { %>
+        <div class="bg-slate-900/40 border border-slate-700/70 rounded-2xl p-6 text-center">
+          <p class="text-slate-200 font-semibold">No hay clientes registrados.</p>
+          <p class="text-slate-400 text-sm mt-1">Registrá el primero para comenzar.</p>
+          <a
+            href="/clientes/crear"
+            class="inline-flex mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow transition"
+          >
+            Registrar primer cliente
+          </a>
+        </div>
+      <% } else { %>
+
+        <!-- ================= MOBILE (cards, SIN scroll) ================= -->
+        <section class="space-y-3 sm:hidden">
+          <% clientes.forEach((cliente, index) => { %>
+            <div class="bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4 shadow">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-white font-semibold text-base truncate">
+                    <%= cliente.nombre %> <%= cliente.apellido %>
+                  </p>
+                  <p class="text-slate-300 text-sm mt-1">
+                    <span class="text-slate-400">DNI:</span>
+                    <span class="text-slate-200"><%= cliente.dni %></span>
+                  </p>
+                  <p class="text-slate-300 text-sm mt-1 truncate">
+                    <span class="text-slate-400">Dirección:</span>
+                    <span class="text-slate-200"><%= cliente.direccion || "—" %></span>
+                  </p>
+                  <p class="text-slate-300 text-sm mt-1">
+                    <span class="text-slate-400">Tel:</span>
+                    <span class="text-slate-200"><%= cliente.telefono || "—" %></span>
+                  </p>
+                  <p class="text-slate-300 text-sm mt-1 truncate">
+                    <span class="text-slate-400">Email:</span>
+                    <span class="text-slate-200"><%= cliente.email || "—" %></span>
+                  </p>
+                </div>
+
+                <div class="text-right shrink-0">
+                  <p class="text-xs text-slate-400">#<%= index + 1 %></p>
+
+                  <p class="mt-2 text-xs text-slate-400">Plan</p>
+                  <p class="text-emerald-200 font-semibold text-sm">
+                    <%= cliente.plan?.nombre || "—" %>
+                  </p>
+
+                  <p class="mt-1 text-sky-200 font-semibold text-sm">
+                    <%= (cliente.plan?.precio != null) ? ("$" + Number(cliente.plan.precio).toFixed(2)) : "—" %>
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-3 gap-2">
+                <a
+                  href="/clientes/<%= cliente._id %>/historial"
+                  class="text-center bg-emerald-500/15 hover:bg-emerald-500/25
+                         border border-emerald-400/30
+                         text-emerald-200 font-semibold py-2 rounded-xl transition text-sm"
+                >
+                  Ver
+                </a>
+
+                <a
+                  href="/clientes/editar/<%= cliente._id %>"
+                  class="text-center bg-slate-950/40 hover:bg-slate-950/60
+                         border border-slate-700/70
+                         text-sky-200 font-semibold py-2 rounded-xl transition text-sm"
+                >
+                  Editar
+                </a>
+
+                <form action="/clientes/eliminar/<%= cliente._id %>" method="POST">
+                  <button
+                    type="submit"
+                    onclick="return confirm('¿Eliminar este cliente?')"
+                    class="w-full bg-rose-500/15 hover:bg-rose-500/25
+                           border border-rose-400/30
+                           text-rose-200 font-semibold py-2 rounded-xl transition text-sm"
+                  >
+                    Eliminar
+                  </button>
+                </form>
+              </div>
+            </div>
+          <% }) %>
+        </section>
+
+        <!-- ================= TABLET/DESKTOP (tabla) ================= -->
+        <div class="hidden sm:block bg-slate-900/45 border border-slate-700/70 rounded-2xl shadow-lg overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-900/60 text-slate-300 uppercase text-xs tracking-wide">
+              <tr>
+                <th class="px-4 py-4 text-left">#</th>
+                <th class="px-4 py-4 text-left">Nombre</th>
+                <th class="px-4 py-4 text-left">Apellido</th>
+                <th class="px-4 py-4 text-left">DNI</th>
+                <th class="px-4 py-4 text-left">Dirección</th>
+                <th class="px-4 py-4 text-left">Teléfono</th>
+                <th class="px-4 py-4 text-left">Correo</th>
+                <th class="px-4 py-4 text-left">Plan</th>
+                <th class="px-4 py-4 text-right">Precio</th>
+                <th class="px-4 py-4 text-right">Acciones</th>
               </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
-    <% } %>
+            </thead>
 
+            <tbody>
+              <% clientes.forEach((cliente, index) => { %>
+                <tr class="border-t border-slate-700/70 hover:bg-slate-900/40 transition">
+                  <td class="px-4 py-3 text-slate-300"><%= index + 1 %></td>
+                  <td class="px-4 py-3 font-medium text-white"><%= cliente.nombre %></td>
+                  <td class="px-4 py-3 text-slate-200"><%= cliente.apellido %></td>
+                  <td class="px-4 py-3 text-slate-200"><%= cliente.dni %></td>
+
+                  <td class="px-4 py-3 text-slate-300 max-w-[260px] truncate" title="<%= cliente.direccion %>">
+                    <%= cliente.direccion || "—" %>
+                  </td>
+
+                  <td class="px-4 py-3 text-slate-300"><%= cliente.telefono || "—" %></td>
+
+                  <td class="px-4 py-3 text-slate-300 max-w-[260px] truncate" title="<%= cliente.email %>">
+                    <%= cliente.email || "—" %>
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <span class="block font-semibold text-sky-200">
+                      <%= cliente.plan?.nombre || "—" %>
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-3 text-right font-semibold text-emerald-200">
+                    <%= (cliente.plan?.precio != null) ? ("$" + Number(cliente.plan.precio).toFixed(2)) : "—" %>
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <div class="flex justify-end gap-2">
+                      <a
+                        href="/clientes/<%= cliente._id %>/historial"
+                        class="bg-emerald-500/15 hover:bg-emerald-500/25
+                               border border-emerald-400/30
+                               text-emerald-200 font-semibold px-3 py-1.5 rounded-lg transition text-xs"
+                      >
+                        Ver
+                      </a>
+
+                      <a
+                        href="/clientes/editar/<%= cliente._id %>"
+                        class="bg-slate-950/40 hover:bg-slate-950/60
+                               border border-slate-700/70
+                               text-sky-200 font-semibold px-3 py-1.5 rounded-lg transition text-xs"
+                      >
+                        Editar
+                      </a>
+
+                      <form action="/clientes/eliminar/<%= cliente._id %>" method="POST">
+                        <button
+                          type="submit"
+                          onclick="return confirm('¿Eliminar este cliente?')"
+                          class="bg-rose-500/15 hover:bg-rose-500/25
+                                 border border-rose-400/30
+                                 text-rose-200 font-semibold px-3 py-1.5 rounded-lg transition text-xs"
+                        >
+                          Eliminar
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+      <% } %>
+
+    </div>
   </div>
-</div>
+</main>

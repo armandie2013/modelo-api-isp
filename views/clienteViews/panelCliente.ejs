@@ -1,91 +1,311 @@
-<main class="flex-1 flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-6 sm:py-8">
-  <div
-    class="w-full max-w-sm sm:max-w-3xl md:max-w-5xl lg:max-w-6xl bg-slate-900/90 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-4 sm:p-6 md:p-10 text-white">
+<style>
+  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
 
-    <h1 class="text-2xl font-bold text-center mb-6">
-      Bienvenido, <%= cliente.nombre %>
-        <%= cliente.apellido %>
-    </h1>
+  /* ✅ Medida única para toda la app */
+  .app-shell { padding-left: 6px; padding-right: 6px; padding-top: 0px; padding-bottom: 0px; }
+  @media (min-width: 640px) { .app-shell { padding-left: 12px; padding-right: 12px; } }
+  @media (min-width: 768px) { .app-shell { padding-left: 16px; padding-right: 16px; } }
+</style>
+
+<div class="flex items-start justify-center min-h-[calc(100vh-200px)] app-shell py-0 sm:py-5">
+  <div
+    class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
+           bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
+           backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
+           px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 text-white safe-bottom overflow-x-hidden"
+  >
+
+    <!-- Header -->
+    <header class="mb-6 sm:mb-8">
+      <p class="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 mb-2">
+        Cliente · Panel
+      </p>
+
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
+        Bienvenido, <span class="text-sky-300"><%= cliente.nombre %> <%= cliente.apellido %></span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-300 mt-2 max-w-2xl">
+        Tus datos personales y el detalle de tus facturas con pagos asociados.
+      </p>
+    </header>
 
     <!-- Datos personales -->
-    <h2 class="text-xl font-semibold mb-3">Datos Personales</h2>
-    <div class="bg-slate-800 border border-slate-600 rounded-lg p-4 sm:p-6 mb-8 shadow">
-      <p><strong>DNI:</strong>
-        <%= cliente.dni %>
-      </p>
-      <p><strong>Email:</strong>
-        <%= cliente.email %>
-      </p>
-      <p><strong>Teléfono:</strong>
-        <%= cliente.telefono %>
-      </p>
-      <p><strong>Dirección:</strong>
-        <%= cliente.direccion %>
-      </p>
-      <p><strong>Plan:</strong>
-        <%= cliente.plan?.nombre %> - <%= cliente.plan?.precioFormateado %>
-      </p>
-    </div>
+    <section class="mb-8 sm:mb-10">
+      <h2 class="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
+        Datos personales
+      </h2>
 
-    <!-- Historial -->
-    <h2 class="text-xl font-semibold mb-3">Historial Facturas</h2>
-    <% if (historial.length===0) { %>
-      <p class="text-slate-300 mb-4">Sin movimientos aún.</p>
-      <% } else { %>
-        <div class="w-full overflow-x-auto mb-8 bg-slate-800 rounded-lg shadow border border-slate-600">
-          <table class="min-w-full text-sm text-white table-auto">
-            <thead class="bg-slate-700 text-blue-200 uppercase">
-              <tr>
-                <th class="px-3 py-2 whitespace-nowrap">#</th>
-                <th class="px-3 py-2 whitespace-nowrap">N° Comp.</th>
-                <th class="px-3 py-2 whitespace-nowrap">Tipo</th>
-                <th class="px-3 py-2 whitespace-nowrap">Fecha</th>
-                <th class="px-3 py-2 min-w-[200px] whitespace-nowrap">Detalle</th>
-                <th class="px-3 py-2 text-right whitespace-nowrap">Cargo</th>
-                <th class="px-3 py-2 text-right whitespace-nowrap">Pago</th>
-                <th class="px-3 py-2 text-right whitespace-nowrap">Saldo</th>
-                <th class="px-3 py-2 text-center whitespace-nowrap">Recibo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% historial.forEach((item, i)=> { %>
-                <tr
-                  class="border-b border-slate-600 <%= item.tipo === 'Factura' ? 'text-red-400' : item.tipo === 'Pago' ? 'text-green-400' : 'text-white' %> hover:bg-slate-700">
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    <%= i + 1 %>
-                  </td>
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    <%= item.numero %>
-                  </td>
-                  <td class="px-3 py-2 capitalize whitespace-nowrap">
-                    <%= item.tipo %>
-                  </td>
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    <%= new Date(item.fecha).toLocaleDateString() %>
-                  </td>
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    <%= item.detalle || '-' %>
-                  </td>
-                  <td class="px-3 py-2 text-right whitespace-nowrap">
-                    <%= item.cargo> 0 ? item.cargoFormateado : '-' %>
-                  </td>
-                  <td class="px-3 py-2 text-right whitespace-nowrap">
-                    <%= item.pago> 0 ? item.pagoFormateado : '-' %>
-                  </td>
-                  <td class="px-3 py-2 text-right font-semibold whitespace-nowrap">
-                    <%= item.saldoFormateado %>
-                  </td>
-                  <td class="px-3 py-2 text-center whitespace-nowrap">
-                    <% if (item.tipo==='Pago' ) { %>
-                      <a href="/cobros/<%= item._id %>/recibo" class="text-blue-400 hover:underline">Ver</a>
-                      <% } else { %> - <% } %>
-                  </td>
-                </tr>
-                <% }); %>
-            </tbody>
-          </table>
+      <div class="bg-slate-900/70 border border-slate-700/80 rounded-2xl p-4 sm:p-6 shadow">
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div class="bg-slate-950/30 border border-slate-700/70 rounded-xl p-3 sm:p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-400">DNI</dt>
+            <dd class="text-white font-semibold mt-1"><%= cliente.dni || "—" %></dd>
+          </div>
+
+          <div class="bg-slate-950/30 border border-slate-700/70 rounded-xl p-3 sm:p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-400">Email</dt>
+            <dd class="text-white font-semibold mt-1 break-words"><%= cliente.email || "—" %></dd>
+          </div>
+
+          <div class="bg-slate-950/30 border border-slate-700/70 rounded-xl p-3 sm:p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-400">Teléfono</dt>
+            <dd class="text-white font-semibold mt-1"><%= cliente.telefono || "—" %></dd>
+          </div>
+
+          <div class="bg-slate-950/30 border border-slate-700/70 rounded-xl p-3 sm:p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-400">Dirección</dt>
+            <dd class="text-white font-semibold mt-1"><%= cliente.direccion || "—" %></dd>
+          </div>
+
+          <div class="sm:col-span-2 bg-slate-950/30 border border-slate-700/70 rounded-xl p-3 sm:p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-400">Plan</dt>
+            <dd class="mt-1">
+              <p class="text-white font-semibold">
+                <%= cliente.plan?.nombre || "—" %>
+              </p>
+              <p class="text-sm text-emerald-300 font-semibold">
+                <%= cliente.plan?.precioFormateado || (cliente.plan?.precio != null ? Number(cliente.plan.precio).toLocaleString("es-AR", { style:"currency", currency:"ARS" }) : "") %>
+              </p>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- Facturas + pagos asociados -->
+    <section>
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-3 sm:mb-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-semibold text-white">
+            Facturas y pagos asociados
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Cada tarjeta es una factura. Adentro se ven sus pagos (con recibo).
+          </p>
         </div>
-        <% } %>
+
+        <%
+          const _facturas = (facturasUI || []).slice().sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+          const fmtARS = (n) => Number(n || 0).toLocaleString("es-AR", { style:"currency", currency:"ARS" });
+
+          const totalFacturado = _facturas.reduce((acc, f) => acc + Number(f.cargo || 0), 0);
+          const totalPagado = _facturas.reduce((acc, f) => {
+            const pagosLocal = (f.pagos || f.pagosAsociados || f.pagosFactura || []);
+            return acc + pagosLocal.reduce((a,p)=> a + Number(p.importe || 0), 0);
+          }, 0);
+
+          const totalAdeudado = Math.max(0, totalFacturado - totalPagado);
+          const estaAlDia = Number(totalAdeudado) <= 0;
+        %>
+
+        <!-- Totales -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 w-full lg:w-auto">
+          <!-- <div class="bg-slate-900/55 border border-slate-700/70 rounded-2xl p-3 shadow">
+            <p class="text-[11px] uppercase tracking-wide text-slate-400">Facturado</p>
+            <p class="text-base sm:text-lg font-extrabold text-rose-300 mt-1"><%= fmtARS(totalFacturado) %></p>
+          </div>
+
+          <div class="bg-slate-900/55 border border-slate-700/70 rounded-2xl p-3 shadow">
+            <p class="text-[11px] uppercase tracking-wide text-slate-400">Pagado</p>
+            <p class="text-base sm:text-lg font-extrabold text-emerald-300 mt-1"><%= fmtARS(totalPagado) %></p>
+          </div> -->
+
+          <% if (estaAlDia) { %>
+            <!-- ✅ Cartel "Estás al día" -->
+            <div class="bg-slate-900/55 border border-emerald-500/45 rounded-2xl p-3 shadow">
+              <p class="text-[11px] uppercase tracking-wide text-slate-400">Estado</p>
+              <div class="mt-1 flex items-center gap-2">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-200 text-sm">
+                  ✓
+                </span>
+                <p class="text-base sm:text-lg font-extrabold text-emerald-300 leading-tight">
+                  Estás al día
+                </p>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">
+                No tenés saldo pendiente.
+              </p>
+            </div>
+          <% } else { %>
+            <!-- ✅ Cartel "Adeudado" -->
+            <div class="bg-slate-900/55 border border-red-500/50 rounded-2xl p-3 shadow">
+              <p class="text-[11px] uppercase tracking-wide text-slate-400">Adeudado</p>
+              <p class="text-base sm:text-lg font-extrabold text-red-400 mt-1"><%= fmtARS(totalAdeudado) %></p>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Tenés saldo pendiente.
+              </p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <% if (!_facturas.length) { %>
+        <div class="bg-slate-900/40 border border-slate-700/70 rounded-2xl p-6 text-center">
+          <p class="text-slate-200 font-semibold">Sin facturas aún.</p>
+          <p class="text-slate-400 text-sm mt-1">Cuando existan cargos, aparecerán aquí.</p>
+        </div>
+      <% } else { %>
+
+        <!-- Cards compactas -->
+        <div id="facturasList" class="space-y-2 sm:space-y-3">
+          <% _facturas.forEach((f) => {
+
+              // ✅ Acá está la relación. Si NO viene armada desde backend, esto queda vacío.
+              const pagosRaw = (f.pagos || f.pagosAsociados || f.pagosFactura || []);
+              const pagos = pagosRaw.slice().sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+
+              const totalPagosFactura = pagos.reduce((acc, p) => acc + Number(p.importe || 0), 0);
+              const pendiente = Math.max(0, Number(f.cargo || 0) - totalPagosFactura);
+          %>
+
+            <article
+              class="factura-card bg-slate-900/55 border border-red-500/50 rounded-xl p-3 sm:p-4 shadow"
+              data-pendiente="<%= Number(pendiente || 0) %>"
+            >
+              <!-- Header factura -->
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-[11px] text-slate-400">
+                    <%= new Date(f.fecha).toLocaleDateString("es-AR") %>
+                    <span class="mx-2 text-slate-600">•</span>
+                    Factura Nº <span class="text-white font-semibold"><%= f.numero %></span>
+                  </p>
+                  <p class="text-sm text-slate-200 mt-1 truncate">
+                    <%= f.detalle || "—" %>
+                  </p>
+                </div>
+
+                <div class="shrink-0 text-right">
+                  <p class="text-[11px] text-slate-400">Factura</p>
+                  <p class="text-base sm:text-lg font-extrabold text-red-400 leading-tight">
+                    <%= fmtARS(f.cargo) %>
+                  </p>
+                  <p class="text-[11px] text-slate-400 mt-1">
+                    Pendiente:
+                    <span class="<%= pendiente > 0 ? 'text-red-400 font-semibold' : 'text-emerald-200 font-semibold' %>">
+                      <%= fmtARS(pendiente) %>
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Pagos adentro (SI existen) -->
+              <div class="mt-3 border-t border-slate-700/70 pt-3">
+                <div class="flex items-center justify-between gap-3">
+                  <p class="text-xs font-semibold text-slate-200">Pagos</p>
+
+                  <% if (pagos.length) { %>
+                    <p class="text-xs font-bold text-emerald-300 whitespace-nowrap">
+                      + <%= fmtARS(totalPagosFactura) %>
+                    </p>
+                  <% } else { %>
+                    <p class="text-xs text-slate-500">Sin pagos</p>
+                  <% } %>
+                </div>
+
+                <% if (pagos.length) { %>
+                  <div class="mt-2 space-y-2">
+                    <% pagos.forEach((p) => { %>
+                      <div class="bg-slate-950/40 border border-emerald-400/15 rounded-lg p-2.5">
+                        <div class="flex items-center justify-between gap-3">
+                          <div class="min-w-0">
+                            <p class="text-[11px] text-slate-400 truncate">
+                              <%= new Date(p.fecha).toLocaleDateString("es-AR") %>
+                              <span class="mx-2 text-slate-600">•</span>
+                              Recibo Nº <span class="text-white font-semibold"><%= p.numero || "—" %></span>
+                            </p>
+                          </div>
+
+                          <div class="flex items-center gap-2 shrink-0">
+                            <!-- <p class="text-xs font-bold text-emerald-300 whitespace-nowrap">
+                              + <%= fmtARS(p.importe) %>
+                            </p> -->
+
+                            <% if (p._id) { %>
+                              <a
+                                href="/cobros/<%= p._id %>/recibo"
+                                class="inline-flex items-center justify-center
+                                       bg-sky-500/15 hover:bg-sky-500/25
+                                       border border-sky-400/25
+                                       text-sky-200 font-semibold
+                                       px-2.5 py-1 rounded-lg transition text-[11px] whitespace-nowrap"
+                              >
+                                Ver recibo
+                              </a>
+                            <% } %>
+                          </div>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                <% } %>
+              </div>
+
+              <% if (!pagos.length) { %>
+                <p class="text-xs text-slate-400 mt-2">
+                  Aún no hay pagos registrados para esta factura.
+                </p>
+              <% } %>
+            </article>
+
+          <% }) %>
+        </div>
+
+        <!-- ✅ Botón SIEMPRE afuera del listado (evita quedar "entre cards") -->
+        <div id="historialToggle" class="mt-4 flex justify-center"></div>
+
+        <script>
+          (function () {
+            const cards = Array.from(document.querySelectorAll(".factura-card"));
+            const toggleWrap = document.getElementById("historialToggle");
+            if (!cards.length || !toggleWrap) return;
+
+            const pagadas = [];
+            const impagas = [];
+
+            cards.forEach(card => {
+              const pendiente = Number(card.dataset.pendiente || 0);
+              if (pendiente > 0) impagas.push(card);
+              else pagadas.push(card);
+            });
+
+            const estaAlDia = impagas.length === 0;
+
+            // 🟢 Si está al día → mostrar todo, sin botón
+            if (estaAlDia) return;
+
+            // 🔴 Hay impagas → ocultar pagadas
+            pagadas.forEach(c => c.classList.add("hidden"));
+
+            // Si no hay pagadas ocultas, no mostramos botón
+            if (!pagadas.length) return;
+
+            // Crear botón
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = "Ver historial completo";
+            btn.className =
+              "inline-flex items-center justify-center " +
+              "bg-sky-500/15 hover:bg-sky-500/25 " +
+              "border border-sky-400/25 " +
+              "text-sky-200 font-semibold " +
+              "px-5 py-2.5 rounded-xl transition text-sm";
+
+            toggleWrap.appendChild(btn);
+
+            let expanded = false;
+
+            btn.addEventListener("click", () => {
+              expanded = !expanded;
+              btn.textContent = expanded ? "Ocultar historial" : "Ver historial completo";
+              pagadas.forEach(c => c.classList.toggle("hidden", !expanded));
+            });
+          })();
+        </script>
+
+      <% } %>
+    </section>
 
   </div>
-</main>
+</div>

@@ -1,60 +1,157 @@
-<div class="max-w-6xl mx-auto px-4 py-8">
-  <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-    Historial des <%= cliente.nombre %> <%= cliente.apellido %>
-  </h1>
+<main>
+  <style>
+    .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
+  </style>
 
-  <% if (usuario.rol === 'cliente') { %>
-    <p class="text-center text-sm text-gray-500 mb-4">
-      A continuación se muestra el historial de pagos, cargos y notas de los últimos 6 meses.
-    </p>
-  <% } %>
+  <!-- ✅ MISMO WRAPPER QUE ADMIN -->
+  <div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-0 sm:py-5">
+    <div
+      class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
+             bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
+             backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
+             px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 text-white safe-bottom"
+    >
 
-  <% if (historial.length === 0) { %>
-    <p class="text-center text-gray-500">Sin movimientos aún.</p>
-  <% } else { %>
-    <div class="overflow-x-auto bg-white rounded-lg shadow-md border border-gray-200">
-      <table class="min-w-full table-auto text-sm text-gray-800">
-        <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
-          <tr>
-            <th class="px-4 py-3 text-left">#</th>
-            <th class="px-4 py-3 text-left">N° Comprobante</th>
-            <th class="px-4 py-3 text-left">Tipo</th>
-            <th class="px-4 py-3 text-left">Fecha</th>
-            <th class="px-4 py-3 text-left">Detalle</th>
-            <th class="px-4 py-3 text-right">Cargo ($)</th>
-            <th class="px-4 py-3 text-right">Pago ($)</th>
-            <th class="px-4 py-3 text-right">Saldo ($)</th>
-            <th class="px-4 py-3 text-center">Recibo</th>
-          </tr>
-        </thead>
-        <tbody>
+      <!-- Header -->
+      <header class="mb-6 sm:mb-8 text-center sm:text-left">
+        <p class="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 mb-2">
+          Cliente · Historial financiero
+        </p>
+
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
+          Historial de <%= cliente.nombre %> <%= cliente.apellido %>
+        </h1>
+
+        <% if (usuario.rol === 'cliente') { %>
+          <p class="text-sm sm:text-base text-slate-300 mt-2 max-w-2xl">
+            Movimientos de los últimos 6 meses: cargos, pagos y notas.
+          </p>
+        <% } %>
+      </header>
+
+      <% if (!historial || historial.length === 0) { %>
+
+        <!-- Sin movimientos -->
+        <div class="bg-slate-900/40 border border-slate-700/70 rounded-2xl p-6 text-center">
+          <p class="text-slate-200 font-semibold">Sin movimientos aún</p>
+          <p class="text-slate-400 text-sm mt-1">
+            Cuando existan cargos o pagos, aparecerán aquí.
+          </p>
+        </div>
+
+      <% } else { %>
+
+        <!-- ================= MOBILE ================= -->
+        <div class="space-y-3 sm:hidden">
           <% historial.forEach((item, i) => { %>
-            <tr class="border-b hover:bg-gray-50">
-              <td class="px-4 py-2"><%= i + 1 %></td>
-              <td class="px-4 py-2"><%= item.numero %></td>
-              <td class="px-4 py-2 capitalize"><%= item.tipo %></td>
-              <td class="px-4 py-2"><%= new Date(item.fecha).toLocaleDateString() %></td>
-              <td class="px-4 py-2"><%= item.detalle || '-' %></td>
-              <td class="px-4 py-2 text-right">
-                <%= item.cargo > 0 ? `$${item.cargo.toFixed(2)}` : '-' %>
-              </td>
-              <td class="px-4 py-2 text-right">
-                <%= item.pago > 0 ? `$${item.pago.toFixed(2)}` : '-' %>
-              </td>
-              <td class="px-4 py-2 text-right font-semibold">
-                <%= `$${item.saldo.toFixed(2)}` %>
-              </td>
-              <td class="px-4 py-2 text-center">
-                <% if (item.tipo === 'pago') { %>
-                  <a href="/cobros/<%= item._id %>/recibo" class="text-blue-600 hover:underline">Ver recibo</a>
-                <% } else { %>
-                  -
-                <% } %>
-              </td>
-            </tr>
+            <div class="bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4 shadow">
+              <div class="flex justify-between items-start gap-3">
+                <div class="min-w-0">
+                  <p class="text-sm text-slate-400">
+                    <%= new Date(item.fecha).toLocaleDateString() %>
+                  </p>
+                  <p class="font-semibold text-white capitalize">
+                    <%= item.tipo %>
+                  </p>
+                  <p class="text-sm text-slate-300 mt-1 truncate">
+                    <%= item.detalle || '—' %>
+                  </p>
+                  <p class="text-xs text-slate-400 mt-1">
+                    Comprobante Nº <%= item.numero %>
+                  </p>
+                </div>
+
+                <div class="text-right shrink-0">
+                  <% if (item.cargo > 0) { %>
+                    <p class="text-rose-300 font-semibold">
+                      - $<%= item.cargo.toFixed(2) %>
+                    </p>
+                  <% } %>
+
+                  <% if (item.pago > 0) { %>
+                    <p class="text-emerald-300 font-semibold">
+                      + $<%= item.pago.toFixed(2) %>
+                    </p>
+                  <% } %>
+
+                  <p class="text-sm font-bold text-sky-300 mt-1">
+                    $<%= item.saldo.toFixed(2) %>
+                  </p>
+                </div>
+              </div>
+
+              <% if (item.tipo === 'pago') { %>
+                <div class="mt-3 text-right">
+                  <a
+                    href="/cobros/<%= item._id %>/recibo"
+                    class="text-sky-300 text-sm font-semibold hover:underline"
+                  >
+                    Ver recibo
+                  </a>
+                </div>
+              <% } %>
+            </div>
           <% }) %>
-        </tbody>
-      </table>
+        </div>
+
+        <!-- ================= DESKTOP / TABLET ================= -->
+        <div class="hidden sm:block bg-slate-900/45 border border-slate-700/70 rounded-2xl shadow-lg overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-900/60 text-slate-300 uppercase text-xs tracking-wide">
+              <tr>
+                <th class="px-4 py-4 text-left">#</th>
+                <th class="px-4 py-4 text-left">Comprobante</th>
+                <th class="px-4 py-4 text-left">Tipo</th>
+                <th class="px-4 py-4 text-left">Fecha</th>
+                <th class="px-4 py-4 text-left">Detalle</th>
+                <th class="px-4 py-4 text-right">Cargo</th>
+                <th class="px-4 py-4 text-right">Pago</th>
+                <th class="px-4 py-4 text-right">Saldo</th>
+                <th class="px-4 py-4 text-center">Recibo</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <% historial.forEach((item, i) => { %>
+                <tr class="border-t border-slate-700/70 hover:bg-slate-900/40 transition">
+                  <td class="px-4 py-3 text-slate-300"><%= i + 1 %></td>
+                  <td class="px-4 py-3 text-slate-200"><%= item.numero %></td>
+                  <td class="px-4 py-3 text-slate-200 capitalize"><%= item.tipo %></td>
+                  <td class="px-4 py-3 text-slate-300">
+                    <%= new Date(item.fecha).toLocaleDateString() %>
+                  </td>
+                  <td class="px-4 py-3 text-slate-300">
+                    <%= item.detalle || '—' %>
+                  </td>
+                  <td class="px-4 py-3 text-right text-rose-300 font-medium">
+                    <%= item.cargo > 0 ? `-$${item.cargo.toFixed(2)}` : '—' %>
+                  </td>
+                  <td class="px-4 py-3 text-right text-emerald-300 font-medium">
+                    <%= item.pago > 0 ? `+$${item.pago.toFixed(2)}` : '—' %>
+                  </td>
+                  <td class="px-4 py-3 text-right font-bold text-sky-300">
+                    $<%= item.saldo.toFixed(2) %>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <% if (item.tipo === 'pago') { %>
+                      <a
+                        href="/cobros/<%= item._id %>/recibo"
+                        class="text-sky-300 hover:underline text-sm"
+                      >
+                        Ver
+                      </a>
+                    <% } else { %>
+                      —
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+      <% } %>
+
     </div>
-  <% } %>
-</div>
+  </div>
+</main>

@@ -1,76 +1,257 @@
-<div class="w-full max-w-4xl bg-slate-900/90 backdrop-blur-md border border-slate-700 rounded-xl shadow-2xl text-white p-6 sm:p-8 mx-auto mt-8">
-  <h1 class="text-2xl font-bold mb-6 text-center text-white">Editar Cliente</h1>
+<main>
+  <div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-0 sm:py-5">
+    <div
+      class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
+             bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
+             backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
+             px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 text-white"
+    >
 
-  <form action="/clientes/editar/<%= cliente._id %>" method="POST" class="space-y-6">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <input type="text" name="nombre" placeholder="Nombre" required value="<%= cliente.nombre %>"
-        class="w-full p-3 rounded bg-white/20 border border-white/30 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      <!-- Header -->
+      <header class="mb-8">
+        <p class="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 mb-2">
+          Administración · Clientes
+        </p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          Editar cliente
+        </h1>
+        <p class="text-sm text-slate-300 mt-1 max-w-2xl">
+          Actualizá los datos del cliente y seleccioná el plan correspondiente.
+        </p>
+      </header>
 
-      <input type="text" name="apellido" placeholder="Apellido" required value="<%= cliente.apellido %>"
-        class="w-full p-3 rounded bg-white/20 border border-white/30 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      <!-- Card -->
+      <div class="flex justify-center">
+        <div class="w-full max-w-2xl bg-slate-900/55 border border-slate-700/70 rounded-2xl p-6 sm:p-8 shadow-xl">
 
-      <input type="text" name="dni" placeholder="DNI" required value="<%= cliente.dni %>"
-        class="w-full p-3 rounded bg-white/20 border border-white/30 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <form action="/clientes/editar/<%= cliente._id %>" method="POST" class="space-y-6">
 
-      <input type="text" name="direccion" placeholder="Dirección" required value="<%= cliente.direccion %>"
-        class="w-full p-3 rounded bg-white/20 border border-white/30 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <!-- Datos -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-      <input type="text" name="telefono" placeholder="Teléfono" value="<%= cliente.telefono %>"
-        class="w-full p-3 rounded bg-white/20 border border-white/30 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              <div class="space-y-1">
+                <label class="block text-sm font-medium text-slate-300" for="nombre">Nombre</label>
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  placeholder="Nombre"
+                  required
+                  value="<%= cliente.nombre %>"
+                  class="w-full px-4 py-3 rounded-xl
+                         bg-slate-950/40 text-white placeholder-white/35
+                         border border-slate-600
+                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                         transition"
+                />
+              </div>
 
-      <input type="email" name="email" placeholder="Correo electrónico" value="<%= cliente.email %>"
-        class="w-full p-3 rounded bg-white/20 border border-white/30 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
-    </div>
+              <div class="space-y-1">
+                <label class="block text-sm font-medium text-slate-300" for="apellido">Apellido</label>
+                <input
+                  type="text"
+                  id="apellido"
+                  name="apellido"
+                  placeholder="Apellido"
+                  required
+                  value="<%= cliente.apellido %>"
+                  class="w-full px-4 py-3 rounded-xl
+                         bg-slate-950/40 text-white placeholder-white/35
+                         border border-slate-600
+                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                         transition"
+                />
+              </div>
 
-    <div>
-      <label class="block text-white mb-2 font-medium">Seleccionar Plan</label>
-      <select name="plan" id="plan"
-        class="w-full p-3 rounded bg-slate-800 border border-slate-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-        required onchange="mostrarDetallePlan(this)">
-        <option value="">-- Selecciona un plan --</option>
-        <% planes.forEach(plan=> { %>
-          <option value="<%= plan._id %>" <%=cliente.plan?.toString()===plan._id.toString() ? 'selected' : '' %>>
-            <%= plan.nombre %> - <%= plan.tipo %>
-          </option>
-        <% }) %>
-      </select>
+              <div class="space-y-1">
+                <label class="block text-sm font-medium text-slate-300" for="dni">DNI</label>
+                <input
+                  type="text"
+                  id="dni"
+                  name="dni"
+                  placeholder="DNI"
+                  required
+                  value="<%= cliente.dni %>"
+                  inputmode="numeric"
+                  class="w-full px-4 py-3 rounded-xl
+                         bg-slate-950/40 text-white placeholder-white/35
+                         border border-slate-600
+                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                         transition"
+                />
+              </div>
 
-      <div id="detalle-plan" class="mt-4 text-sm text-white hidden">
-        <p><strong>Tipo:</strong> <span id="tipo-plan"></span></p>
-        <p><strong>Precio:</strong> $<span id="precio-plan"></span></p>
+              <div class="space-y-1">
+                <label class="block text-sm font-medium text-slate-300" for="direccion">Dirección</label>
+                <input
+                  type="text"
+                  id="direccion"
+                  name="direccion"
+                  placeholder="Dirección"
+                  required
+                  value="<%= cliente.direccion %>"
+                  class="w-full px-4 py-3 rounded-xl
+                         bg-slate-950/40 text-white placeholder-white/35
+                         border border-slate-600
+                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                         transition"
+                />
+              </div>
+
+              <div class="space-y-1">
+                <label class="block text-sm font-medium text-slate-300" for="telefono">Teléfono</label>
+                <input
+                  type="text"
+                  id="telefono"
+                  name="telefono"
+                  placeholder="Teléfono"
+                  value="<%= cliente.telefono || '' %>"
+                  class="w-full px-4 py-3 rounded-xl
+                         bg-slate-950/40 text-white placeholder-white/35
+                         border border-slate-600
+                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                         transition"
+                />
+              </div>
+
+              <div class="space-y-1">
+                <label class="block text-sm font-medium text-slate-300" for="email">Correo electrónico</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="correo@ejemplo.com"
+                  value="<%= cliente.email || '' %>"
+                  class="w-full px-4 py-3 rounded-xl
+                         bg-slate-950/40 text-white placeholder-white/35
+                         border border-slate-600
+                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                         transition"
+                />
+              </div>
+
+            </div>
+
+            <!-- Plan -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-slate-300" for="plan">
+                Seleccionar plan
+              </label>
+
+              <select
+                name="plan"
+                id="plan"
+                required
+                onchange="mostrarDetallePlan(this)"
+                class="w-full px-4 py-3 rounded-xl
+                       bg-slate-950/40 text-white
+                       border border-slate-600
+                       focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                       transition"
+              >
+                <option value="">-- Seleccioná un plan --</option>
+                <% planes.forEach(plan => { %>
+                  <option value="<%= plan._id %>" <%= cliente.plan?.toString() === plan._id.toString() ? 'selected' : '' %>>
+                    <%= plan.nombre %> - <%= plan.tipo %>
+                  </option>
+                <% }) %>
+              </select>
+
+              <!-- Detalle plan -->
+              <div id="detalle-plan" class="hidden">
+                <div class="mt-3 rounded-xl border border-slate-700/70 bg-slate-950/30 p-4">
+                  <p class="text-sm text-slate-300">
+                    <span class="text-slate-400">Tipo:</span>
+                    <span id="tipo-plan" class="text-slate-100 font-medium"></span>
+                  </p>
+                  <p class="text-sm text-slate-300 mt-1">
+                    <span class="text-slate-400">Precio:</span>
+                    <span class="text-emerald-200 font-semibold" id="precio-plan"></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                type="submit"
+                class="flex-1 bg-sky-600 hover:bg-sky-700 active:bg-sky-800
+                       text-white font-semibold py-3 rounded-xl
+                       shadow-md hover:shadow-lg transition"
+              >
+                Guardar cambios
+              </button>
+
+              <a
+                href="/clientes/dashboard"
+                class="flex-1 text-center bg-slate-950/40 hover:bg-slate-950/60
+                       border border-slate-700/70
+                       text-slate-200 font-semibold py-3 rounded-xl
+                       transition"
+              >
+                Volver
+              </a>
+            </div>
+
+          </form>
+        </div>
       </div>
-    </div>
 
-    <div class="text-center">
-      <button type="submit"
-        class="inline-block bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold px-6 py-2 rounded-lg shadow">
-        Guardar Cambios
-      </button>
     </div>
-  </form>
-</div>
+  </div>
+</main>
 
 <script>
+  // Datos planes desde backend
   const planes = <%- JSON.stringify(planes) %>;
-  const planSeleccionado = "<%= cliente.plan?.toString() %>";
+  const planSeleccionado = "<%= cliente.plan?.toString() || '' %>";
+
+  function formatearMonedaARS(numero) {
+    return new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number(numero || 0));
+  }
 
   function mostrarDetallePlan(select) {
     const id = select.value;
-    const plan = planes.find(p => p._id === id);
-    const detalleDiv = document.getElementById('detalle-plan');
+    const plan = planes.find(p => String(p._id) === String(id));
+    const detalleDiv = document.getElementById("detalle-plan");
+
     if (plan) {
-      document.getElementById('tipo-plan').textContent = plan.tipo;
-      document.getElementById('precio-plan').textContent = plan.precio.toFixed(2);
-      detalleDiv.classList.remove('hidden');
+      document.getElementById("tipo-plan").textContent = plan.tipo || "—";
+      document.getElementById("precio-plan").textContent = formatearMonedaARS(plan.precio);
+      detalleDiv.classList.remove("hidden");
     } else {
-      detalleDiv.classList.add('hidden');
+      detalleDiv.classList.add("hidden");
     }
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    if (planSeleccionado) {
-      document.getElementById('plan').value = planSeleccionado;
-      mostrarDetallePlan(document.getElementById('plan'));
+  document.addEventListener("DOMContentLoaded", () => {
+    // placeholders: focus borra, blur vuelve SOLO si está vacío
+    const inputs = Array.from(document.querySelectorAll("input[placeholder]"));
+    inputs.forEach((input) => {
+      const ph = input.placeholder;
+      input.addEventListener("focus", () => input.placeholder = "");
+      input.addEventListener("blur", () => {
+        if (!input.value.trim()) input.placeholder = ph;
+      });
+    });
+
+    // DNI solo números (opcional)
+    const dni = document.getElementById("dni");
+    dni?.addEventListener("input", function () {
+      this.value = this.value.replace(/\D/g, "").slice(0, 10);
+    });
+
+    // Mostrar detalle del plan si ya hay uno seleccionado
+    const planSelect = document.getElementById("plan");
+    if (planSelect && planSeleccionado) {
+      planSelect.value = planSeleccionado;
+      mostrarDetallePlan(planSelect);
     }
   });
 </script>

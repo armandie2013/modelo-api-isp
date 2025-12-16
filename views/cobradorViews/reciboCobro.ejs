@@ -1,53 +1,117 @@
-<div class="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8 mt-8 text-gray-800">
-  <h1 class="text-2xl font-bold mb-4 text-center">Recibo de Cobro</h1>
+<style>
+  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
+</style>
 
-  <div class="mb-4">
-    <p><strong>N° Comprobante:</strong>
-      <%= cobro.numeroComprobante %>
-    </p>
-    <p><strong>Fecha:</strong>
-      <%= new Date(cobro.fecha).toLocaleDateString() %>
-    </p>
-  </div>
+<div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-0 sm:py-5">
+  <div
+    class="w-full max-w-3xl mx-auto
+           bg-slate-950
+           rounded-2xl shadow-xl border border-slate-700
+           px-5 sm:px-8 py-6 sm:py-8 text-white safe-bottom"
+  >
 
-  <div class="mb-4">
-    <p><strong>Cliente:</strong>
-      <%= cobro?.cliente?.nombre || '-' %> <%= cobro?.cliente?.apellido || '-' %>
-    </p>
-    <p><strong>DNI:</strong>
-      <%= cobro?.cliente?.dni || '-' %>
-    </p>
-  </div>
+    <!-- Encabezado -->
+    <header class="border-b border-slate-700 pb-4 mb-6">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-2">
+        <div>
+          <p class="text-xs uppercase tracking-widest text-slate-400">
+            Recibo de cobro
+          </p>
+          <h1 class="text-2xl sm:text-3xl font-bold mt-1">
+            Nº <span class="text-sky-400"><%= cobro.numeroComprobante %></span>
+          </h1>
+        </div>
 
-  <div class="mb-4">
-    <h2 class="font-semibold mb-2">Facturas cobradas:</h2>
-    <table class="w-full table-auto text-sm border border-gray-300">
-      <thead class="bg-gray-100 text-left">
-        <tr>
-          <th class="p-2 border">Tipo</th>
-          <th class="p-2 border">N° Comp.</th>
-          <th class="p-2 border">Detalle</th>
-          <th class="p-2 border text-right">Importe ($)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% (cobro.facturasPagadas || []).forEach(f => { %>
-          <tr>
-            <td class="p-2 border"><%= f?.tipo || '-' %></td>
-            <td class="p-2 border"><%= f?.numeroComprobante || '-' %></td>
-            <td class="p-2 border"><%= f?.detalle || '-' %></td>
-            <td class="p-2 border text-right"><%= f.importeFormateado %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
+        <p class="text-sm text-slate-300">
+          <%= new Date(cobro.fecha).toLocaleDateString("es-AR") %>
+        </p>
+      </div>
+    </header>
 
-  <div class="mt-4 text-right font-bold text-lg">
-    Total Cobrado: <%= cobro.totalCobradoFormateado %>
-  </div>
+    <!-- Cliente -->
+    <section class="mb-6">
+      <h2 class="text-sm font-semibold text-slate-300 uppercase mb-2">
+        Cliente
+      </h2>
 
-  <div class="mt-6 text-center">
-    <a href="/cobrador/panel" class="text-blue-600 hover:underline">Volver al panel</a>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-900 border border-slate-700 rounded-xl p-4">
+        <div>
+          <p class="text-xs text-slate-400">Nombre</p>
+          <p class="font-semibold text-white">
+            <%= cobro?.cliente?.nombre || '-' %> <%= cobro?.cliente?.apellido || '-' %>
+          </p>
+        </div>
+
+        <div>
+          <p class="text-xs text-slate-400">DNI</p>
+          <p class="font-semibold text-white">
+            <%= cobro?.cliente?.dni || '-' %>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detalle -->
+    <section class="mb-6">
+      <h2 class="text-sm font-semibold text-slate-300 uppercase mb-2">
+        Detalle del cobro
+      </h2>
+
+      <div class="border border-slate-700 rounded-xl overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-800 text-slate-300">
+            <tr>
+              <th class="px-4 py-3 text-left">Comprobante</th>
+              <th class="px-4 py-3 text-left">Detalle</th>
+              <th class="px-4 py-3 text-right">Importe</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% (cobro.facturasPagadas || []).forEach(f => { %>
+              <tr class="border-t border-slate-700">
+                <td class="px-4 py-3 whitespace-nowrap font-medium">
+                  <%= f?.numeroComprobante || '-' %>
+                </td>
+
+                <td class="px-4 py-3 text-slate-300">
+                  <%= f?.detalle || '-' %>
+                </td>
+
+                <td class="px-4 py-3 text-right font-semibold text-emerald-400">
+                  <%= f?.importeFormateado || '-' %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Total -->
+    <section class="mb-8">
+      <div class="flex justify-between items-center bg-slate-900 border border-emerald-500/40 rounded-xl p-4">
+        <p class="text-sm uppercase tracking-wide text-slate-400">
+          Total cobrado
+        </p>
+        <p class="text-2xl sm:text-3xl font-extrabold text-emerald-400">
+          <%= cobro.totalCobradoFormateado %>
+        </p>
+      </div>
+    </section>
+
+    <!-- Acción -->
+    <div class="text-center">
+      <a
+        href="/cliente/panel"
+        class="inline-flex items-center justify-center
+               border border-sky-500/60 text-sky-300
+               hover:bg-sky-500/10
+               px-6 py-3 rounded-xl font-semibold transition"
+      >
+        Volver al panel
+      </a>
+    </div>
+
   </div>
 </div>

@@ -54,6 +54,13 @@ const clienteSchema = new mongoose.Schema({
     ref: 'Plan',
     required: true
   },
+
+  // ✅ NUEVO
+  activo: {
+    type: Boolean,
+    default: true
+  },
+
   historial: [historialSchema]
 }, {
   timestamps: true

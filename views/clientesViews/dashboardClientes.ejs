@@ -3,7 +3,7 @@
     .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
   </style>
 
-  <!-- ✅ Mismo shell que Admin -->
+  <!-- SHELL -->
   <div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-0 sm:py-5">
     <div
       class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
@@ -12,229 +12,232 @@
              px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 text-white safe-bottom"
     >
 
-      <!-- Header -->
-      <header class="mb-6 sm:mb-8">
-        <p class="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 mb-2">
+      <!-- HEADER -->
+      <header class="mb-6">
+        <p class="text-xs uppercase tracking-[0.25em] text-slate-400 mb-2">
           Administración · Clientes
         </p>
 
         <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-          <div class="min-w-0">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Listado de clientes
             </h1>
-            <p class="text-sm sm:text-base text-slate-300 mt-1 max-w-2xl">
-              Gestioná clientes, planes y accesos rápidos al historial.
+            <p class="text-sm text-slate-300 mt-1">
+              Gestión general de clientes
             </p>
           </div>
 
-          <div class="flex flex-col sm:flex-row gap-3 sm:justify-end">
+          <div class="flex gap-2">
             <form action="/clientes/generar-cargos" method="POST"
-                  onsubmit="return confirm('¿Generar cargos para todos los clientes?')">
-              <button
-                type="submit"
-                class="inline-flex items-center justify-center
-                       bg-sky-600 hover:bg-sky-700 active:bg-sky-800
-                       text-white font-semibold
-                       py-2.5 px-5 rounded-xl
-                       shadow-md hover:shadow-lg transition
-                       whitespace-nowrap"
-              >
-                Generar cargos del mes
+                  onsubmit="return confirm('¿Generar cargos SOLO para clientes ACTIVOS?')">
+              <button class="bg-sky-600 hover:bg-sky-700 text-white text-sm px-4 py-2 rounded-xl">
+                Generar cargos
               </button>
             </form>
 
-            <a
-              href="/clientes/crear"
-              class="inline-flex items-center justify-center
-                     bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800
-                     text-white font-semibold
-                     py-2.5 px-5 rounded-xl
-                     shadow-md hover:shadow-lg transition
-                     whitespace-nowrap"
-            >
-              Registrar nuevo cliente
+            <a href="/clientes/crear"
+               class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-xl">
+              Nuevo cliente
             </a>
           </div>
+        </div>
+
+        <!-- BUSCADOR -->
+        <div class="mt-4 bg-slate-900/40 border border-slate-700/70 rounded-xl p-3">
+          <form method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-end">
+
+            <div class="sm:col-span-7">
+              <label class="text-[11px] text-slate-400">Buscar</label>
+              <input
+                type="text"
+                name="q"
+                value="<%= q || '' %>"
+                placeholder="DNI / Nombre / Apellido"
+                class="w-full px-3 py-2 rounded-lg bg-slate-950/40
+                       border border-slate-700 text-sm text-white"
+              />
+            </div>
+
+            <div class="sm:col-span-3">
+              <label class="text-[11px] text-slate-400">Estado</label>
+              <select
+                name="estado"
+                class="w-full px-3 py-2 rounded-lg bg-slate-950/40
+                       border border-slate-700 text-sm text-white">
+                <option value="todos" <%= (!estado || estado === 'todos') ? 'selected' : '' %>>Todos</option>
+                <option value="activos" <%= estado === 'activos' ? 'selected' : '' %>>Activos</option>
+                <option value="inactivos" <%= estado === 'inactivos' ? 'selected' : '' %>>Inactivos</option>
+              </select>
+            </div>
+
+            <div class="sm:col-span-2">
+              <button class="w-full bg-sky-600 hover:bg-sky-700
+                             text-white py-2 rounded-lg text-sm">
+                Buscar
+              </button>
+            </div>
+          </form>
         </div>
       </header>
 
       <% if (!clientes || clientes.length === 0) { %>
-        <div class="bg-slate-900/40 border border-slate-700/70 rounded-2xl p-6 text-center">
-          <p class="text-slate-200 font-semibold">No hay clientes registrados.</p>
-          <p class="text-slate-400 text-sm mt-1">Registrá el primero para comenzar.</p>
-          <a
-            href="/clientes/crear"
-            class="inline-flex mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow transition"
-          >
-            Registrar primer cliente
-          </a>
-        </div>
+        <p class="text-center text-slate-300">No hay clientes cargados</p>
       <% } else { %>
 
-        <!-- ================= MOBILE (cards, SIN scroll) ================= -->
-        <section class="space-y-3 sm:hidden">
-          <% clientes.forEach((cliente, index) => { %>
-            <div class="bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4 shadow">
-              <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <p class="text-white font-semibold text-base truncate">
-                    <%= cliente.nombre %> <%= cliente.apellido %>
-                  </p>
-                  <p class="text-slate-300 text-sm mt-1">
-                    <span class="text-slate-400">DNI:</span>
-                    <span class="text-slate-200"><%= cliente.dni %></span>
-                  </p>
-                  <p class="text-slate-300 text-sm mt-1 truncate">
-                    <span class="text-slate-400">Dirección:</span>
-                    <span class="text-slate-200"><%= cliente.direccion || "—" %></span>
-                  </p>
-                  <p class="text-slate-300 text-sm mt-1">
-                    <span class="text-slate-400">Tel:</span>
-                    <span class="text-slate-200"><%= cliente.telefono || "—" %></span>
-                  </p>
-                  <p class="text-slate-300 text-sm mt-1 truncate">
-                    <span class="text-slate-400">Email:</span>
-                    <span class="text-slate-200"><%= cliente.email || "—" %></span>
-                  </p>
-                </div>
+      <!-- ================= MOBILE ================= -->
+      <section class="space-y-2 sm:hidden">
+        <% clientes.forEach(cliente => {
+          // ✅ Detecta boolean false y también string "false"
+          const esActivo = !(cliente.activo === false || cliente.activo === 'false');
 
-                <div class="text-right shrink-0">
-                  <p class="text-xs text-slate-400">#<%= index + 1 %></p>
+          // ✅ Estado visible: On=Activo, Off=Inactivo
+          const labelToggle = esActivo ? 'On' : 'Off';
 
-                  <p class="mt-2 text-xs text-slate-400">Plan</p>
-                  <p class="text-emerald-200 font-semibold text-sm">
-                    <%= cliente.plan?.nombre || "—" %>
-                  </p>
+          // ✅ Acción que se ejecuta (opuesta al estado actual)
+          const accion = esActivo ? 'Desactivar' : 'Activar';
+          const accionOk = esActivo ? 'DESACTIVADO' : 'ACTIVADO';
+        %>
 
-                  <p class="mt-1 text-sky-200 font-semibold text-sm">
-                    <%= (cliente.plan?.precio != null) ? ("$" + Number(cliente.plan.precio).toFixed(2)) : "—" %>
-                  </p>
-                </div>
-              </div>
+        <article class="bg-slate-900/60 border border-slate-700/70 rounded-xl p-3">
 
-              <div class="mt-4 grid grid-cols-3 gap-2">
-                <a
-                  href="/clientes/<%= cliente._id %>/historial"
-                  class="text-center bg-emerald-500/15 hover:bg-emerald-500/25
-                         border border-emerald-400/30
-                         text-emerald-200 font-semibold py-2 rounded-xl transition text-sm"
-                >
+          <div class="flex justify-between">
+            <div class="min-w-0">
+              <p class="text-sm font-semibold truncate">
+                <%= cliente.apellido %>, <%= cliente.nombre %>
+              </p>
+              <p class="text-[11px] text-slate-300">
+                DNI <b><%= cliente.dni %></b>
+              </p>
+            </div>
+
+            <div class="shrink-0 text-right">
+              <span class="text-[9px] px-1.5 py-0.5 rounded border
+                <%= esActivo
+                  ? 'bg-emerald-500/15 text-emerald-200 border-emerald-400/30'
+                  : 'bg-rose-500/15 text-rose-200 border-rose-400/30' %>">
+                <%= esActivo ? 'Activo' : 'Inactivo' %>
+              </span>
+            </div>
+          </div>
+
+          <p class="mt-1 text-[11px] text-slate-300 truncate">
+            Plan:
+            <span class="text-sky-200 font-semibold">
+              <%= cliente.plan?.nombre || '—' %>
+            </span>
+          </p>
+
+          <div class="mt-2 grid grid-cols-4 gap-1.5">
+            <a href="/clientes/<%= cliente._id %>/historial"
+               class="text-[10px] py-1 rounded bg-emerald-500/15
+                      text-emerald-200 text-center border border-emerald-400/30">
+              Ver
+            </a>
+
+            <a href="/clientes/editar/<%= cliente._id %>"
+               class="text-[10px] py-1 rounded bg-slate-950/40
+                      text-sky-200 text-center border border-slate-700">
+              Editar
+            </a>
+
+            <!-- ✅ Toggle: On=Activo / Off=Inactivo -->
+            <form action="/clientes/<%= cliente._id %>/toggle-activo" method="POST">
+              <button
+                type="submit"
+                onclick="return confirmarToggleCliente('<%= accion %>','<%= accionOk %>')"
+                class="w-full text-[10px] py-1 rounded border
+                  <%= esActivo
+                    ? 'bg-emerald-500/15 text-emerald-200 border-emerald-400/30'
+                    : 'bg-rose-500/15 text-rose-200 border-rose-400/30' %>">
+                <%= labelToggle %>
+              </button>
+            </form>
+
+            <form action="/clientes/eliminar/<%= cliente._id %>" method="POST">
+              <button
+                type="submit"
+                onclick="return confirm('¿Eliminar cliente?')"
+                class="w-full text-[10px] py-1 rounded bg-rose-500/15
+                       text-rose-200 border border-rose-400/30">
+                Del
+              </button>
+            </form>
+          </div>
+        </article>
+        <% }) %>
+      </section>
+
+      <!-- ================= DESKTOP ================= -->
+      <div class="hidden sm:block overflow-x-auto">
+        <table class="w-full text-sm bg-slate-900/50 border border-slate-700/70 rounded-xl">
+          <thead class="bg-slate-900/70 text-slate-300">
+            <tr>
+              <th class="px-3 py-2 text-left">Apellido</th>
+              <th class="px-3 py-2 text-left">Nombre</th>
+              <th class="px-3 py-2">DNI</th>
+              <th class="px-3 py-2">Plan</th>
+              <th class="px-3 py-2">Estado</th>
+              <th class="px-3 py-2 text-right">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% clientes.forEach(cliente => {
+              const esActivo = !(cliente.activo === false || cliente.activo === 'false');
+              const accion = esActivo ? 'Desactivar' : 'Activar';
+              const accionOk = esActivo ? 'DESACTIVADO' : 'ACTIVADO';
+            %>
+            <tr class="border-t border-slate-700/70 hover:bg-slate-900/40">
+              <td class="px-3 py-2"><%= cliente.apellido %></td>
+              <td class="px-3 py-2"><%= cliente.nombre %></td>
+              <td class="px-3 py-2"><%= cliente.dni %></td>
+              <td class="px-3 py-2"><%= cliente.plan?.nombre || '—' %></td>
+              <td class="px-3 py-2">
+                <span class="text-xs px-2 py-1 rounded border
+                  <%= esActivo
+                    ? 'bg-emerald-500/15 text-emerald-200 border-emerald-400/30'
+                    : 'bg-rose-500/15 text-rose-200 border-rose-400/30' %>">
+                  <%= esActivo ? 'Activo' : 'Inactivo' %>
+                </span>
+              </td>
+              <td class="px-3 py-2 text-right space-x-2">
+                <a href="/clientes/<%= cliente._id %>/historial" class="text-emerald-300 text-xs">
                   Ver
                 </a>
-
-                <a
-                  href="/clientes/editar/<%= cliente._id %>"
-                  class="text-center bg-slate-950/40 hover:bg-slate-950/60
-                         border border-slate-700/70
-                         text-sky-200 font-semibold py-2 rounded-xl transition text-sm"
-                >
+                <a href="/clientes/editar/<%= cliente._id %>" class="text-sky-300 text-xs">
                   Editar
                 </a>
 
-                <form action="/clientes/eliminar/<%= cliente._id %>" method="POST">
+                <form action="/clientes/<%= cliente._id %>/toggle-activo" method="POST" class="inline">
                   <button
                     type="submit"
-                    onclick="return confirm('¿Eliminar este cliente?')"
-                    class="w-full bg-rose-500/15 hover:bg-rose-500/25
-                           border border-rose-400/30
-                           text-rose-200 font-semibold py-2 rounded-xl transition text-sm"
-                  >
-                    Eliminar
+                    onclick="return confirmarToggleCliente('<%= accion %>','<%= accionOk %>')"
+                    class="text-xs px-2 py-1 rounded border
+                      <%= esActivo
+                        ? 'bg-emerald-500/15 text-emerald-200 border-emerald-400/30'
+                        : 'bg-rose-500/15 text-rose-200 border-rose-400/30' %>">
+                    <%= esActivo ? 'Desactivar' : 'Activar' %>
                   </button>
                 </form>
-              </div>
-            </div>
-          <% }) %>
-        </section>
-
-        <!-- ================= TABLET/DESKTOP (tabla) ================= -->
-        <div class="hidden sm:block bg-slate-900/45 border border-slate-700/70 rounded-2xl shadow-lg overflow-hidden">
-          <table class="w-full text-sm">
-            <thead class="bg-slate-900/60 text-slate-300 uppercase text-xs tracking-wide">
-              <tr>
-                <th class="px-4 py-4 text-left">#</th>
-                <th class="px-4 py-4 text-left">Nombre</th>
-                <th class="px-4 py-4 text-left">Apellido</th>
-                <th class="px-4 py-4 text-left">DNI</th>
-                <th class="px-4 py-4 text-left">Dirección</th>
-                <th class="px-4 py-4 text-left">Teléfono</th>
-                <th class="px-4 py-4 text-left">Correo</th>
-                <th class="px-4 py-4 text-left">Plan</th>
-                <th class="px-4 py-4 text-right">Precio</th>
-                <th class="px-4 py-4 text-right">Acciones</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <% clientes.forEach((cliente, index) => { %>
-                <tr class="border-t border-slate-700/70 hover:bg-slate-900/40 transition">
-                  <td class="px-4 py-3 text-slate-300"><%= index + 1 %></td>
-                  <td class="px-4 py-3 font-medium text-white"><%= cliente.nombre %></td>
-                  <td class="px-4 py-3 text-slate-200"><%= cliente.apellido %></td>
-                  <td class="px-4 py-3 text-slate-200"><%= cliente.dni %></td>
-
-                  <td class="px-4 py-3 text-slate-300 max-w-[260px] truncate" title="<%= cliente.direccion %>">
-                    <%= cliente.direccion || "—" %>
-                  </td>
-
-                  <td class="px-4 py-3 text-slate-300"><%= cliente.telefono || "—" %></td>
-
-                  <td class="px-4 py-3 text-slate-300 max-w-[260px] truncate" title="<%= cliente.email %>">
-                    <%= cliente.email || "—" %>
-                  </td>
-
-                  <td class="px-4 py-3">
-                    <span class="block font-semibold text-sky-200">
-                      <%= cliente.plan?.nombre || "—" %>
-                    </span>
-                  </td>
-
-                  <td class="px-4 py-3 text-right font-semibold text-emerald-200">
-                    <%= (cliente.plan?.precio != null) ? ("$" + Number(cliente.plan.precio).toFixed(2)) : "—" %>
-                  </td>
-
-                  <td class="px-4 py-3">
-                    <div class="flex justify-end gap-2">
-                      <a
-                        href="/clientes/<%= cliente._id %>/historial"
-                        class="bg-emerald-500/15 hover:bg-emerald-500/25
-                               border border-emerald-400/30
-                               text-emerald-200 font-semibold px-3 py-1.5 rounded-lg transition text-xs"
-                      >
-                        Ver
-                      </a>
-
-                      <a
-                        href="/clientes/editar/<%= cliente._id %>"
-                        class="bg-slate-950/40 hover:bg-slate-950/60
-                               border border-slate-700/70
-                               text-sky-200 font-semibold px-3 py-1.5 rounded-lg transition text-xs"
-                      >
-                        Editar
-                      </a>
-
-                      <form action="/clientes/eliminar/<%= cliente._id %>" method="POST">
-                        <button
-                          type="submit"
-                          onclick="return confirm('¿Eliminar este cliente?')"
-                          class="bg-rose-500/15 hover:bg-rose-500/25
-                                 border border-rose-400/30
-                                 text-rose-200 font-semibold px-3 py-1.5 rounded-lg transition text-xs"
-                        >
-                          Eliminar
-                        </button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </div>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
 
       <% } %>
 
     </div>
   </div>
+
+  <!-- JS -->
+  <script>
+    function confirmarToggleCliente(accion, accionOk) {
+      if (!confirm(`¿${accion} este cliente?`)) return false;
+      alert(`Cliente ${accionOk} correctamente`);
+      return true;
+    }
+  </script>
 </main>

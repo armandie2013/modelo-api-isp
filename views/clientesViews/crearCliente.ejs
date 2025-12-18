@@ -154,6 +154,27 @@
 
             </div>
 
+            <!-- ✅ Activo/Inactivo -->
+            <div class="rounded-xl border border-slate-700/70 bg-slate-900/40 p-4">
+              <div class="flex items-start gap-3">
+                <input
+                  id="activo"
+                  name="activo"
+                  type="checkbox"
+                  class="mt-1 h-4 w-4 accent-sky-500"
+                  <%= (datos && (datos.activo === false || datos.activo === 'false' || datos.activo === 'off')) ? '' : 'checked' %>
+                />
+                <div>
+                  <label for="activo" class="text-sm font-semibold text-slate-100">
+                    Cliente activo
+                  </label>
+                  <p class="text-xs text-slate-400 mt-0.5">
+                    Si está inactivo, el generador (manual o cron) no le crea cargos.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <!-- Plan -->
             <div class="space-y-2">
               <label class="block text-sm font-medium text-slate-300">Seleccionar plan</label>

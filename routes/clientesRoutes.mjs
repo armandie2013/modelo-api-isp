@@ -8,7 +8,8 @@ import {
   mostrarDashboardClientes,
   mostrarHistorialCliente,
   generarCargosMensuales,
-  mostrarPanelCliente
+  mostrarPanelCliente,
+  toggleActivoCliente
 } from "../controllers/clientesController.mjs";
 import { verificarSesion } from "../middlewares/verificarSesion.mjs";
 import { verificarAdmin } from "../middlewares/verificarAdmin.mjs";
@@ -49,6 +50,13 @@ router.post(
   verificarAdmin,
   eliminarCliente
 );
+
+router.post(
+  "/clientes/:id/toggle-activo",
+  verificarSesion,
+  verificarAdmin,
+  toggleActivoCliente
+)
 
 router.get(
   "/clientes/dashboard",

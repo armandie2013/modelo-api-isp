@@ -10,6 +10,8 @@ import flash from 'connect-flash';
 import { conectarDB } from './config/database.mjs';
 import { verificarSesion } from './middlewares/verificarSesion.mjs';
 
+import { iniciarCronCargosMensuales } from "./cron/cargosMensuales.cron.mjs";
+
 // 📦 Rutas principales del sistema
 import authRoutes from './routes/authRoutes.mjs';
 import usuariosRoutes from './routes/usuariosRoutes.mjs';
@@ -33,25 +35,27 @@ const __dirname = path.dirname(__filename);
 // Inicializar app
 const app = express();
 
-// Conectar a MongoDB
-conectarDB();
-
-// Configuración del motor de vistas
+// =====================================================
+// 1) Configuración del motor de vistas + estáticos
+// =====================================================
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.set('layout', 'layout'); // Usa views/layout.ejs por defecto
+app.set('layout', 'layout');
 app.use(expressLayouts);
 
-// Middleware para procesar datos de formularios y JSON
+app.use(express.static(path.join(__dirname, 'public')));
+
+// =====================================================
+// 2) Parsers
+// =====================================================
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Archivos estáticos
-app.use(express.static(path.join(__dirname, 'public')));
-
-// 👉 Configuración de sesión
+// =====================================================
+// 3) Sesión + flash
+// =====================================================
 app.use(session({
-  secret: 'clave_secreta_segura',
+  secret: process.env.SESSION_SECRET || 'clave_secreta_segura',
   resave: false,
   saveUninitialized: false,
   rolling: true,
@@ -68,28 +72,25 @@ app.use(session({
 
 // 👉 Evita modificación de sesión en rutas públicas si no hay login
 app.use((req, res, next) => {
-  const rutasQueNoNecesitanSesion = ["/", "/login", "/registro"];
-  if (!req.session?.usuario && rutasQueNoNecesitanSesion.includes(req.path)) {
-    return next(); // No tocar nada de la sesión
+  const rutasPublicas = ["/", "/login", "/registro"];
+  if (!req.session?.usuario && rutasPublicas.includes(req.path)) {
+    return next();
   }
   next();
 });
 
-// 👉 Configuración de flash segura (solo si hay sesión activa con usuario)
+// Flash (solo si hay sesión)
 app.use(flash());
 app.use((req, res, next) => {
-  if (req.session?.usuario) {
-    res.locals.mensajesFlash = req.flash();
-  } else {
-    res.locals.mensajesFlash = {};
-  }
+  res.locals.mensajesFlash = req.session?.usuario ? req.flash() : {};
   next();
 });
 
-// 👉 Middleware de sesión (agrega usuario a res.locals si existe)
+// =====================================================
+// 4) Middleware global de sesión + defaults
+// =====================================================
 app.use(verificarSesion);
 
-// 👉 Middleware temporal para evitar errores por falta de 'titulo'
 app.use((req, res, next) => {
   if (typeof res.locals.titulo === 'undefined') {
     res.locals.titulo = 'Sistema ISP (sin título)';
@@ -97,7 +98,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// 👉 Rutas del sistema
+// =====================================================
+// 5) Rutas del sistema
+// =====================================================
 app.use(authRoutes);
 app.use(usuariosRoutes);
 app.use(adminRoutes);
@@ -107,15 +110,32 @@ app.use(planesRoutes);
 app.use(clientesRoutes);
 app.use(adminCobranzasRoutes);
 app.use(retirosRoutes);
-app.use(cobrosRoutes);  // También tiene retiros combinados
+app.use(cobrosRoutes);
 
 // Página de inicio
 app.get('/', (req, res) => {
   res.render('inicio', { titulo: 'Inicio' });
 });
 
-// Iniciar servidor
+// =====================================================
+// 6) Arranque (DB → Cron → Listen)
+// =====================================================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🟢 Servidor corriendo en http://localhost:${PORT}`);
-});
+
+const iniciarApp = async () => {
+  try {
+    await conectarDB();
+
+    // ✅ Arrancar el cron SOLO después de DB
+    iniciarCronCargosMensuales();
+
+    app.listen(PORT, () => {
+      console.log(`🟢 Servidor corriendo en http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Error iniciando la app:", error);
+    process.exit(1);
+  }
+};
+
+iniciarApp();

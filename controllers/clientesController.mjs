@@ -262,59 +262,67 @@ export const procesarCreacionCliente = async (req, res) => {
 export const mostrarDashboardClientes = async (req, res) => {
   try {
     const q = String(req.query.q || "").trim();
-    const estado = String(req.query.estado || "todos"); // todos | activos | inactivos
+    const estado = String(req.query.estado || "todos").trim(); // todos | activos | inactivos
 
-    const page = Math.max(parseInt(req.query.page || "1", 10), 1);
+    // paginación
+    const pageReq = Math.max(parseInt(req.query.page || "1", 10), 1);
     const limit = Math.min(Math.max(parseInt(req.query.limit || "25", 10), 10), 100);
-    const skip = (page - 1) * limit;
 
     const filtro = {};
 
-    // ✅ Filtro por estado
-    if (estado === "activos") filtro.activo = true;
+    // ✅ Estado
+    // OJO: si tenés clientes viejos sin "activo", y querés que cuenten como activos,
+    // usá activo: { $ne: false } en vez de true.
+    if (estado === "activos") filtro.activo = { $ne: false };
     if (estado === "inactivos") filtro.activo = false;
 
-    // ✅ Buscador (DNI exacto/partial + nombre/apellido contains)
+    // ✅ Buscador: DNI / Nombre / Apellido (todo junto)
     if (q) {
-      const esSoloNumero = /^[0-9]+$/.test(q);
-      if (esSoloNumero) {
-        // DNI: soporte parcial
-        filtro.dni = { $regex: q, $options: "i" };
-      } else {
-        // Nombre/Apellido (case-insensitive)
-        filtro.$or = [
-          { nombre: { $regex: q, $options: "i" } },
-          { apellido: { $regex: q, $options: "i" } },
-        ];
-      }
+      filtro.$or = [
+        { dni: { $regex: q, $options: "i" } },
+        { nombre: { $regex: q, $options: "i" } },
+        { apellido: { $regex: q, $options: "i" } },
+      ];
     }
 
     const total = await Cliente.countDocuments(filtro);
+    const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+    // ✅ page segura dentro del rango
+    const page = Math.min(pageReq, totalPages);
+    const skip = (page - 1) * limit;
 
     const clientes = await Cliente.find(filtro)
       .populate("plan")
-      .sort({ apellido: 1, nombre: 1 }) // orden estable
+      .sort({ apellido: 1, nombre: 1 })
       .skip(skip)
       .limit(limit)
       .lean();
 
-    const totalPages = Math.max(Math.ceil(total / limit), 1);
-
     res.render("clientesViews/dashboardClientes", {
       titulo: "Listado de Clientes",
       clientes,
+
+      // filtros actuales (para mantener inputs)
       q,
       estado,
+
+      // paginación
       page,
       limit,
       total,
       totalPages,
+      hasPrev: page > 1,
+      hasNext: page < totalPages,
+      prevPage: Math.max(page - 1, 1),
+      nextPage: Math.min(page + 1, totalPages),
     });
   } catch (error) {
     console.error("Error al obtener clientes:", error);
     res.status(500).send("Error al obtener los clientes");
   }
 };
+
 
 
 // GET /clientes/editar/:id

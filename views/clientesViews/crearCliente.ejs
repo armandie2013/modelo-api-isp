@@ -13,216 +13,270 @@
     >
 
       <!-- Header -->
-      <header class="mb-8">
-        <p class="text-xs uppercase tracking-widest text-slate-400 mb-2">
+      <header class="mb-5 sm:mb-8">
+        <p class="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-slate-400 mb-2">
           Administración · Clientes
         </p>
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
-          Registrar nuevo cliente
-        </h1>
-        <p class="text-sm text-slate-300 mt-1 max-w-2xl">
-          Completá los datos del cliente y asignale un plan. El DNI debe tener 8 dígitos.
-        </p>
+
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+          <div class="min-w-0">
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              Registrar nuevo cliente
+            </h1>
+            <p class="text-sm text-slate-300 mt-1 max-w-2xl">
+              Completá los datos del cliente y asignale un plan. El DNI debe tener 8 dígitos.
+            </p>
+          </div>
+
+          <a
+            href="/clientes/dashboard"
+            class="inline-flex items-center justify-center
+                   bg-slate-950/40 hover:bg-slate-950/60
+                   border border-slate-700/70
+                   text-slate-200 font-semibold
+                   px-3 py-2 rounded-xl text-xs sm:text-sm
+                   transition whitespace-nowrap"
+          >
+            Volver al listado
+          </a>
+        </div>
       </header>
 
       <!-- Card -->
       <div class="flex justify-center">
-        <div class="w-full max-w-2xl bg-slate-800/70 border border-slate-600/70 rounded-2xl p-6 sm:p-8 shadow-lg">
+        <div class="w-full max-w-2xl bg-slate-900/45 border border-slate-700/70 rounded-2xl shadow-lg">
 
-          <!-- Errores -->
-          <% if (errores && errores.length) { %>
-            <div class="mb-5 rounded-xl border border-rose-400/40 bg-rose-500/10 px-4 py-3 text-rose-200 text-sm">
-              <% errores.forEach(error => { %>
-                <p>• <%= error %></p>
-              <% }) %>
-            </div>
-          <% } %>
+          <!-- Top bar sutil -->
+          <div class="px-4 sm:px-6 py-3 border-b border-slate-700/60">
+            <p class="text-xs text-slate-400">
+              Campos obligatorios: nombre, apellido, DNI, dirección y plan.
+            </p>
+          </div>
 
-          <form action="/clientes/crear" method="POST" class="space-y-6" onsubmit="return validarFormulario()">
+          <div class="p-4 sm:p-6">
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Errores -->
+            <% if (errores && errores.length) { %>
+              <div class="mb-4 rounded-xl border border-rose-400/40 bg-rose-500/10 px-4 py-3 text-rose-200 text-sm">
+                <% errores.forEach(error => { %>
+                  <p>• <%= error %></p>
+                <% }) %>
+              </div>
+            <% } %>
 
-              <!-- Nombre -->
-              <div class="space-y-1">
-                <label class="block text-sm font-medium text-slate-300">Nombre</label>
-                <input
-                  type="text"
-                  name="nombre"
-                  id="nombre"
-                  placeholder="Nombre"
-                  required
-                  value="<%= datos?.nombre || '' %>"
-                  class="w-full px-4 py-3 rounded-xl
-                         bg-slate-900 text-white placeholder-white/35
-                         border border-slate-600
-                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
-                         transition"
-                />
+            <form action="/clientes/crear" method="POST" class="space-y-5" onsubmit="return validarFormulario()">
+
+              <!-- ✅ Inputs (mobile 1 col, PC 2 col) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+
+                <!-- Nombre -->
+                <div class="space-y-1">
+                  <label class="block text-sm font-medium text-slate-300">Nombre</label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    id="nombre"
+                    placeholder="Nombre"
+                    required
+                    value="<%= datos?.nombre || '' %>"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl
+                           bg-slate-950/40 text-white placeholder-white/35
+                           border border-slate-700
+                           focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                           transition text-sm"
+                  />
+                </div>
+
+                <!-- Apellido -->
+                <div class="space-y-1">
+                  <label class="block text-sm font-medium text-slate-300">Apellido</label>
+                  <input
+                    type="text"
+                    name="apellido"
+                    id="apellido"
+                    placeholder="Apellido"
+                    required
+                    value="<%= datos?.apellido || '' %>"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl
+                           bg-slate-950/40 text-white placeholder-white/35
+                           border border-slate-700
+                           focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                           transition text-sm"
+                  />
+                </div>
+
+                <!-- DNI -->
+                <div class="space-y-1">
+                  <label class="block text-sm font-medium text-slate-300">DNI</label>
+                  <input
+                    type="text"
+                    name="dni"
+                    id="dni"
+                    placeholder="DNI (8 dígitos)"
+                    required
+                    maxlength="8"
+                    inputmode="numeric"
+                    value="<%= datos?.dni || '' %>"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl
+                           bg-slate-950/40 text-white placeholder-white/35
+                           border border-slate-700
+                           focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                           transition text-sm"
+                  />
+                  <p class="text-[11px] text-slate-400">Solo números, 8 dígitos.</p>
+                </div>
+
+                <!-- Teléfono -->
+                <div class="space-y-1">
+                  <label class="block text-sm font-medium text-slate-300">Teléfono</label>
+                  <input
+                    type="text"
+                    name="telefono"
+                    id="telefono"
+                    placeholder="Teléfono"
+                    inputmode="numeric"
+                    value="<%= datos?.telefono || '' %>"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl
+                           bg-slate-950/40 text-white placeholder-white/35
+                           border border-slate-700
+                           focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                           transition text-sm"
+                  />
+                </div>
+
+                <!-- Dirección (ocupa 2 columnas en PC) -->
+                <div class="space-y-1 sm:col-span-2">
+                  <label class="block text-sm font-medium text-slate-300">Dirección</label>
+                  <input
+                    type="text"
+                    name="direccion"
+                    id="direccion"
+                    placeholder="Dirección"
+                    required
+                    value="<%= datos?.direccion || '' %>"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl
+                           bg-slate-950/40 text-white placeholder-white/35
+                           border border-slate-700
+                           focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                           transition text-sm"
+                  />
+                </div>
+
+                <!-- Email (ocupa 2 columnas en PC) -->
+                <div class="space-y-1 sm:col-span-2">
+                  <label class="block text-sm font-medium text-slate-300">Correo electrónico</label>
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="correo@ejemplo.com"
+                    value="<%= datos?.email || '' %>"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl
+                           bg-slate-950/40 text-white placeholder-white/35
+                           border border-slate-700
+                           focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                           transition text-sm"
+                  />
+                </div>
+
               </div>
 
-              <!-- Apellido -->
-              <div class="space-y-1">
-                <label class="block text-sm font-medium text-slate-300">Apellido</label>
-                <input
-                  type="text"
-                  name="apellido"
-                  id="apellido"
-                  placeholder="Apellido"
-                  required
-                  value="<%= datos?.apellido || '' %>"
-                  class="w-full px-4 py-3 rounded-xl
-                         bg-slate-900 text-white placeholder-white/35
-                         border border-slate-600
-                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
-                         transition"
-                />
-              </div>
-
-              <!-- DNI -->
-              <div class="space-y-1">
-                <label class="block text-sm font-medium text-slate-300">DNI</label>
-                <input
-                  type="text"
-                  name="dni"
-                  id="dni"
-                  placeholder="DNI (8 dígitos)"
-                  required
-                  maxlength="8"
-                  inputmode="numeric"
-                  value="<%= datos?.dni || '' %>"
-                  class="w-full px-4 py-3 rounded-xl
-                         bg-slate-900 text-white placeholder-white/35
-                         border border-slate-600
-                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
-                         transition"
-                />
-                <p class="text-xs text-slate-400">Solo números, 8 dígitos.</p>
-              </div>
-
-              <!-- Dirección -->
-              <div class="space-y-1">
-                <label class="block text-sm font-medium text-slate-300">Dirección</label>
-                <input
-                  type="text"
-                  name="direccion"
-                  id="direccion"
-                  placeholder="Dirección"
-                  required
-                  value="<%= datos?.direccion || '' %>"
-                  class="w-full px-4 py-3 rounded-xl
-                         bg-slate-900 text-white placeholder-white/35
-                         border border-slate-600
-                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
-                         transition"
-                />
-              </div>
-
-              <!-- Teléfono -->
-              <div class="space-y-1">
-                <label class="block text-sm font-medium text-slate-300">Teléfono</label>
-                <input
-                  type="text"
-                  name="telefono"
-                  id="telefono"
-                  placeholder="Teléfono"
-                  inputmode="numeric"
-                  value="<%= datos?.telefono || '' %>"
-                  class="w-full px-4 py-3 rounded-xl
-                         bg-slate-900 text-white placeholder-white/35
-                         border border-slate-600
-                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
-                         transition"
-                />
-              </div>
-
-              <!-- Email -->
-              <div class="space-y-1">
-                <label class="block text-sm font-medium text-slate-300">Correo electrónico</label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  placeholder="correo@ejemplo.com"
-                  value="<%= datos?.email || '' %>"
-                  class="w-full px-4 py-3 rounded-xl
-                         bg-slate-900 text-white placeholder-white/35
-                         border border-slate-600
-                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
-                         transition"
-                />
-              </div>
-
-            </div>
-
-            <!-- ✅ Activo/Inactivo -->
-            <div class="rounded-xl border border-slate-700/70 bg-slate-900/40 p-4">
-              <div class="flex items-start gap-3">
-                <input
-                  id="activo"
-                  name="activo"
-                  type="checkbox"
-                  class="mt-1 h-4 w-4 accent-sky-500"
-                  <%= (datos && (datos.activo === false || datos.activo === 'false' || datos.activo === 'off')) ? '' : 'checked' %>
-                />
-                <div>
-                  <label for="activo" class="text-sm font-semibold text-slate-100">
-                    Cliente activo
-                  </label>
-                  <p class="text-xs text-slate-400 mt-0.5">
-                    Si está inactivo, el generador (manual o cron) no le crea cargos.
-                  </p>
+              <!-- ✅ Activo/Inactivo -->
+              <div class="rounded-xl border border-slate-700/70 bg-slate-950/30 p-3 sm:p-4">
+                <div class="flex items-start gap-3">
+                  <input
+                    id="activo"
+                    name="activo"
+                    type="checkbox"
+                    class="mt-0.5 h-4 w-4 accent-sky-500"
+                    <%= (datos && (datos.activo === false || datos.activo === 'false' || datos.activo === 'off')) ? '' : 'checked' %>
+                  />
+                  <div class="min-w-0">
+                    <label for="activo" class="text-sm font-semibold text-slate-100">
+                      Cliente activo
+                    </label>
+                    <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                      Si está inactivo, el generador (manual o cron) no le crea cargos.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Plan -->
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-slate-300">Seleccionar plan</label>
+              <!-- Plan -->
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-slate-300">Seleccionar plan</label>
 
-              <select
-                name="plan"
-                id="plan"
-                required
-                onchange="mostrarDetallePlan(this)"
-                class="w-full px-4 py-3 rounded-xl
-                       bg-slate-900 text-white
-                       border border-slate-600
-                       focus:outline-none focus:ring-2 focus:ring-sky-500/60
-                       transition"
-              >
-                <option value="">-- Selecciona un plan --</option>
-                <% planes.forEach(plan => { %>
-                  <option value="<%= plan._id %>" <%= datos?.plan === plan._id.toString() ? 'selected' : '' %>>
-                    <%= plan.nombre %> - <%= plan.tipo %>
-                  </option>
-                <% }) %>
-              </select>
+                <select
+                  name="plan"
+                  id="plan"
+                  required
+                  onchange="mostrarDetallePlan(this)"
+                  class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl
+                         bg-slate-950/40 text-white
+                         border border-slate-700
+                         focus:outline-none focus:ring-2 focus:ring-sky-500/60
+                         transition text-sm"
+                >
+                  <option value="">-- Selecciona un plan --</option>
+                  <% planes.forEach(plan => { %>
+                    <option value="<%= plan._id %>" <%= datos?.plan === plan._id.toString() ? 'selected' : '' %>>
+                      <%= plan.nombre %> - <%= plan.tipo %>
+                    </option>
+                  <% }) %>
+                </select>
 
-              <div id="detalle-plan" class="hidden rounded-xl border border-slate-700/70 bg-slate-900/40 p-4">
-                <p class="text-sm text-slate-300">
-                  <span class="text-slate-400">Tipo:</span>
-                  <span id="tipo-plan" class="text-white font-medium"></span>
-                </p>
-                <p class="text-sm text-slate-300 mt-1">
-                  <span class="text-slate-400">Precio:</span>
-                  <span class="text-emerald-300 font-semibold">$<span id="precio-plan"></span></span>
-                </p>
+                <!-- Detalle plan -->
+                <div id="detalle-plan" class="hidden rounded-xl border border-slate-700/70 bg-slate-950/30 p-4">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <p class="text-[11px] text-slate-400">Tipo</p>
+                      <p id="tipo-plan" class="text-white font-semibold text-sm"></p>
+                    </div>
+
+                    <div class="text-right">
+                      <p class="text-[11px] text-slate-400">Precio</p>
+                      <p class="text-emerald-300 font-extrabold text-lg leading-tight">
+                        <span>$</span><span id="precio-plan"></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <!-- Botón -->
-            <div class="pt-2 flex justify-center">
-              <button
-                type="submit"
-                class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 active:bg-sky-800
-                       text-white font-semibold px-8 py-3 rounded-xl
-                       shadow-md hover:shadow-lg transition"
-              >
-                Registrar cliente
-              </button>
-            </div>
+              <!-- Botones (✅ MISMO TAMAÑO EN PC) -->
+              <!-- Botones (alineados a la derecha en PC) -->
+<div class="pt-1 flex justify-end">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full sm:w-auto">
 
-          </form>
+    <button
+      type="submit"
+      class="inline-flex items-center justify-center
+             w-full sm:w-44 h-11
+             bg-sky-600 hover:bg-sky-700 active:bg-sky-800
+             text-white font-semibold
+             rounded-xl shadow-md hover:shadow-lg transition text-sm"
+    >
+      Registrar cliente
+    </button>
+
+    <a
+      href="/clientes/dashboard"
+      class="inline-flex items-center justify-center
+             w-full sm:w-44 h-11
+             bg-slate-950/40 hover:bg-slate-950/60
+             border border-slate-700/70
+             text-slate-200 font-semibold
+             rounded-xl transition text-sm"
+    >
+      Cancelar
+    </a>
+
+  </div>
+</div>
+
+
+            </form>
+          </div>
         </div>
       </div>
 
@@ -230,44 +284,59 @@
   </div>
 </main>
 
+<!-- ✅ JSON seguro para JS (evita el error de línea 285) -->
+<script type="application/json" id="planes-json"><%- JSON.stringify(planes || []) %></script>
+
 <script>
-  const planes = <%- JSON.stringify(planes) %>;
+  // ✅ Parseo seguro (no rompe aunque planes venga vacío)
+  const planes = JSON.parse(document.getElementById("planes-json")?.textContent || "[]");
+
+  function moneyARS(value) {
+    const n = Number(value || 0);
+    return n.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 
   function mostrarDetallePlan(select) {
     const id = select.value;
-    const plan = planes.find(p => p._id === id);
-    const detalleDiv = document.getElementById('detalle-plan');
+    const plan = planes.find(p => String(p._id) === String(id));
+    const detalleDiv = document.getElementById("detalle-plan");
 
     if (plan) {
-      document.getElementById('tipo-plan').textContent = plan.tipo;
-      document.getElementById('precio-plan').textContent = Number(plan.precio).toFixed(2);
-      detalleDiv.classList.remove('hidden');
+      document.getElementById("tipo-plan").textContent = plan.tipo || "-";
+      document.getElementById("precio-plan").textContent = moneyARS(plan.precio);
+      detalleDiv.classList.remove("hidden");
     } else {
-      detalleDiv.classList.add('hidden');
+      detalleDiv.classList.add("hidden");
     }
   }
 
-  function soloNumeros(input) { input.value = input.value.replace(/\D/g, ''); }
+  function soloNumeros(input) {
+    input.value = input.value.replace(/\D/g, "");
+  }
 
   function capitalizarNombre(input) {
     input.value = input.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
   }
 
   function capitalizarDireccion(input) {
-    const v = input.value.trim();
+    const v = (input.value || "").trim();
     if (!v) return;
     input.value = v.charAt(0).toUpperCase() + v.slice(1);
   }
 
   function validarFormulario() {
-    const dni = document.getElementById('dni')?.value.trim() || "";
+    const dni = (document.getElementById("dni")?.value || "").trim();
     if (dni.length !== 8) {
-      Swal.fire({
-        icon: "error",
-        title: "DNI inválido",
-        text: "El DNI debe tener exactamente 8 números.",
-        confirmButtonColor: "#0ea5e9"
-      });
+      if (window.Swal?.fire) {
+        Swal.fire({
+          icon: "error",
+          title: "DNI inválido",
+          text: "El DNI debe tener exactamente 8 números.",
+          confirmButtonColor: "#0ea5e9"
+        });
+      } else {
+        alert("DNI inválido: debe tener exactamente 8 números.");
+      }
       return false;
     }
     return true;

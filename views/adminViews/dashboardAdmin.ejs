@@ -1,35 +1,53 @@
 <style>
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .safe-bottom {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+  }
 
   /* Bottom sheet (solo mobile) */
-  .sheet-backdrop{
-    position:fixed; inset:0;
-    background:rgba(0,0,0,.55);
+  .sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
     backdrop-filter: blur(4px);
-    display:none;
-    z-index:50;
+    display: none;
+    z-index: 50;
   }
-  .sheet{
-    position:fixed; left:0; right:0; bottom:0;
-    transform:translateY(110%);
-    transition:transform .22s ease;
-    z-index:60;
+
+  .sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: translateY(110%);
+    transition: transform .22s ease;
+    z-index: 60;
   }
-  .sheet.open{ transform:translateY(0); }
-  .sheet-backdrop.show{ display:block; }
+
+  .sheet.open {
+    transform: translateY(0);
+  }
+
+  .sheet-backdrop.show {
+    display: block;
+  }
 </style>
 
 <!-- ✅ SOLO CAMBIÉ LA ALTURA/ESPACIO VERTICAL (py) PARA QUE QUEDE A LA MISMA DISTANCIA -->
 <!-- Antes: py-6 sm:py-10 | Ahora: py-0 sm:py-5 -->
 <div class="flex items-start justify-center min-h-[calc(100vh-200px)] px-2 sm:px-4 py-0 sm:py-5">
-  <div
-    class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
+  <div class="w-full max-w-full sm:max-w-5xl lg:max-w-7xl xl:max-w-screen-xl mx-auto
            bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950/95
            backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80
-           px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 text-white safe-bottom"
-  >
+           px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 text-white safe-bottom">
 
     <!-- Encabezado -->
     <header class="mb-5 sm:mb-8">
@@ -47,10 +65,8 @@
           </p>
         </div>
 
-        <div
-          class="inline-flex items-center gap-2 rounded-full bg-slate-800/70 border border-slate-600/70
-                 px-3 py-1 text-xs sm:text-sm text-slate-200 shadow-md"
-        >
+        <div class="inline-flex items-center gap-2 rounded-full bg-slate-800/70 border border-slate-600/70
+                 px-3 py-1 text-xs sm:text-sm text-slate-200 shadow-md">
           <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span>Sistema en funcionamiento</span>
         </div>
@@ -60,17 +76,13 @@
     <!-- Buscador -->
     <section class="mb-4 sm:mb-6">
       <div class="relative">
-        <input
-          id="buscadorAdmin"
-          type="text"
-          placeholder="Buscar módulo… (usuarios, planes, clientes)"
-          class="w-full bg-slate-900/60 border border-slate-700/80 rounded-xl px-4 py-3
+        <input id="buscadorAdmin" type="text" placeholder="Buscar módulo… (usuarios, planes, clientes)" class="w-full bg-slate-900/60 border border-slate-700/80 rounded-xl px-4 py-3
                  text-sm text-white placeholder:text-slate-400 outline-none
-                 focus:border-sky-500/80 focus:ring-2 focus:ring-sky-500/20"
-        />
+                 focus:border-sky-500/80 focus:ring-2 focus:ring-sky-500/20" />
         <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none">
-            <path d="M21 21l-4.3-4.3m1.3-5.2a7 7 0 1 1-14 0a7 7 0 0 1 14 0Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M21 21l-4.3-4.3m1.3-5.2a7 7 0 1 1-14 0a7 7 0 0 1 14 0Z" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" />
           </svg>
         </div>
       </div>
@@ -80,24 +92,23 @@
     <section id="listaAdminMobile" class="space-y-2 lg:hidden" aria-label="Accesos administración (móvil)">
 
       <!-- Roles -->
-      <button
-        type="button"
-        class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
+      <button type="button" class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
                hover:bg-slate-900/70 hover:border-sky-400/60 transition
-               focus:outline-none focus:ring-2 focus:ring-sky-400/30"
-        data-name="roles accesos usuarios permisos"
+               focus:outline-none focus:ring-2 focus:ring-sky-400/30" data-name="roles accesos usuarios permisos"
         data-title="Roles y accesos"
         data-desc="Asigná o modificá el rol de acceso a los usuarios registrados en el sistema."
-        data-href="/usuarios/dashboard"
-        data-color="sky"
-      >
+        data-href="/usuarios/dashboard" data-color="sky">
         <div class="flex items-center gap-3">
           <div class="h-10 w-10 rounded-full bg-sky-500/15 border border-sky-500/40 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-sky-300" viewBox="0 0 24 24" fill="none">
-              <path d="M15 14a3 3 0 1 0-6 0v5h6v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M18 21v-3a2 2 0 0 0-1-1.73" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 16.27A2 2 0 0 0 6 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M15 14a3 3 0 1 0-6 0v5h6v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M18 21v-3a2 2 0 0 0-1-1.73" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M7 16.27A2 2 0 0 0 6 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </div>
           <div class="min-w-0 flex-1">
@@ -106,28 +117,26 @@
           </div>
           <div class="text-slate-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </div>
         </div>
       </button>
 
       <!-- Usuarios -->
-      <button
-        type="button"
-        class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
+      <button type="button" class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
                hover:bg-slate-900/70 hover:border-indigo-400/60 transition
-               focus:outline-none focus:ring-2 focus:ring-indigo-400/30"
-        data-name="usuarios registrados listado"
+               focus:outline-none focus:ring-2 focus:ring-indigo-400/30" data-name="usuarios registrados listado"
         data-title="Usuarios registrados"
         data-desc="Consultá la lista de usuarios activos y realizá acciones administrativas."
-        data-href="/usuarios/dashboard"
-        data-color="indigo"
-      >
+        data-href="/usuarios/dashboard" data-color="indigo">
         <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center">
+          <div
+            class="h-10 w-10 rounded-full bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-300" viewBox="0 0 24 24" fill="none">
-              <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </div>
           <div class="min-w-0 flex-1">
@@ -136,29 +145,26 @@
           </div>
           <div class="text-slate-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </div>
         </div>
       </button>
 
       <!-- Planes -->
-      <button
-        type="button"
-        class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
+      <button type="button" class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
                hover:bg-slate-900/70 hover:border-emerald-400/60 transition
                focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
-        data-name="planes internet tv servicios precios"
-        data-title="Planes"
-        data-desc="Consultá, creá y editá planes de servicios de Internet y TV."
-        data-href="/planes/listado"
-        data-color="emerald"
-      >
+        data-name="planes internet tv servicios precios" data-title="Planes"
+        data-desc="Consultá, creá y editá planes de servicios de Internet y TV." data-href="/planes/listado"
+        data-color="emerald">
         <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center">
+          <div
+            class="h-10 w-10 rounded-full bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-300" viewBox="0 0 24 24" fill="none">
-              <path d="M5 5h14v10H5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-              <path d="M9 19h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M5 5h14v10H5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+              <path d="M9 19h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
             </svg>
           </div>
           <div class="min-w-0 flex-1">
@@ -167,29 +173,27 @@
           </div>
           <div class="text-slate-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </div>
         </div>
       </button>
 
       <!-- Clientes -->
-      <button
-        type="button"
-        class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
+      <button type="button" class="admin-item admin-item-mobile w-full text-left bg-slate-900/55 border border-slate-700/70 rounded-2xl p-4
                hover:bg-slate-900/70 hover:border-amber-300/60 transition
-               focus:outline-none focus:ring-2 focus:ring-amber-300/30"
-        data-name="clientes alta edicion consulta"
-        data-title="Clientes"
-        data-desc="Alta, edición y consulta de clientes y sus servicios contratados."
-        data-href="/clientes/dashboard"
-        data-color="amber"
-      >
+               focus:outline-none focus:ring-2 focus:ring-amber-300/30" data-name="clientes alta edicion consulta"
+        data-title="Clientes" data-desc="Alta, edición y consulta de clientes y sus servicios contratados."
+        data-href="/clientes/dashboard" data-color="amber">
         <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full bg-amber-400/15 border border-amber-400/40 flex items-center justify-center">
+          <div
+            class="h-10 w-10 rounded-full bg-amber-400/15 border border-amber-400/40 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-200" viewBox="0 0 24 24" fill="none">
-              <path d="M16 13a4 4 0 1 0-8 0v5h8v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M12 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 13a4 4 0 1 0-8 0v5h8v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M12 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </div>
           <div class="min-w-0 flex-1">
@@ -198,25 +202,22 @@
           </div>
           <div class="text-slate-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </div>
         </div>
       </button>
 
       <!-- Próximos módulos -->
-      <button
-        type="button"
-        class="admin-item admin-item-mobile w-full text-left bg-slate-900/30 border border-dashed border-slate-600/70 rounded-2xl p-4
-               hover:bg-slate-900/45 transition"
-        data-name="proximos modulos reportes auditoria caja cobradores"
+      <button type="button" class="admin-item admin-item-mobile w-full text-left bg-slate-900/30 border border-dashed border-slate-600/70 rounded-2xl p-4
+               hover:bg-slate-900/45 transition" data-name="proximos modulos reportes auditoria caja cobradores"
         data-title="Próximos módulos"
         data-desc="Aquí podrás agregar accesos a reportes, estadísticas, auditorías, caja, cobradores y más."
-        data-href="#"
-        data-color="slate"
-      >
+        data-href="#" data-color="slate">
         <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full bg-slate-500/10 border border-slate-600/50 flex items-center justify-center">
+          <div
+            class="h-10 w-10 rounded-full bg-slate-500/10 border border-slate-600/50 flex items-center justify-center">
             <span class="text-slate-300 font-bold">+</span>
           </div>
           <div class="min-w-0 flex-1">
@@ -225,7 +226,8 @@
           </div>
           <div class="text-slate-500">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </div>
         </div>
@@ -233,26 +235,27 @@
     </section>
 
     <!-- ===== DESKTOP (grid) ===== -->
-    <section
-      id="gridAdminDesktop"
-      class="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-6"
-      aria-label="Accesos administración (PC)"
-    >
+    <section id="gridAdminDesktop" class="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-6"
+      aria-label="Accesos administración (PC)">
       <!-- Roles -->
-      <a
-        href="/usuarios/dashboard"
-        class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
+      <a href="/usuarios/dashboard" class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
                shadow-md hover:shadow-xl hover:border-sky-500/70 hover:bg-slate-900/80 transition-all"
-        data-name="roles accesos usuarios permisos"
-      >
-        <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-sky-500/10 blur-2xl group-hover:bg-sky-400/20"></div>
+        data-name="roles accesos usuarios permisos">
+        <div
+          class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-sky-500/10 blur-2xl group-hover:bg-sky-400/20">
+        </div>
         <div class="flex items-start gap-4">
-          <div class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-sky-500/15 border border-sky-500/40">
+          <div
+            class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-sky-500/15 border border-sky-500/40">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-sky-300" viewBox="0 0 24 24" fill="none">
-              <path d="M15 14a3 3 0 1 0-6 0v5h6v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M18 21v-3a2 2 0 0 0-1-1.73" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 16.27A2 2 0 0 0 6 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M15 14a3 3 0 1 0-6 0v5h6v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M18 21v-3a2 2 0 0 0-1-1.73" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M7 16.27A2 2 0 0 0 6 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </div>
           <div class="flex-1">
@@ -261,7 +264,8 @@
             <span class="inline-flex items-center gap-2 text-sm text-sky-300 font-medium">
               Gestionar usuarios
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z"/>
+                <path
+                  d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z" />
               </svg>
             </span>
           </div>
@@ -269,17 +273,18 @@
       </a>
 
       <!-- Usuarios -->
-      <a
-        href="/usuarios/dashboard"
-        class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
+      <a href="/usuarios/dashboard" class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
                shadow-md hover:shadow-xl hover:border-indigo-500/70 hover:bg-slate-900/80 transition-all"
-        data-name="usuarios registrados listado"
-      >
-        <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-indigo-500/10 blur-2xl group-hover:bg-indigo-400/20"></div>
+        data-name="usuarios registrados listado">
+        <div
+          class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-indigo-500/10 blur-2xl group-hover:bg-indigo-400/20">
+        </div>
         <div class="flex items-start gap-4">
-          <div class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-indigo-500/15 border border-indigo-500/40">
+          <div
+            class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-indigo-500/15 border border-indigo-500/40">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-300" viewBox="0 0 24 24" fill="none">
-              <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </div>
           <div class="flex-1">
@@ -288,7 +293,8 @@
             <span class="inline-flex items-center gap-2 text-sm text-indigo-300 font-medium">
               Ver listado
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z"/>
+                <path
+                  d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z" />
               </svg>
             </span>
           </div>
@@ -296,18 +302,18 @@
       </a>
 
       <!-- Planes -->
-      <a
-        href="/planes/listado"
-        class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
+      <a href="/planes/listado" class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
                shadow-md hover:shadow-xl hover:border-emerald-500/70 hover:bg-slate-900/80 transition-all"
-        data-name="planes internet tv servicios precios"
-      >
-        <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl group-hover:bg-emerald-400/20"></div>
+        data-name="planes internet tv servicios precios">
+        <div
+          class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl group-hover:bg-emerald-400/20">
+        </div>
         <div class="flex items-start gap-4">
-          <div class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/40">
+          <div
+            class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/40">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none">
-              <path d="M5 5h14v10H5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-              <path d="M9 19h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M5 5h14v10H5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+              <path d="M9 19h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
             </svg>
           </div>
           <div class="flex-1">
@@ -316,7 +322,8 @@
             <span class="inline-flex items-center gap-2 text-sm text-emerald-300 font-medium">
               Administrar planes
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z"/>
+                <path
+                  d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z" />
               </svg>
             </span>
           </div>
@@ -324,18 +331,20 @@
       </a>
 
       <!-- Clientes -->
-      <a
-        href="/clientes/dashboard"
-        class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
+      <a href="/clientes/dashboard" class="admin-item admin-item-desktop group relative block bg-slate-900/60 border border-slate-700/80 rounded-2xl p-6
                shadow-md hover:shadow-xl hover:border-amber-400/70 hover:bg-slate-900/80 transition-all"
-        data-name="clientes alta edicion consulta"
-      >
-        <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-amber-400/10 blur-2xl group-hover:bg-amber-300/20"></div>
+        data-name="clientes alta edicion consulta">
+        <div
+          class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-amber-400/10 blur-2xl group-hover:bg-amber-300/20">
+        </div>
         <div class="flex items-start gap-4">
-          <div class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-amber-400/15 border border-amber-400/40">
+          <div
+            class="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-amber-400/15 border border-amber-400/40">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-200" viewBox="0 0 24 24" fill="none">
-              <path d="M16 13a4 4 0 1 0-8 0v5h8v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M12 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 13a4 4 0 1 0-8 0v5h8v-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M12 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </div>
           <div class="flex-1">
@@ -344,7 +353,8 @@
             <span class="inline-flex items-center gap-2 text-sm text-amber-200 font-medium">
               Gestionar clientes
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z"/>
+                <path
+                  d="M7.293 15.707a1 1 0 0 1 0-1.414L10.586 11H4a1 1 0 1 1 0-2h6.586L7.293 5.707A1 1 0 1 1 8.707 4.293l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0Z" />
               </svg>
             </span>
           </div>
@@ -352,11 +362,9 @@
       </a>
 
       <!-- Próximos módulos -->
-      <div
-        class="admin-item admin-item-desktop relative bg-slate-900/40 border border-dashed border-slate-600/70 rounded-2xl p-6
+      <div class="admin-item admin-item-desktop relative bg-slate-900/40 border border-dashed border-slate-600/70 rounded-2xl p-6
                flex flex-col justify-center text-slate-400"
-        data-name="proximos modulos reportes auditoria caja cobradores"
-      >
+        data-name="proximos modulos reportes auditoria caja cobradores">
         <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold">Próximos módulos</p>
         <p class="text-sm mt-2 max-w-md">
           Aquí podrás agregar accesos a reportes, estadísticas, auditorías, caja, cobradores y más.
@@ -386,18 +394,15 @@
           <p id="sheetTitle" class="text-lg font-extrabold text-slate-100 truncate">—</p>
           <p id="sheetDesc" class="text-sm text-slate-300/80 mt-1">—</p>
         </div>
-        <button id="sheetCerrar" class="shrink-0 rounded-xl bg-slate-800/70 border border-slate-600 px-3 py-2 text-sm hover:bg-slate-800">
+        <button id="sheetCerrar"
+          class="shrink-0 rounded-xl bg-slate-800/70 border border-slate-600 px-3 py-2 text-sm hover:bg-slate-800">
           Cerrar
         </button>
       </div>
 
-      <a
-        id="sheetLink"
-        href="#"
-        class="block w-full text-center bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white
+      <a id="sheetLink" href="#" class="block w-full text-center bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white
                py-3 rounded-xl text-sm font-semibold transition
-               focus:outline-none focus:ring-2 focus:ring-sky-400/40"
-      >
+               focus:outline-none focus:ring-2 focus:ring-sky-400/40">
         Ir al módulo
       </a>
     </div>
@@ -420,14 +425,51 @@
     $backdrop.classList.add("show");
     $sheet.classList.add("open");
   };
+
   const closeSheet = () => {
     $sheet.classList.remove("open");
     $backdrop.classList.remove("show");
   };
 
+  // ✅ CIERRE FORZADO (para cuando el navegador restaura la página al volver)
+  const forceCloseSheet = () => {
+    // por seguridad: evita que quede "pegado" abierto por BFCache
+    $sheet?.classList.remove("open");
+    $backdrop?.classList.remove("show");
+  };
+
   $cerrar?.addEventListener("click", closeSheet);
   $backdrop?.addEventListener("click", closeSheet);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+
+  // ✅ Si se toca "Ir al módulo", cerramos el sheet ANTES de navegar
+  $link?.addEventListener("click", () => {
+    // si es "#" no navegamos, pero igual cerramos
+    closeSheet();
+  });
+
+  // ✅ Al volver con el botón del navegador (popstate) cerramos
+  window.addEventListener("popstate", () => {
+    forceCloseSheet();
+  });
+
+  // ✅ BFCache: cuando volvés desde un módulo, Safari/Chrome pueden restaurar estado
+  window.addEventListener("pageshow", (e) => {
+    // e.persisted suele venir true si viene desde cache/historial
+    if (e.persisted) {
+      forceCloseSheet();
+    } else {
+      // incluso si no es persisted, nos aseguramos que cargue limpio
+      forceCloseSheet();
+    }
+  });
+
+  // ✅ Si la pestaña vuelve a estar visible, también cerramos por las dudas
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      forceCloseSheet();
+    }
+  });
 
   // Filtrado (aplica a mobile y desktop)
   const applyFilter = () => {
@@ -486,5 +528,10 @@
   window.addEventListener("resize", () => {
     const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
     if (isDesktop) closeSheet();
+  });
+
+  // ✅ Al cargar por primera vez, garantizamos que esté cerrado
+  document.addEventListener("DOMContentLoaded", () => {
+    forceCloseSheet();
   });
 </script>
